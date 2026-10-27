@@ -1,4 +1,4 @@
-# 贡献指南 · Contributing to dsh-tools
+# 贡献指南 · Contributing to Local Chat Room
 
 欢迎任何规模贡献：错别字、文档、Bug 修复、新功能。
 
@@ -6,9 +6,9 @@
 
 ## 🐛 报 Bug / 提需求
 
-- 先搜一遍 [Issues](https://github.com/systemsssx/dsh-tools/issues) 和 [Discussions](https://github.com/systemsssx/dsh-tools/discussions)；
-- Bug 用 [Bug 模板](https://github.com/systemsssx/dsh-tools/issues/new?template=bug_report.md)：Python 版本、OS、子包名（chatroom / clipboard）、复现步骤、报错日志；
-- 需求用 [Feature 模板](https://github.com/systemsssx/dsh-tools/issues/new?template=feature_request.md)：讲使用场景和现在的不便；
+- 先搜一遍 [Issues](https://github.com/systemsssx/local-chat-room/issues) 和 [Discussions](https://github.com/systemsssx/local-chat-room/discussions)；
+- Bug 用 [Bug 模板](https://github.com/systemsssx/local-chat-room/issues/new?template=bug_report.md)：Python 版本、OS、子包名（chatroom / clipboard）、复现步骤、报错日志；
+- 需求用 [Feature 模板](https://github.com/systemsssx/local-chat-room/issues/new?template=feature_request.md)：讲使用场景和现在的不便；
 - 用法讨论请去 Discussions，不走 Issue。
 
 > 别贴 token、真实绝对路径、用户名，用 `<本机路径>` 占位。

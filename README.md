@@ -1,6 +1,6 @@
 <div align="center">
 
-# dsh-tools · 局域网协同工具集
+# Local Chat Room · 局域网协同工具集
 
 **一个仓库，两件趁手的局域网工具：聊天室 & 协同剪贴板。**
 
@@ -11,16 +11,16 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat-square&logo=fastapi&logoColor=white)](./packages)
 [![SQLite](https://img.shields.io/badge/SQLite-local-003b57?style=flat-square&logo=sqlite&logoColor=white)](./packages)
 [![Status](https://img.shields.io/badge/status-active-8b5cf6?style=flat-square)](README.md#faq)
-[![Stars](https://img.shields.io/github/stars/systemsssx/dsh-tools?style=flat-square&logo=github&color=fbbf24)](https://github.com/systemsssx/dsh-tools/stargazers)
-[![Issues](https://img.shields.io/github/issues/systemsssx/dsh-tools?style=flat-square)](https://github.com/systemsssx/dsh-tools/issues)
-[![Discussions](https://img.shields.io/badge/discussions-open-8b5cf6?style=flat-square&logo=github)](https://github.com/systemsssx/dsh-tools/discussions)
+[![Stars](https://img.shields.io/github/stars/systemsssx/local-chat-room?style=flat-square&logo=github&color=fbbf24)](https://github.com/systemsssx/local-chat-room/stargazers)
+[![Issues](https://img.shields.io/github/issues/systemsssx/local-chat-room?style=flat-square)](https://github.com/systemsssx/local-chat-room/issues)
+[![Discussions](https://img.shields.io/badge/discussions-open-8b5cf6?style=flat-square&logo=github)](https://github.com/systemsssx/local-chat-room/discussions)
 
-<img src="./docs/images/hero.png" width="100%" alt="dsh-tools — 局域网协同工具集" />
+<img src="./docs/images/hero.jpg" width="100%" alt="Local Chat Room — 局域网协同工具集" />
 
 </div>
 
 > **一句话定位**：同一个局域网里，一台电脑跑服务，手机 / 平板 / 电脑用浏览器打开就能用——内容不出内网、不需要账号、不需要外网。
-> 本仓库把原来的两个独立项目合并成 monorepo：**Chat Room**（聊天室）与 **Collab Clipboard**（协同剪贴板），技术栈同源（FastAPI + SQLite + 零构建前端），一起维护。
+> 本仓库把原来的两个独立项目合并成 monorepo（小组课程作业）：**Chat Room**（聊天室）与 **Collab Clipboard**（协同剪贴板），技术栈同源（FastAPI + SQLite + 零构建前端），一起维护。
 
 ---
 
@@ -66,7 +66,7 @@
 1. **同源技术栈**：FastAPI + uvicorn + SQLite + 原生前端，共享同一套启动方式、测试跑法与局域网玩法；
 2. **一个入口**：想用哪个就进哪个子目录，不用在两个仓库之间来回跳；
 3. **一起维护**：Issue / Discussion / Star 集中在一处，两个子包的改动可以放同一个 PR；
-4. **历史不丢**：原仓库 [`chat-room`](https://github.com/systemsssx/chat-room) 与 [`collab-clipboard`](https://github.com/systemsssx/collab-clipboard) 已归档只读，完整提交历史仍保留在原仓库。
+4. **归档说明**：原 `chat-room`、`collab-clipboard` 两个独立仓库的源码已全部并入本仓库（原仓库已删除）。
 
 ---
 
@@ -75,7 +75,7 @@
 ## 📁 目录结构
 
 ```text
-dsh-tools/
+local-chat-room/
 ├─ packages/
 │  ├─ chatroom/                 # 局域网聊天室（完整可运行）
 │  │  ├─ app/                   # 后端：路由 / 存储 / SSE / 鉴权
@@ -110,8 +110,8 @@ dsh-tools/
 | 网络 | 同一个局域网（手机连同一个 Wi-Fi 即可访问） |
 
 ```bash
-git clone https://github.com/systemsssx/dsh-tools.git
-cd dsh-tools
+git clone https://github.com/systemsssx/local-chat-room.git
+cd local-chat-room
 ```
 
 ### 启动 Chat Room（默认端口 8000）
@@ -260,7 +260,7 @@ Chrome/Edge 地址栏 `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
 <details>
 <summary><b>和原来的两个仓库是什么关系？</b></summary>
 
-本仓库是 `chat-room` + `collab-clipboard` 的合并版；原仓库已归档只读，不再更新，Issue/PR 请提到本仓库。
+本仓库是原 `chat-room` + `collab-clipboard` 两个独立项目的合并版（小组课程作业）；原仓库已删除，后续 Issue/PR 都提到本仓库。
 </details>
 
 ---
@@ -275,9 +275,9 @@ Chrome/Edge 地址栏 `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
 
 **点个 ⭐ Star，就是继续完善最直接的动力。**
 
-[![Star](https://img.shields.io/github/stars/systemsssx/dsh-tools?style=for-the-badge&logo=github&label=%E2%AD%90%20Star)](https://github.com/systemsssx/dsh-tools/stargazers)
+[![Star](https://img.shields.io/github/stars/systemsssx/local-chat-room?style=for-the-badge&logo=github&label=%E2%AD%90%20Star)](https://github.com/systemsssx/local-chat-room/stargazers)
 &nbsp;
-[![Fork](https://img.shields.io/badge/Fork-%E5%B8%A6%E8%B5%B0%E6%94%B9-blue?style=for-the-badge&logo=github)](https://github.com/systemsssx/dsh-tools/fork)
+[![Fork](https://img.shields.io/badge/Fork-%E5%B8%A6%E8%B5%B0%E6%94%B9-blue?style=for-the-badge&logo=github)](https://github.com/systemsssx/local-chat-room/fork)
 
 </div>
 
@@ -289,10 +289,10 @@ Chrome/Edge 地址栏 `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
 
 | 我想… | 去哪儿 | 请带上 |
 |---|---|---|
-| ❓ 提问 / 讨论玩法 | **[Discussions](https://github.com/systemsssx/dsh-tools/discussions)** | 你的使用场景（局域网 / 设备数） |
-| 🐛 报 Bug | **[Issues · Bug](https://github.com/systemsssx/dsh-tools/issues/new?template=bug_report.md)** | Python 版本、OS、复现步骤、报错日志 |
-| 💡 提需求 | **[Issues · Feature](https://github.com/systemsssx/dsh-tools/issues/new?template=feature_request.md)** | 使用场景 + 现在卡在哪 |
-| 🛠️ 提 PR | **[Pull Request](https://github.com/systemsssx/dsh-tools/compare)** | 改动说明 + 对应子包的 `unittest` 输出 |
+| ❓ 提问 / 讨论玩法 | **[Discussions](https://github.com/systemsssx/local-chat-room/discussions)** | 你的使用场景（局域网 / 设备数） |
+| 🐛 报 Bug | **[Issues · Bug](https://github.com/systemsssx/local-chat-room/issues/new?template=bug_report.md)** | Python 版本、OS、复现步骤、报错日志 |
+| 💡 提需求 | **[Issues · Feature](https://github.com/systemsssx/local-chat-room/issues/new?template=feature_request.md)** | 使用场景 + 现在卡在哪 |
+| 🛠️ 提 PR | **[Pull Request](https://github.com/systemsssx/local-chat-room/compare)** | 改动说明 + 对应子包的 `unittest` 输出 |
 
 > 发帖别贴 token / 真实绝对路径 / 用户名，用 `<本机路径>` 占位即可。
 
@@ -303,8 +303,8 @@ Chrome/Edge 地址栏 `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
 ## 🤝 贡献
 
 ```bash
-git clone https://github.com/systemsssx/dsh-tools.git
-cd dsh-tools/packages/<chatroom|clipboard>
+git clone https://github.com/systemsssx/local-chat-room.git
+cd local-chat-room/packages/<chatroom|clipboard>
 python -m unittest discover      # 必须全绿
 ```
 
@@ -323,8 +323,7 @@ python -m unittest discover      # 必须全绿
 
 [MIT License](./LICENSE) © 2026 systemsssx
 
-两个子包分别来自 [`systemsssx/chat-room`](https://github.com/systemsssx/chat-room) 与
-[`systemsssx/collab-clipboard`](https://github.com/systemsssx/collab-clipboard)（均已归档只读）。
+两个子包分别来自原 `chat-room` 与 `collab-clipboard`（现已合并进本仓库，原仓库已删除）。
 感谢所有提过意见的人。
 
 <div align="center">
