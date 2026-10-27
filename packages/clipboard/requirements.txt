@@ -1,0 +1,11 @@
+# 协同剪贴板 · 局域网 —— Python 后端依赖
+#
+# 安装：python -m pip install -r requirements.txt
+#
+# 只列非标准库的包；SQLite（sqlite3）、编码转换（gb18030）、随机 id（uuid）、
+# 局域网地址发现（socket）全部由 Python 标准库提供，不需要额外依赖。
+
+fastapi>=0.115          # Web 框架（题目首推）
+uvicorn>=0.30           # ASGI 服务器
+python-multipart>=0.0.9 # FastAPI 解析 multipart 上传（图片/文件）需要
+websockets>=12          # uvicorn 跑 WebSocket 需要

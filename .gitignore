@@ -1,0 +1,43 @@
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── 运行时数据（每台机器 / 每次运行都不同，绝不提交）────────────────
+data/
+**/data/
+uploads/
+**/uploads/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ── 日志 / 临时文件 ─────────────────────────────────────────────────
+*.log
+logs/
+*.tmp
+*.bak
+*.bak-*
+*.orig
+*.rej
+
+# ── Node（dev/ 下少量 .mjs 工具）────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── 系统 / 编辑器 ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

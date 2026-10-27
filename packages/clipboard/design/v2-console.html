@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>协同剪贴板 · UI 设计稿</title>
+<style>
+@font-face{font-family:'InterX';src:url('../../epubui/EasyPub-New/fonts/Inter-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+@font-face{font-family:'NotoSC';src:url('../../epubui/EasyPub-New/fonts/NotoSansSC-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+@font-face{font-family:'NotoSerifSC';src:url('../../epubui/EasyPub-New/fonts/NotoSerifSC-VF.ttf') format('truetype');font-weight:200 900;font-display:block}
+/* ════════════════════════════════════════════════════════════
+   皮肤 ② 通道条 CHANNEL STRIPS
+   模拟调音台：暖炭灰机箱 + 单一琥珀强调 + 左侧 LED 电平梯
+   三条通道条结构完全相同 —— 差异只在读数与状态，这正是"同屏对比"的本意
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#171819; --rail:#1D1E21; --panel:#232529; --panel2:#2B2D32; --field:#141517;
+  --line:#33353A; --line2:#414348;
+  --tx:#F2EDE4; --tx2:#A8A29A; --tx3:#7A756E; --tx4:#565249;
+  --acc:#E8A33D; --acc-d:#C4832A; --led:#E8A33D; --warn:#E8A33D; --red:#D9645A; --push:#E8A33D;
+  --r-card:10px; --r-ctl:7px;
+  --mono:'Cascadia Mono',Consolas,'Courier New',monospace;
+  --sans:'InterX','NotoSC','Microsoft YaHei',sans-serif;
+  --num:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1600px;height:1000px;overflow:hidden}
+body{
+  font-family:var(--sans); font-weight:380; color:var(--tx); background:var(--bg);
+  background-image:radial-gradient(120% 80% at 50% 0%,rgba(232,163,61,.05),transparent 60%);
+  -webkit-font-smoothing:antialiased;
+}
+.app{display:flex;height:1000px}
+
+/* ── 侧边栏 ── */
+.rail{width:400px;flex-shrink:0;background:var(--rail);border-right:1px solid var(--line);
+      display:flex;flex-direction:column;padding-bottom:10px;overflow:hidden}
+.brand{display:flex;align-items:center;gap:12px;padding:14px 18px 12px}
+.mark{width:32px;height:32px;border-radius:50%;flex-shrink:0;
+      background:radial-gradient(circle at 34% 28%,#3A3C41,#202124 62%);
+      border:1px solid #45474C;display:flex;align-items:center;justify-content:center;
+      font-size:14px;color:var(--acc);box-shadow:inset 0 -3px 8px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.4)}
+.bname{font-size:14px;font-weight:460;letter-spacing:.01em}
+.btag{font-family:var(--mono);font-size:8.5px;color:var(--tx4);letter-spacing:.2em;margin-top:2px}
+
+.blk{padding:9px 14px 0}
+.blk-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.blk-head .t{font-size:10.5px;letter-spacing:.1em;color:var(--tx2);font-weight:460}
+.blk-head .en{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;color:var(--tx4)}
+.blk-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.blk-head .cnt{font-family:var(--num);font-size:12px;color:var(--acc)}
+
+.card{background:linear-gradient(180deg,#26282D,#212328);border:1px solid var(--line);
+      border-radius:var(--r-card);padding:10px 12px;margin-bottom:7px;
+      box-shadow:0 2px 5px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.035)}
+.card:last-child{margin-bottom:0}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.ch .ct{font-size:11.5px;font-weight:460}
+.ch .cs{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.05em}
+.lbl{display:block;font-size:9px;letter-spacing:.1em;color:var(--tx4);font-weight:460;margin-bottom:5px}
+
+.row{display:flex;gap:7px;align-items:center;margin-bottom:9px}
+.row.tight{margin-bottom:0}
+.inp{flex:1;height:29px;background:var(--field);border:1px solid var(--line2);border-radius:var(--r-ctl);
+     color:var(--tx);font-family:var(--mono);font-size:12.5px;padding:0 10px;letter-spacing:.06em;
+     box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
+.btn{height:29px;padding:0 14px;border-radius:var(--r-ctl);font-family:inherit;font-size:11px;font-weight:460;
+     background:linear-gradient(180deg,#303237,#26282C);border:1px solid var(--line2);color:var(--tx2);
+     box-shadow:0 1px 2px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05)}
+.btn.pri{background:linear-gradient(180deg,#EFAC47,#CE8B27);border-color:#8E6220;color:#231703;font-weight:520}
+
+.stat{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--tx2);margin-bottom:10px}
+.led{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--led);
+     box-shadow:0 0 8px rgba(232,163,61,.85),inset 0 0 3px rgba(255,255,255,.5)}
+.led.w{background:#E8A33D}
+.led.r{background:var(--red);box-shadow:0 0 8px rgba(217,100,90,.8)}
+
+.ta{background:var(--field);border:1px solid var(--line2);border-radius:var(--r-ctl);padding:9px 10px;
+    font-size:11.5px;line-height:1.62;height:57px;overflow:hidden;box-shadow:inset 0 2px 6px rgba(0,0,0,.45)}
+.fr{display:flex;align-items:center;gap:8px;margin-top:8px;font-family:var(--mono);font-size:9.5px;color:var(--tx4)}
+.fr .r{margin-left:auto;color:var(--acc)}
+
+.sw{width:32px;height:16px;border-radius:9px;margin-left:auto;flex-shrink:0;position:relative;
+    background:linear-gradient(180deg,#D9942F,#B87A22);border:1px solid #8E6220}
+.sw i{position:absolute;right:2px;top:1.5px;width:11px;height:11px;border-radius:50%;
+      background:radial-gradient(circle at 35% 30%,#fff,#E4DCCB);box-shadow:0 1px 2px rgba(0,0,0,.5)}
+.kv{font-size:10.5px;color:var(--tx2);margin-bottom:7px}
+.quote{background:var(--field);border-radius:var(--r-ctl);padding:6px 9px;font-family:var(--mono);
+       font-size:10px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px;
+       box-shadow:inset 0 2px 6px rgba(0,0,0,.45)}
+.quote b{color:var(--tx4);font-weight:400}
+.warn{font-size:9.5px;line-height:1.5;color:#E9B96A;background:rgba(232,163,61,.08);
+      border:1px solid rgba(232,163,61,.26);border-radius:var(--r-ctl);padding:6px 8px}
+
+.hist{display:flex;flex-direction:column}
+.hi{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(65,67,72,.5);font-size:10.5px}
+.hi:last-child{border-bottom:0}
+.hi .ht{font-family:var(--mono);font-size:9.5px;color:var(--tx4);flex-shrink:0}
+.hi .hs{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
+.hi .hr{font-family:var(--num);font-size:11px;color:var(--tx4)}
+.mini{font-family:inherit;font-size:9px;color:var(--tx2);border:1px solid var(--line2);
+      background:linear-gradient(180deg,#303237,#26282C);border-radius:5px;padding:3px 7px}
+
+.thumbs{display:flex;gap:8px}
+.th{flex:1;height:47px;border-radius:var(--r-ctl);border:1px solid var(--line2);position:relative;overflow:hidden;
+    background:linear-gradient(150deg,#3A3428,#241F18);box-shadow:inset 0 2px 6px rgba(0,0,0,.4)}
+.th.b{background:linear-gradient(150deg,#2E2F38,#1C1D24)}
+.th span{position:absolute;left:0;right:0;bottom:0;background:rgba(14,14,16,.8);font-family:var(--mono);
+         font-size:8px;color:var(--tx3);padding:3px 5px;white-space:nowrap;overflow:hidden}
+.drop{border:1px dashed var(--line2);border-radius:var(--r-ctl);padding:9px;text-align:center;
+      font-size:10px;color:var(--tx3);background:rgba(0,0,0,.14)}
+
+.rail-foot{margin-top:auto;padding:11px 18px 0;border-top:1px solid var(--line);
+           display:flex;gap:10px;font-family:var(--mono);font-size:9px;color:var(--tx4)}
+.rail-foot .r{margin-left:auto;color:var(--acc)}
+
+/* ── 大栏 ── */
+.stage{flex:1;display:flex;flex-direction:column;padding:16px 18px 0;min-width:0}
+.stage-head{display:flex;align-items:flex-end;gap:14px;padding-bottom:12px;margin-bottom:14px;
+            border-bottom:1px solid var(--line)}
+.sh-room{font-family:var(--num);font-size:22px;letter-spacing:.02em;color:var(--tx)}
+.sh-sub{font-size:10.5px;color:var(--tx3);padding-bottom:3px}
+.sh-right{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--tx2);padding-bottom:3px}
+
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex:1;min-height:0}
+.col{--lc:var(--acc) !important;
+     background:linear-gradient(180deg,#26282D,#212328);border:1px solid var(--line);
+     border-radius:var(--r-card);padding:15px 16px 13px 30px;display:flex;flex-direction:column;min-height:0;
+     position:relative;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04)}
+/* 左侧 LED 电平梯 —— 这套皮肤的签名元素 */
+.col::before{content:"";position:absolute;left:9px;top:16px;bottom:16px;width:7px;border-radius:4px;
+             background:repeating-linear-gradient(180deg,rgba(232,163,61,.85) 0 2px,transparent 2px 6px);
+             opacity:.5}
+.col::after{content:"";position:absolute;left:9px;top:16px;height:42%;width:7px;border-radius:4px;
+            background:repeating-linear-gradient(180deg,#F2B455 0 2px,transparent 2px 6px);
+            filter:drop-shadow(0 0 4px rgba(232,163,61,.75))}
+.col-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.port{font-family:var(--num);font-size:11px;letter-spacing:.06em;color:#221703;background:var(--acc);
+      border-radius:4px;padding:1px 7px 2px;font-weight:600}
+.col-name{font-size:13.5px;font-weight:460}
+.col-head .led{margin-left:auto}
+.col-path{font-family:var(--mono);font-size:9.5px;color:var(--tx4);margin-bottom:11px;line-height:1.5}
+.metrics{display:flex;gap:16px;padding:10px 0 11px;border-top:1px solid var(--line);
+         border-bottom:1px solid var(--line);margin-bottom:12px}
+.m b{display:block;font-family:var(--num);font-size:19px;font-weight:600;color:var(--acc);letter-spacing:.01em}
+.m span{font-size:9px;color:var(--tx4);letter-spacing:.1em}
+
+.band{margin-bottom:12px}
+.band-t{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--tx4);margin-bottom:8px}
+.tl{position:relative;display:flex;align-items:center;justify-content:space-between;height:16px;padding:0 2px}
+.tl::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line2)}
+.tl i{position:relative;width:5px;height:10px;border-radius:2px;background:#2E3034;border:1px solid var(--line2)}
+.tl i.on{background:var(--acc);border-color:var(--acc);box-shadow:0 0 8px rgba(232,163,61,.75)}
+.tl i.push{background:var(--acc);border-color:var(--acc);box-shadow:0 0 8px rgba(232,163,61,.6)}
+.tl i.up{background:#6E6A62;border-color:#6E6A62}
+.cap{margin-top:7px;font-family:var(--mono);font-size:9px;line-height:1.5;color:var(--tx4)}
+
+/* 电平梯读数按通道各不相同：轮询最省、WebSocket 最活跃 */
+.col:nth-child(1)::after{height:32%}
+.col:nth-child(2)::after{height:46%}
+.col:nth-child(3)::after{height:60%}
+
+.log{flex:1;min-height:0;display:flex;flex-direction:column;gap:15px;overflow:hidden;
+     -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
+     mask-image:linear-gradient(180deg,#000 86%,transparent 100%)}
+.ln{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9.5px;color:var(--tx3)}
+.ln .t{color:var(--tx4)}
+.ln .ok{color:var(--acc)}
+.ln .push{color:#E8C489}
+.ln .ws{color:#C7B08A}
+.ln .d{color:var(--tx4);margin-left:auto}
+.note{font-size:10px;line-height:1.6;color:var(--tx3);border-top:1px solid var(--line);padding-top:10px;margin-top:11px}
+
+/* ── 对照表 ── */
+.cmp{flex:0 0 auto;margin-top:16px;background:linear-gradient(180deg,#26282D,#212328);
+     border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px 6px;
+     box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.035)}
+.cmp-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cmp-h .t{font-size:11.5px;font-weight:460}
+.cmp-h .en{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;color:var(--tx4)}
+.cmp-h .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.cmp-h .cnt{font-family:var(--num);font-size:11px;color:var(--acc)}
+.cmp-grid{display:grid;grid-template-columns:118px repeat(3,1fr)}
+.cmp-grid>div{padding:7px 11px;font-size:10.5px;color:var(--tx2);border-bottom:1px solid rgba(51,53,58,.8)}
+.cmp-grid>div:nth-last-child(-n+4){border-bottom:0;padding-bottom:9px}
+.cmp-grid .hd{font-family:var(--num);font-size:11px;letter-spacing:.04em;color:var(--acc)}
+.cmp-grid .k{color:var(--tx4);font-size:10px;letter-spacing:.06em}
+.cmp-grid .hl{color:var(--tx)}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════════ 侧边栏：三个板块 × 两个小栏 ═══════════════ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="mark">⇄</div>
+      <div>
+        <div class="bname">协同剪贴板</div>
+        <div class="btag">LAN CLIPBOARD</div>
+      </div>
+    </div>
+
+    <!-- ── 板块一 · 文字 ── -->
+    <section class="blk">
+      <div class="blk-head"><span class="t">文字</span><span class="en">TEXT</span><span class="rule"></span><span class="cnt">02</span></div>
+
+      <!-- 小栏 1：纯文字共享 -->
+      <div class="card">
+        <div class="ch"><span class="ct">纯文字共享</span><span class="cs">ROOM 1001</span></div>
+        <label class="lbl">房间号</label>
+        <div class="row"><input class="inp" value="1001"><button class="btn pri">进入</button></div>
+        <div class="stat"><i class="led"></i>已连接 · HTTP 轮询 1.5s</div>
+        <label class="lbl">共享剪贴板内容</label>
+        <div class="ta">会议改到周三 14:00，会议室 B203。记得带上上周的流程图打印稿。</div>
+        <div class="fr"><span>最近更新 14:23:05</span><span class="r">REV 12</span></div>
+      </div>
+
+      <!-- 小栏 2：剪贴板自动读取 -->
+      <div class="card">
+        <div class="ch"><span class="ct">剪贴板自动读取</span><span class="sw"><i></i></span></div>
+        <div class="kv">本机剪贴板 → 房间 1001</div>
+        <div class="quote"><b>14:22:41</b> · https://192.168.1.7:8000</div>
+        <div class="warn">仅 localhost 生效：局域网 IP 打开时浏览器不授予剪贴板权限</div>
+      </div>
+    </section>
+
+    <!-- ── 板块二 · 历史 ── -->
+    <section class="blk">
+      <div class="blk-head"><span class="t">历史</span><span class="en">SQLITE</span><span class="rule"></span><span class="cnt">128</span></div>
+
+      <div class="card">
+        <div class="ch"><span class="ct">最近 20 条</span><span class="cs">TAP TO RESTORE</span></div>
+        <div class="hist">
+          <div class="hi"><span class="ht">14:23:05</span><span class="hs">会议改到周三 14:00，会议室 B203…</span><span class="hr">r12</span><span class="mini">恢复</span></div>
+          <div class="hi"><span class="ht">14:22:41</span><span class="hs">https://192.168.1.7:8000</span><span class="hr">r11</span><span class="mini">恢复</span></div>
+          <div class="hi"><span class="ht">14:19:02</span><span class="hs">先把后端两个接口跑通，再换 SSE</span><span class="hr">r10</span><span class="mini">恢复</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="ct">存储</span><span class="cs">data/app.db</span></div>
+        <div class="kv">服务重启后自动恢复 · 最近快照 14:23:05</div>
+        <div class="row tight"><button class="btn">导出全部</button><button class="btn">清空历史</button></div>
+      </div>
+    </section>
+
+    <!-- ── 板块三 · 图片 ── -->
+    <section class="blk">
+      <div class="blk-head"><span class="t">图片</span><span class="en">IMAGE</span><span class="rule"></span><span class="cnt">04</span></div>
+
+      <div class="card">
+        <div class="ch"><span class="ct">上传 / 粘贴</span><span class="cs">≤ 2 MB</span></div>
+        <div class="drop">拖入图片，或在文本框内 Ctrl+V 粘贴</div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="ct">图片流</span><span class="cs">WS BROADCAST</span></div>
+        <div class="thumbs">
+          <div class="th"><span>截图-1422.png</span></div>
+          <div class="th b"><span>白板.jpg</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rail-foot"><span>192.168.1.7:8000</span><span>ROOM 1001</span><span class="r">2 连接</span></div>
+  </aside>
+
+  <!-- ═══════════════ 大栏：三种通信方案 ═══════════════ -->
+  <main class="stage">
+    <div class="stage-head">
+      <span class="sh-room">房间 1001</span>
+      <span class="sh-sub">三种通信方案 · 同一份内容，各自送达</span>
+      <span class="sh-right"><i class="led"></i>全部运行中 · 192.168.1.7:8000</span>
+    </div>
+
+    <div class="cols">
+
+      <!-- 方案一 · HTTP 轮询 -->
+      <section class="col" style="--lc:#5BE37F">
+        <div class="col-head"><span class="port">P1</span><span class="col-name">HTTP 轮询</span><i class="led"></i></div>
+        <div class="col-path">GET /api/room/1001<br>POST /api/room/1001</div>
+        <div class="metrics">
+          <div class="m"><b>1,284</b><span>请求数</span></div>
+          <div class="m"><b>12</b><span>延迟 ms</span></div>
+          <div class="m"><b>1.5s</b><span>间隔</span></div>
+        </div>
+        <div class="band">
+          <div class="band-t">REQUEST TIMELINE · 24s</div>
+          <div class="tl">
+            <i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i>
+          </div>
+          <div class="cap">每 1.5 秒问一次 · 16 次请求 / 只有 3 次内容真的变了</div>
+        </div>
+        <div class="log">
+          <div class="ln"><span class="t">14:23:05</span><span class="ok">GET 200</span><span class="d">rev 12 · 12ms</span></div>
+          <div class="ln"><span class="t">14:23:03</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:23:02</span><span class="ok">POST 200</span><span class="d">rev 12 已写入</span></div>
+          <div class="ln"><span class="t">14:23:00</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:59</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:57</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:56</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:54</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:53</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:51</span><span class="ok">GET 200</span><span class="d">rev 11 · 11ms</span></div>
+          <div class="ln"><span class="t">14:22:50</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:48</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:47</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:45</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:44</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+          <div class="ln"><span class="t">14:22:42</span><span class="ok">GET 304</span><span class="d">未变化</span></div>
+        </div>
+        <div class="note">客户端每 1.5 秒问一次控制器，内容没变也照问 —— 代码最少，空请求最多。</div>
+      </section>
+
+      <!-- 方案二 · SSE -->
+      <section class="col" style="--lc:#7FC7F0">
+        <div class="col-head"><span class="port">P2</span><span class="col-name">SSE 推送</span><i class="led"></i></div>
+        <div class="col-path">GET /api/sse/1001<br>POST /api/room/1001</div>
+        <div class="metrics">
+          <div class="m"><b>86</b><span>已推事件</span></div>
+          <div class="m"><b>2</b><span>订阅者</span></div>
+          <div class="m"><b>20s</b><span>心跳</span></div>
+        </div>
+        <div class="band">
+          <div class="band-t">PUSH TIMELINE · 24s</div>
+          <div class="tl">
+            <i></i><i class="push"></i><i></i><i class="push"></i><i></i><i class="push up"></i><i></i><i class="push"></i><i></i><i class="push"></i><i></i><i class="push"></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="cap">服务器推 6 次（蓝）· 客户端 POST 1 次（黄）</div>
+        </div>
+        <div class="log">
+          <div class="ln"><span class="t">14:23:05</span><span class="push">event update</span><span class="d">rev 12 → 2 客户端</span></div>
+          <div class="ln"><span class="t">14:22:45</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:22:41</span><span class="push">event update</span><span class="d">rev 11 → 2 客户端</span></div>
+          <div class="ln"><span class="t">14:22:25</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:22:10</span><span class="push">event sync</span><span class="d">新客户端加入</span></div>
+          <div class="ln"><span class="t">14:22:09</span><span class="ok">POST 200</span><span class="d">rev 10 已写入</span></div>
+          <div class="ln"><span class="t">14:22:05</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:21:58</span><span class="push">event update</span><span class="d">rev 9 → 2 客户端</span></div>
+          <div class="ln"><span class="t">14:21:45</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:21:33</span><span class="push">event update</span><span class="d">rev 8 → 1 客户端</span></div>
+          <div class="ln"><span class="t">14:21:25</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:21:12</span><span class="push">event update</span><span class="d">rev 7 → 1 客户端</span></div>
+          <div class="ln"><span class="t">14:21:05</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:20:58</span><span class="push">event update</span><span class="d">rev 6 → 1 客户端</span></div>
+          <div class="ln"><span class="t">14:20:45</span><span class="push">: ping</span><span class="d">心跳</span></div>
+          <div class="ln"><span class="t">14:20:31</span><span class="push">event sync</span><span class="d">新客户端加入</span></div>
+        </div>
+        <div class="note">一条长连接由服务器主动推；写入仍走普通 POST，所以只是"半个"双向。</div>
+      </section>
+
+      <!-- 方案三 · WebSocket -->
+      <section class="col" style="--lc:#C9A6F0">
+        <div class="col-head"><span class="port">P3</span><span class="col-name">WebSocket</span><i class="led"></i></div>
+        <div class="col-path">ws://192.168.1.7:8000/ws/1001</div>
+        <div class="metrics">
+          <div class="m"><b>214</b><span>消息数</span></div>
+          <div class="m"><b>3</b><span>往返 ms</span></div>
+          <div class="m"><b>0</b><span>重连次数</span></div>
+        </div>
+        <div class="band">
+          <div class="band-t">BIDIRECTIONAL · 24s</div>
+          <div class="tl">
+            <i class="push"></i><i class="up"></i><i class="push"></i><i class="push"></i><i class="up"></i><i class="push"></i><i class="push"></i><i class="up"></i><i class="push"></i><i class="push"></i><i class="up"></i><i class="push"></i><i class="push"></i><i class="up"></i><i class="push"></i><i></i>
+          </div>
+          <div class="cap">一条连接双向 14 条消息 · 没有固定间隔</div>
+        </div>
+        <div class="log">
+          <div class="ln"><span class="t">14:23:05</span><span class="ws">→ update</span><span class="d">本机发出 rev 12</span></div>
+          <div class="ln"><span class="t">14:23:05</span><span class="ws">← ack</span><span class="d">已落库 · 3ms</span></div>
+          <div class="ln"><span class="t">14:23:05</span><span class="ws">⇒ broadcast</span><span class="d">同房间 1 个其他客户端</span></div>
+          <div class="ln"><span class="t">14:22:41</span><span class="ws">← update</span><span class="d">来自手机 192.168.1.9</span></div>
+          <div class="ln"><span class="t">14:22:41</span><span class="ws">⇒ broadcast</span><span class="d">房间内广播</span></div>
+          <div class="ln"><span class="t">14:21:58</span><span class="ws">⇄ 握手</span><span class="d">101 Switching Protocols</span></div>
+          <div class="ln"><span class="t">14:21:57</span><span class="ws">→ join</span><span class="d">room 1001</span></div>
+          <div class="ln"><span class="t">14:21:57</span><span class="ws">← sync</span><span class="d">rev 8 · 当前内容</span></div>
+          <div class="ln"><span class="t">14:20:12</span><span class="ws">← ping</span><span class="d">30s 心跳</span></div>
+          <div class="ln"><span class="t">14:20:12</span><span class="ws">→ pong</span><span class="d">连接存活</span></div>
+          <div class="ln"><span class="t">14:18:30</span><span class="ws">✕ close</span><span class="d">1006 异常断开</span></div>
+          <div class="ln"><span class="t">14:18:32</span><span class="ws">↻ 重连</span><span class="d">退避 1s → 成功</span></div>
+          <div class="ln"><span class="t">14:18:32</span><span class="ws">→ join</span><span class="d">自动重新加入 room 1001</span></div>
+          <div class="ln"><span class="t">14:18:32</span><span class="ws">← sync</span><span class="d">自动拉取 rev 8</span></div>
+          <div class="ln"><span class="t">14:17:50</span><span class="ws">→ update</span><span class="d">本机发出 rev 7</span></div>
+          <div class="ln"><span class="t">14:17:50</span><span class="ws">← ack</span><span class="d">已落库 · 2ms</span></div>
+        </div>
+        <div class="note">一条连接双向收发；断线指数退避重连，重连后自动重新加入房间并拉最新内容。</div>
+      </section>
+    </div>
+
+    <!-- 三种方式的区别（对应 README 必写项） -->
+    <section class="cmp">
+      <div class="cmp-h"><span class="t">三种方式的区别</span><span class="en">POLLING / SSE / WEBSOCKET</span><span class="rule"></span><span class="cnt">同一份内容 · 房间 1001</span></div>
+      <div class="cmp-grid">
+        <div class="hd">维度</div><div class="hd">HTTP 轮询</div><div class="hd">SSE</div><div class="hd">WebSocket</div>
+        <div class="k">方向</div><div>客户端不断问</div><div>服务器 → 客户端，单向</div><div class="hl">双向，随时收发</div>
+        <div class="k">连接</div><div>每次请求新建</div><div>一条 HTTP 长连接</div><div class="hl">握手后一条双向连接</div>
+        <div class="k">本次开销</div><div>1,284 次请求</div><div>86 条事件 + 心跳</div><div>214 条消息</div>
+        <div class="k">同步延迟</div><div>0 ～ 1.5 秒</div><div>立即（&lt; 50ms）</div><div class="hl">立即（&lt; 10ms）</div>
+        <div class="k">断线处理</div><div>下一次请求自然恢复</div><div>EventSource 自动重连</div><div class="hl">需自己写退避重连</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+</body>
+</html>

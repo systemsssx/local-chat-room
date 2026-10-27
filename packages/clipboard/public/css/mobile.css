@@ -1,0 +1,287 @@
+/* ════════════════════════════════════════════════════════════
+   手机适配版样式
+   ────────────────────────────────────────────────────────────
+   设计目标：在 360~430px 宽的手机竖屏上，把桌面版的"四面框"压缩成
+     顶栏（房间 + 抽屉入口） / 组合条（传输 × 模式） / 消息流 / 底部输入
+   左侧栏和右侧栏收进两个抽屉（从左右滑出）。
+
+   关键手机适配点：
+     · 100dvh —— 避开手机浏览器地址栏收起/展开导致的高度跳动
+     · env(safe-area-inset-*) —— 刘海屏 / 底部横条
+     · 输入框字号 ≥16px —— iOS 聚焦时不会自动放大页面
+     · 触控目标 ≥44px —— 手指点得中
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#151618; --panel:#1F2126; --panel2:#26282D; --field:#101113; --stream:#191A1D;
+  --line:#2C2E33; --line2:#3A3D43;
+  --tx:#F2EDE4; --tx2:#A8A29A; --tx3:#7A756E; --tx4:#5A564E;
+  --acc:#E8A33D; --acc-soft:rgba(232,163,61,.14);
+  --mono:'Cascadia Mono',Consolas,'Courier New',monospace;
+  --sans:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --num:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+/* overflow-x:hidden 是必需的：两个抽屉平时用 transform 藏在屏幕外，
+   不裁掉的话文档会被撑宽，手机上能左右拖动（假横向滚动）。 */
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:var(--sans);font-weight:380;color:var(--tx);background:var(--bg);
+  -webkit-font-smoothing:antialiased;overscroll-behavior:none;
+  touch-action:manipulation;                          /* 去掉双击缩放 */
+}
+.app{display:flex;flex-direction:column;height:100dvh}
+
+/* ══ 顶栏 ══ */
+.top{
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  background:linear-gradient(180deg,#212328,#1C1E22);border-bottom:1px solid var(--line);
+}
+.icon-btn{
+  width:42px;height:42px;flex-shrink:0;border-radius:12px;cursor:pointer;
+  background:var(--field);border:1px solid var(--line2);color:var(--tx2);
+  font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;
+}
+.icon-btn:active{background:var(--panel2);color:var(--tx)}
+.room-chip{
+  display:flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;
+  background:var(--field);border:1px solid var(--line2);
+}
+.room-chip .rc-k{font-size:11px;color:var(--tx4)}
+.room-chip .rc-v{font-family:var(--num);font-size:17px;font-weight:600;color:var(--acc)}
+.top-spacer{flex:1}
+.led{width:8px;height:8px;border-radius:50%;background:var(--acc);flex-shrink:0;
+     box-shadow:0 0 8px rgba(232,163,61,.8)}
+.led.w{background:#C9A227;box-shadow:0 0 8px rgba(201,162,39,.75)}
+.led.r{background:#D9645A;box-shadow:0 0 8px rgba(217,100,90,.75)}
+
+/* ══ 组合条：传输 × 模式 ══ */
+.bar{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:#1B1C1F;border-bottom:1px solid var(--line);
+  flex-wrap:wrap;                                   /* 窄屏放不下就换行，别把「剪贴板」截掉 */
+}
+.hidden-file{display:none}                          /* 两个隐藏的 file input 绝不能露出来 */
+.seg{display:flex;background:var(--field);border:1px solid var(--line2);border-radius:10px;padding:3px;gap:3px;flex-shrink:0}
+.seg-btn{
+  min-height:34px;padding:0 12px;border:0;border-radius:7px;background:transparent;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:460;color:var(--tx3);white-space:nowrap;
+}
+.seg-btn.active{background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#241803;font-weight:520}
+
+/* 三个传输（由 panels.js 渲染成 .chan，这里压成横向分段） */
+#channels{display:flex;gap:3px}
+.chan{
+  min-height:34px;display:flex;align-items:center;gap:6px;padding:0 11px;cursor:pointer;
+  border-radius:7px;color:var(--tx3);font-size:13px;white-space:nowrap;
+}
+.chan .num,.chan .en,.chan .meter{display:none}      /* 手机上只留名字和状态灯 */
+.chan .nm{display:none}                              /* 全名太长，用简称 */
+.chan .nm-s{display:block}
+.chan.active{background:#33363D;color:var(--tx);font-weight:460}
+.chan .led{margin-left:2px}
+
+/* ══ 消息流 ══ */
+.stream{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--stream)}
+.stream-head{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;height:30px;padding:0 14px;
+  border-bottom:1px solid var(--line);font-size:11px;color:var(--tx4);overflow:hidden;
+}
+.sh-cnt{font-family:var(--num);font-size:12px;color:var(--tx3);flex-shrink:0}
+.sh-upd{font-family:var(--mono);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0;max-width:45%;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vu,.vu-num{display:none}                            /* 手机上不显示电平条 */
+
+.msgs{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.stream-empty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:0 32px;text-align:center;color:var(--tx4);font-size:13px;pointer-events:none;
+}
+.stream-empty.hide{display:none}
+
+/* 「N 条新消息 ↓」—— 手机上触控目标大一点，位置也抬高些（别贴着输入栏） */
+.jump-bottom{
+  position:sticky;bottom:16px;z-index:5;
+  display:none;width:fit-content;margin:0 auto;min-height:40px;
+  padding:0 18px;border-radius:999px;cursor:pointer;font-family:inherit;
+  font-size:13px;font-weight:460;
+  background:linear-gradient(180deg,#31343B,#24272C);
+  border:1px solid rgba(232,163,61,.42);color:var(--acc);
+  box-shadow:0 8px 22px rgba(0,0,0,.55);
+}
+.jump-bottom.show{display:block}
+.jump-bottom:active{background:#3A3E46}
+
+/* 消息：桌面版是「左侧发送者栏 + 右侧内容」，手机上改成上下两行，内容占满宽度 */
+.msg{display:flex;flex-direction:column;border-bottom:1px solid rgba(44,46,51,.7)}
+.msg.me{background:linear-gradient(90deg,rgba(232,163,61,.05),transparent 60%)}
+.m-rail{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
+  padding:9px 14px 0;border:0;width:auto;
+}
+.m-name{font-size:12.5px;font-weight:460}
+.msg.me .m-name{color:var(--acc)}
+.m-ip{font-family:var(--mono);font-size:10px;color:var(--tx4)}
+.m-time{font-family:var(--mono);font-size:10px;color:var(--tx4);margin-left:auto}
+.m-tags{display:flex;gap:4px}
+.tp{font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:1px 5px;border-radius:4px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--tx4)}
+.tp-polling{color:#9FD8B0;border-color:#2F4A38}
+.tp-sse{color:#B9D7F0;border-color:#2E4356}
+.tp-ws{color:#C9A6F0;border-color:#413457}
+.tp.src{color:var(--acc);border-color:rgba(232,163,61,.35);background:var(--acc-soft)}
+
+.m-body{padding:8px 14px 13px}
+.m-text{font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.thumb{display:block;width:100%;max-width:100%;border-radius:10px;overflow:hidden;
+       border:1px solid var(--line2);background:#101113}
+.thumb-img{display:block;width:100%;height:auto;max-height:60vh;object-fit:cover}
+.fileline{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.filecard{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:9px;
+          background:var(--panel2);border:1px solid var(--line)}
+.mf-ico{width:30px;height:30px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;
+        justify-content:center;font-family:var(--mono);font-size:9.5px;font-weight:700;
+        background:rgba(232,163,61,.14);border:1px solid rgba(232,163,61,.3);color:var(--acc)}
+.mf-name{font-size:13px;font-weight:460;word-break:break-all}
+.mf-meta{font-family:var(--mono);font-size:10px;color:var(--tx4)}
+.mf-btn{min-height:32px;padding:0 12px;border-radius:7px;background:var(--panel2);
+        border:1px solid var(--line2);color:var(--tx2);font-size:12px;text-decoration:none;
+        display:inline-flex;align-items:center;margin-left:auto}
+.code{margin-top:8px;padding:10px 12px;border-radius:9px;background:var(--field);
+      border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;line-height:1.65;
+      color:var(--tx2);white-space:pre-wrap;word-break:break-word;max-height:160px;overflow:hidden}
+
+/* ══ 底部输入 ══ */
+.bottom{
+  flex-shrink:0;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);
+  background:linear-gradient(180deg,#1F2126,#1A1C20);border-top:1px solid var(--line);
+}
+.composer{display:flex;align-items:center;gap:8px}
+.comp{
+  flex:1;min-width:0;height:46px;border-radius:12px;background:var(--field);
+  border:1px solid var(--line2);color:var(--tx);font-family:inherit;
+  font-size:16px;                                    /* ≥16px：iOS 聚焦不放大 */
+  padding:0 14px;
+}
+.comp:focus{outline:none;border-color:var(--acc)}
+.tool{
+  width:46px;height:46px;flex-shrink:0;border-radius:12px;cursor:pointer;
+  background:var(--panel2);border:1px solid var(--line2);color:var(--tx2);
+  font-size:17px;display:flex;align-items:center;justify-content:center;
+}
+.tool:active{background:#31343A}
+.tool .tl{display:none}                              /* 手机上只留图标，不要文字 */
+.comp-hint{display:none}                             /* 提示文字在手机上太长 */
+.send{
+  height:46px;padding:0 20px;flex-shrink:0;border:0;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#231703;
+  font-family:inherit;font-size:15px;font-weight:560;
+}
+.send:active{filter:brightness(1.08)}
+
+/* 剪贴板监听模式 */
+.listen{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ln-dot{width:10px;height:10px;border-radius:50%;background:#34373D;flex-shrink:0}
+.ln-dot.live{background:var(--acc);box-shadow:0 0 9px rgba(232,163,61,.85);animation:pulse 1.6s ease-in-out infinite}
+.ln-dot.paused{background:#C9A227}
+.ln-dot.off{background:#D9645A}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.ln-text{font-size:13px;color:var(--tx2);flex:1;min-width:0}
+.ln-last{font-family:var(--mono);font-size:10px;color:var(--tx4);width:100%}
+.ln-diag{width:100%;font-family:var(--mono);font-size:10px;color:var(--tx4)}
+.ln-toggle{height:38px;padding:0 14px;border-radius:10px;background:var(--panel2);
+           border:1px solid var(--line2);color:var(--tx2);font-family:inherit;font-size:13px;flex-shrink:0}
+
+/* ══ 抽屉（把桌面版的左右侧栏收进来）══ */
+.scrim{
+  position:fixed;inset:0;background:rgba(6,8,11,.62);opacity:0;pointer-events:none;
+  transition:opacity .2s ease;z-index:40;
+}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;bottom:0;width:min(86vw,340px);z-index:50;
+  background:#1B1C1F;display:flex;flex-direction:column;
+  transition:transform .24s cubic-bezier(.16,1,.3,1);
+  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
+}
+.drawer.left{left:0;transform:translateX(-102%);border-right:1px solid var(--line)}
+.drawer.right{right:0;transform:translateX(102%);border-left:1px solid var(--line)}
+.drawer.show{transform:none}
+.drawer-head{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  font-size:14px;font-weight:460;
+}
+.drawer-x{
+  width:36px;height:36px;border-radius:10px;background:var(--field);
+  border:1px solid var(--line2);color:var(--tx3);font-size:15px;
+}
+.drawer-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 24px}
+
+.sec{font-size:11px;letter-spacing:.12em;color:var(--tx4);font-weight:460;margin:18px 0 8px}
+.sec:first-child{margin-top:0}
+.rail-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.lbl{display:block;font-size:11px;letter-spacing:.1em;color:var(--tx4);margin-bottom:6px}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:9px}
+.row.tight{margin-bottom:0;margin-top:10px}
+.inp{
+  flex:1;min-width:0;height:42px;border-radius:10px;background:var(--field);
+  border:1px solid var(--line2);color:var(--tx);font-family:var(--mono);
+  font-size:16px;padding:0 12px;
+}
+.inp:focus{outline:none;border-color:var(--acc)}
+.btn{height:42px;padding:0 16px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:460;
+     background:var(--panel2);border:1px solid var(--line2);color:var(--tx2)}
+.btn:active{background:#31343A}
+.btn.pri{background:linear-gradient(180deg,#EFAC47,#CE8B27);border-color:#8E6220;color:#231703;font-weight:520}
+.stat{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)}
+.kv{font-size:12px;color:var(--tx3);line-height:1.55}
+.kv.mono{font-family:var(--mono);font-size:10.5px;margin-top:6px;color:var(--tx4);word-break:break-all}
+
+.mem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(44,46,51,.6)}
+.mem:last-child{border-bottom:0}
+.mem-txt{flex:1;min-width:0}
+.mem .nm{font-size:13px;font-weight:460}
+.mem .ip{font-family:var(--mono);font-size:10px;color:var(--tx4);margin-top:2px}
+.sig{display:flex;align-items:flex-end;gap:2px;height:13px}
+.sig i{width:3px;background:#34373D;border-radius:1px}
+.sig i:nth-child(1){height:5px}
+.sig i:nth-child(2){height:9px}
+.sig i:nth-child(3){height:13px}
+.sig.s1 i:nth-child(-n+1),.sig.s2 i:nth-child(-n+2),.sig.s3 i:nth-child(-n+3){
+  background:var(--acc);box-shadow:0 0 4px rgba(232,163,61,.45)}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:6px;
+      background:var(--acc-soft);border:1px solid rgba(232,163,61,.3);color:var(--acc);white-space:nowrap}
+.chip.dim{background:rgba(255,255,255,.04);border-color:var(--line2);color:var(--tx3)}
+
+.kv2{display:flex;align-items:baseline;gap:10px;padding:7px 0;font-size:12px;color:var(--tx3);
+     border-bottom:1px solid rgba(44,46,51,.55)}
+.kv2:last-child{border-bottom:0}
+.kv2 b{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:400;color:var(--tx2)}
+
+.hi{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(44,46,51,.55);font-size:12px}
+.hi:last-child{border-bottom:0}
+.hi .ht{font-family:var(--mono);font-size:10px;color:var(--tx4);flex-shrink:0}
+.hi .hs{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
+.mini{min-height:32px;padding:0 12px;font-size:12px;color:var(--tx2);border:1px solid var(--line2);
+      border-radius:8px;background:var(--panel2);font-family:inherit;flex-shrink:0}
+
+/* ══ 轻提示 ══ */
+.toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 88px);
+  transform:translateX(-50%) translateY(10px);max-width:86vw;text-align:center;
+  padding:11px 16px;border-radius:11px;background:#26282D;border:1px solid var(--line2);
+  color:var(--tx);font-size:13px;opacity:0;pointer-events:none;transition:.18s ease;z-index:99;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:#5A2A26;color:#F0A79E}
+
+/* 横屏（手机横过来）：整体压缩一点，但结构不变 */
+@media (orientation:landscape) and (max-height:520px){
+  .top{padding-top:6px;padding-bottom:6px}
+  .bar{padding:5px 12px}
+  .stream-head{height:26px}
+  .bottom{padding-top:7px;padding-bottom:7px}
+  .comp,.tool,.send{height:40px}
+}

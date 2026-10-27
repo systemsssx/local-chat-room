@@ -1,0 +1,65 @@
+/* ════════════════════════════════════════════════════════════
+   手机版：同一套 DOM 与 JS，只换布局 ——
+   左栏（房间）和右栏（成员）变成左右两个抽屉，消息流占满整屏。
+   抽屉用 body 上的 show-rooms / show-members 两个类开关（main.js 里绑的按钮）。
+   ════════════════════════════════════════════════════════════ */
+
+.only-mobile{display:flex}
+
+/* 顶栏：挤掉品牌文字和次要信息，只留房间名与两个抽屉按钮 */
+.top{height:52px;gap:9px;padding:0 10px}
+.brand-text{display:none}
+.top-sep{display:none}
+.rp-name{font-size:14px;max-width:36vw}
+.rp-meta{font-size:8px;gap:6px}
+.rp-meta #roomMeta{display:none}          /* 成员/条数挪到抽屉里看 */
+.me-name{display:none}
+.ghost{height:26px;padding:0 9px;font-size:10.5px}
+.icon-btn{width:30px;height:30px;font-size:13px}
+
+/* 中部：只有消息流 */
+.mid{position:relative;overflow:hidden}
+.stream{width:100%}
+
+/* 左右两栏 = 抽屉 */
+.left,.right{
+  position:fixed;top:52px;bottom:0;z-index:40;width:82vw;max-width:320px;
+  transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.6);
+}
+.left{left:0;transform:translateX(-102%)}
+.right{right:0;width:86vw;max-width:340px;transform:translateX(102%)}
+body.show-rooms .left{transform:none}
+body.show-members .right{transform:none}
+/* 打开抽屉时压暗背景（点一下就能关） */
+body.show-rooms::after,body.show-members::after{
+  content:"";position:fixed;inset:52px 0 0;z-index:30;background:rgba(10,11,12,.55);
+}
+
+/* 消息行：手机上没有横向空间，把"谁 + 时间"压成一行标题 */
+.msgs{padding-bottom:64px}
+.msg{flex-direction:column}
+.m-rail{width:100%;padding:12px 14px 0;border-right:0;gap:8px;align-items:center}
+.m-who{display:flex;align-items:baseline;gap:8px}
+.m-time{margin-top:0}
+.m-body{padding:6px 14px 14px 48px}
+.m-text{font-size:13.5px;max-width:none}
+.thumb{width:100%}
+.filecard{max-width:none}
+
+/* 右栏卡片在抽屉里窄一点更好看 */
+.right .rail-card{margin:0 12px 8px}
+
+/* 输入栏：紧凑一点，图片/文件只留图标 */
+.bottom{min-height:64px;padding:9px 10px}
+.composer{gap:8px}
+.tool{height:40px;padding:0 12px;font-size:0}
+.tool .ti{font-size:14px}
+.comp{height:40px;font-size:13px}
+.send{height:40px;padding:0 18px;font-size:12.5px}
+
+/* 弹窗与登录卡片：手机上占满宽度 */
+.modal-card,.login-card{width:auto;margin:0 16px}
+.code-inp{font-size:16px;letter-spacing:.22em}
+
+/* 流式布局的细节：iOS 安全区 */
+.bottom{padding-bottom:calc(9px + env(safe-area-inset-bottom))}

@@ -1,0 +1,17 @@
+{
+  "name": "collab-clipboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "局域网协同剪贴板 · 轮询 / SSE / WebSocket 三阶段实现",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
+    "ws": "^8.22.0"
+  }
+}

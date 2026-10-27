@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>聊天室 · 主界面设计稿 v5</title>
+<style>
+@font-face{font-family:'InterX';src:url('../../epubui/EasyPub-New/fonts/Inter-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+@font-face{font-family:'NotoSC';src:url('../../epubui/EasyPub-New/fonts/NotoSansSC-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+
+/* ════════════════════════════════════════════════════════════
+   聊天室 · 皮肤 ⑤ 频道台 CHANNEL DESK
+   沿用④的精密仪表语汇（暖炭灰机箱 + 单一琥珀 + LED），只换结构：
+     上：品牌 · 当前房间铭牌 · SSE 状态 · 我
+     左：房间列表（取代原来的三种传输方案）
+     中：消息流（唯一窗口）
+     右：在线成员 · 房间概况 · 服务
+     下：输入栏（房间号与昵称输入已取消 —— 房间在左侧选、身份来自登录）
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#151618; --rail:#1B1C1F; --panel:#212328; --panel2:#292B31; --field:#101113;
+  --stream:#191A1D; --line:#2C2E33; --line2:#3A3D43;
+  --tx:#F2EDE4; --tx2:#A8A29A; --tx3:#7A756E; --tx4:#5A564E;
+  --acc:#E8A33D; --acc-soft:rgba(232,163,61,.14); --red:#D9645A;
+  --r-card:10px; --r-ctl:7px;
+  --mono:'Cascadia Mono',Consolas,'Courier New',monospace;
+  --sans:'InterX','NotoSC','Microsoft YaHei',sans-serif;
+  --num:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1600px;height:1000px;overflow:hidden}
+body{
+  font-family:var(--sans);font-weight:380;color:var(--tx);background:var(--bg);
+  background-image:radial-gradient(120% 70% at 50% 0%,rgba(232,163,61,.045),transparent 62%);
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit}
+:focus-visible{outline:2px solid rgba(232,163,61,.75);outline-offset:2px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#33363C;border-radius:5px;border:2px solid transparent;background-clip:content-box}
+
+/* ══════════════ 视图切换（只在设计稿里存在，截图时隐藏） ══════════════ */
+.draftbar{position:fixed;right:14px;bottom:14px;z-index:99;display:flex;align-items:center;gap:6px;
+  padding:6px 8px 6px 12px;border-radius:999px;background:rgba(27,28,31,.94);border:1px solid var(--line2);
+  box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.draftbar .db-t{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx4)}
+.db-b{height:24px;padding:0 12px;border-radius:999px;border:1px solid transparent;background:transparent;
+  color:var(--tx3);font-size:11px;cursor:pointer}
+.db-b.active{background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#241803;font-weight:520}
+body.shot .draftbar{display:none}
+body.view-login .app{display:none}
+body.view-chat .login{display:none}
+
+/* ════════════════════════════════════════════════════════════
+   一、登录页
+   ════════════════════════════════════════════════════════════ */
+.login{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.login::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(60% 46% at 50% 34%,rgba(232,163,61,.07),transparent 70%)}
+.login-card{position:relative;width:432px;padding:32px 34px 26px;border-radius:14px;
+  background:linear-gradient(180deg,#22242A,#1B1D21);border:1px solid var(--line2);
+  box-shadow:0 28px 70px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04)}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.login-title{font-size:17px;font-weight:500;letter-spacing:.01em}
+.login-sub{font-size:11.5px;line-height:1.7;color:var(--tx3);padding-bottom:20px;margin-bottom:20px;
+  border-bottom:1px solid var(--line)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10.5px;color:var(--tx3);margin-bottom:7px;letter-spacing:.02em}
+.login-inp{width:100%;height:42px;background:var(--field);border:1px solid var(--line2);border-radius:9px;
+  color:var(--tx);font-family:var(--sans);font-size:13px;padding:0 14px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.5)}
+.login-inp:focus{outline:none;border-color:var(--acc);box-shadow:inset 0 2px 6px rgba(0,0,0,.5),0 0 0 3px rgba(232,163,61,.12)}
+.login-inp::placeholder{color:var(--tx4)}
+.login-btn{width:100%;height:44px;margin-top:8px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#231703;font-size:13.5px;font-weight:560;letter-spacing:.04em;
+  box-shadow:0 4px 14px rgba(232,163,61,.2)}
+.login-btn:hover{filter:brightness(1.06)}
+.login-foot{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:11.5px;color:var(--tx3)}
+.link{color:var(--acc);text-decoration:none;border-bottom:1px dashed rgba(232,163,61,.45);cursor:pointer}
+.login-note{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:10px;line-height:1.9;color:var(--tx3);letter-spacing:.02em}
+
+/* ════════════════════════════════════════════════════════════
+   二、聊天页
+   ════════════════════════════════════════════════════════════ */
+.app{display:flex;flex-direction:column;height:1000px}
+
+/* ── 上：品牌 · 当前房间 · 我 ── */
+.top{height:58px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 18px;
+  background:linear-gradient(180deg,#212328,#1C1E22);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 34% 28%,#3E4046,#202124 64%);border:1px solid #4A4C52;
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--acc);
+  box-shadow:inset 0 -3px 7px rgba(0,0,0,.55)}
+.bname{font-size:13px;font-weight:480;line-height:1.15}
+.btag{font-family:var(--mono);font-size:8px;color:var(--tx4);letter-spacing:.2em}
+.top-sep{width:1px;height:28px;background:var(--line)}
+.room-plate{display:flex;flex-direction:column;gap:3px;min-width:0}
+.rp-name{font-size:16px;font-weight:500;letter-spacing:.01em;line-height:1.1;white-space:nowrap}
+.rp-name .rp-h{color:var(--tx4);font-weight:400;margin-right:1px}
+.rp-meta{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;
+  color:var(--tx4);letter-spacing:.06em;white-space:nowrap}
+.rp-meta .on{color:var(--acc)}
+.rp-meta .sep{color:#3A3D43}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.me-chip{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border-radius:999px;
+  background:var(--field);border:1px solid var(--line2)}
+.me-name{font-size:12px;font-weight:460}
+.ghost{height:28px;padding:0 12px;border-radius:var(--r-ctl);background:transparent;
+  border:1px solid var(--line2);color:var(--tx3);font-size:11px;cursor:pointer}
+.ghost:hover{color:var(--tx);border-color:#4A4D54}
+.led{width:7px;height:7px;border-radius:50%;background:var(--acc);flex-shrink:0;
+  box-shadow:0 0 7px rgba(232,163,61,.8)}
+.led.dim{background:#43464C;box-shadow:none}
+
+/* ── 中部三栏 ── */
+.mid{flex:1;display:flex;min-height:0}
+
+/* ── 左：房间列表 ── */
+.left{width:268px;flex-shrink:0;background:var(--rail);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:14px 0 0;overflow:hidden}
+.left-head{display:flex;align-items:center;padding:0 14px 9px 18px}
+.left-head .t{font-size:9.5px;letter-spacing:.16em;color:var(--tx4);font-weight:460}
+.sec-n{font-family:var(--num);font-size:11px;color:var(--acc);letter-spacing:0;margin-left:7px}
+.add-btn{margin-left:auto;width:22px;height:22px;border-radius:6px;font-size:13px;line-height:1;cursor:pointer;
+  background:linear-gradient(180deg,#313338,#272930);border:1px solid var(--line2);color:var(--tx2);
+  display:flex;align-items:center;justify-content:center}
+.add-btn:hover{color:var(--acc);border-color:var(--acc)}
+.filter{height:30px;margin:0 14px 10px 18px;background:var(--field);border:1px solid var(--line2);
+  border-radius:var(--r-ctl);color:var(--tx);font-family:var(--sans);font-size:11.5px;padding:0 11px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
+.filter:focus{outline:none;border-color:var(--acc)}
+.filter::placeholder{color:var(--tx4)}
+.rooms{flex:1;min-height:0;overflow-y:auto;padding:0 10px 10px}
+.room{display:flex;align-items:flex-start;gap:10px;margin-bottom:3px;padding:9px 10px;border-radius:9px;
+  border:1px solid transparent;cursor:pointer;position:relative;user-select:none}
+.room:hover{background:#212328}
+.room.active{background:linear-gradient(180deg,#2C2F35,#252830);border-color:#3E4148}
+.room.active::before{content:"";position:absolute;left:-1px;top:50%;transform:translateY(-50%);
+  width:3px;height:26px;border-radius:0 3px 3px 0;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.rm-txt{flex:1;min-width:0}
+.rm-nm{font-size:12.5px;font-weight:460;line-height:1.25;color:var(--tx2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room.active .rm-nm{color:var(--tx)}
+.rm-cnt{font-family:var(--num);font-size:10.5px;color:var(--tx4);margin-left:6px;letter-spacing:.02em}
+.rm-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);margin-top:4px;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room.unread .rm-sub{color:var(--tx3)}
+.rm-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;padding-top:1px}
+.rm-time{font-family:var(--mono);font-size:8.5px;color:var(--tx4)}
+.badge{min-width:18px;height:16px;padding:0 5px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#241803;
+  font-family:var(--num);font-size:10px;font-weight:600}
+.rooms-foot{margin-top:auto;padding:11px 18px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:9px;color:var(--tx4);display:flex;gap:8px}
+.rooms-foot .r{margin-left:auto;color:var(--acc)}
+
+/* ── 中：消息流 ── */
+.stream{flex:1;min-width:0;background:var(--stream);display:flex;flex-direction:column}
+.stream-head{height:38px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 22px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.012)}
+.sh-t{font-size:11.5px;font-weight:460;color:var(--tx2)}
+.sh-cnt{font-family:var(--num);font-size:11px;color:var(--tx4)}
+.sh-upd{font-family:var(--mono);font-size:9.5px;color:var(--tx4);letter-spacing:.04em}
+.vu{display:flex;align-items:center;gap:2px;margin-left:8px}
+.vu i{width:3px;height:9px;border-radius:1px;background:#34373D;opacity:.6}
+.vu i.on{background:var(--acc);opacity:1;box-shadow:0 0 4px rgba(232,163,61,.45)}
+.vu-num{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.06em;min-width:64px}
+.sh-right{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--tx3)}
+.msgs{flex:1;min-height:0;overflow-y:auto;position:relative;padding-bottom:56px}
+.load-more{display:flex;justify-content:center;padding:14px 0 6px}
+.load-more button{height:26px;padding:0 14px;border-radius:999px;background:linear-gradient(180deg,#26282D,#202226);
+  border:1px solid var(--line2);color:var(--tx3);font-size:11px;cursor:pointer}
+.load-more button:hover{color:var(--acc);border-color:rgba(232,163,61,.5)}
+.day{display:flex;align-items:center;gap:12px;padding:16px 22px 8px}
+.day::before,.day::after{content:"";height:1px;background:var(--line);flex:1}
+.day span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--tx4)}
+.sys{display:flex;align-items:center;gap:9px;padding:9px 22px;font-size:11.5px;color:var(--tx3)}
+.sys i{width:5px;height:5px;border-radius:50%;background:#43464C;flex-shrink:0}
+.msg{display:flex;border-bottom:1px solid rgba(44,46,51,.7)}
+.msg.me{background:linear-gradient(90deg,rgba(232,163,61,.045),transparent 46%)}
+.m-rail{width:186px;flex-shrink:0;padding:15px 14px 15px 22px;border-right:1px solid rgba(44,46,51,.7);
+  display:flex;gap:9px}
+.av{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:460;color:var(--tx2);
+  background:linear-gradient(160deg,#3C3F45,#26282D);border:1px solid #45484F}
+.msg.me .av{background:linear-gradient(160deg,#EFAC47,#B87A20);border-color:#EFAC47;color:#241803;font-weight:520}
+.m-who{min-width:0}
+.m-name{font-size:12px;font-weight:460;line-height:1.25;word-break:break-all}
+.msg.me .m-name{color:var(--acc)}
+.m-time{font-family:var(--mono);font-size:9px;color:var(--tx4);margin-top:4px}
+.m-body{flex:1;min-width:0;padding:15px 22px}
+.m-text{font-size:13px;line-height:1.72;color:var(--tx);white-space:pre-wrap;word-break:break-word;max-width:640px}
+.thumb{display:block;width:326px;max-width:100%;border-radius:9px;overflow:hidden;position:relative;
+  border:1px solid var(--line2);box-shadow:0 6px 18px rgba(0,0,0,.4);background:#101113}
+.thumb-img{display:block;width:100%;height:auto;max-height:280px;object-fit:cover}
+.thumb-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 12px 8px;font-family:var(--mono);
+  font-size:9px;color:#D8D3CA;background:linear-gradient(180deg,transparent,rgba(0,0,0,.72))}
+.filecard{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-ctl);max-width:640px;
+  background:linear-gradient(180deg,#24262B,#1F2126);border:1px solid var(--line)}
+.mf-ico{width:30px;height:30px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.04em;
+  background:rgba(232,163,61,.14);border:1px solid rgba(232,163,61,.3);color:var(--acc)}
+.mf-txt{min-width:0}
+.mf-name{font-size:12px;font-weight:460;word-break:break-all}
+.mf-meta{font-family:var(--mono);font-size:9.5px;color:var(--tx4);margin-top:3px}
+.mf-btn{margin-left:auto;height:24px;padding:0 10px;border-radius:5px;flex-shrink:0;
+  background:linear-gradient(180deg,#313338,#272930);border:1px solid var(--line2);color:var(--tx2);
+  font-size:10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.mf-btn:hover{color:var(--acc);border-color:var(--acc)}
+.code{margin-top:9px;padding:10px 13px;border-radius:var(--r-ctl);background:var(--field);
+  border:1px solid var(--line);font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--tx2);
+  white-space:pre-wrap;word-break:break-word;max-width:720px;max-height:104px;overflow:hidden}
+.jump{position:sticky;bottom:14px;z-index:5;display:flex;justify-content:center;pointer-events:none}
+.jump button{pointer-events:auto;padding:8px 16px;border-radius:999px;cursor:pointer;
+  background:linear-gradient(180deg,#31343B,#24272C);border:1px solid rgba(232,163,61,.42);color:var(--acc);
+  font-size:12px;font-weight:460;box-shadow:0 8px 22px rgba(0,0,0,.55)}
+.jump button:hover{background:linear-gradient(180deg,#3A3E46,#2A2D33)}
+
+/* ── 右：成员 · 房间 · 服务 ── */
+.right{width:292px;flex-shrink:0;background:var(--rail);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;padding:14px 0 0;overflow-y:auto}
+.sec{font-size:9.5px;letter-spacing:.16em;color:var(--tx4);font-weight:460;padding:0 18px 8px;
+  display:flex;align-items:center;gap:8px}
+.sec-gap{padding-top:16px}
+.rail-card{background:linear-gradient(180deg,#24262B,#1F2126);border:1px solid var(--line);
+  border-radius:var(--r-card);padding:9px 11px;margin:0 10px 8px;
+  box-shadow:0 2px 5px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.03)}
+.mem{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(44,46,51,.6)}
+.mem:last-child{border-bottom:0}
+.mem-txt{flex:1;min-width:0}
+.mem-nm{font-size:12px;font-weight:460;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem-st{font-family:var(--mono);font-size:9px;color:var(--tx4);margin-top:3px}
+.chip{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;
+  background:var(--acc-soft);border:1px solid rgba(232,163,61,.3);color:var(--acc);white-space:nowrap}
+.chip.dim{background:rgba(255,255,255,.04);border-color:var(--line2);color:var(--tx3)}
+.kv2{display:flex;align-items:baseline;gap:10px;padding:6px 0;font-size:10.5px;color:var(--tx3);
+  border-bottom:1px solid rgba(44,46,51,.55)}
+.kv2:last-child{border-bottom:0}
+.kv2 b{margin-left:auto;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--tx2)}
+.kv2 b.acc{color:var(--acc)}
+.right-foot{margin-top:auto;padding:11px 18px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:9px;color:var(--tx4)}
+
+/* ── 下：输入栏 ── */
+.bottom{min-height:78px;flex-shrink:0;display:flex;align-items:center;padding:12px 18px;
+  background:linear-gradient(180deg,#1F2126,#1A1C20);border-top:1px solid var(--line)}
+.composer{display:flex;align-items:center;gap:12px;width:100%}
+.tool{height:44px;padding:0 14px;border-radius:var(--r-card);flex-shrink:0;
+  background:linear-gradient(180deg,#2A2C32,#222429);border:1px solid var(--line2);color:var(--tx2);
+  font-size:11.5px;font-weight:460;display:flex;align-items:center;gap:7px;cursor:pointer}
+.tool:hover{color:var(--tx);border-color:#4A4D54}
+.tool .ti{font-size:12px;opacity:.85}
+.comp{flex:1;min-width:0;height:44px;background:var(--field);border:1px solid var(--line2);border-radius:var(--r-card);
+  color:var(--tx);font-family:var(--sans);font-size:12.5px;padding:0 15px;
+  box-shadow:inset 0 2px 7px rgba(0,0,0,.5)}
+.comp:focus{outline:none;border-color:var(--acc)}
+.comp::placeholder{color:var(--tx4)}
+.send{height:44px;padding:0 30px;border:0;border-radius:var(--r-card);cursor:pointer;flex-shrink:0;
+  background:linear-gradient(180deg,#EFAC47,#CE8B27);color:#231703;font-size:13px;font-weight:560;
+  letter-spacing:.04em;box-shadow:0 3px 10px rgba(232,163,61,.22)}
+.send:hover{filter:brightness(1.06)}
+</style>
+</head>
+
+<body class="view-chat">
+
+<!-- ══════════════════════ 一、登录页 ══════════════════════ -->
+<section class="login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="mark">⇄</div>
+      <div>
+        <div class="login-title">进入聊天室</div>
+        <div class="btag">CHAT ROOM · SSE</div>
+      </div>
+    </div>
+
+    <p class="login-sub">用户名就是聊天室里显示的名字。第一次来点下面的「注册」，之后用同一个账号登录即可。</p>
+
+    <div class="field">
+      <label for="u">用户名</label>
+      <input class="login-inp" id="u" type="text" placeholder="3–16 个字符，中英文都行" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="p">密码</label>
+      <input class="login-inp" id="p" type="password" placeholder="至少 8 位" autocomplete="current-password">
+    </div>
+
+    <button class="login-btn">登录</button>
+
+    <div class="login-foot">
+      <span>还没有账号？</span>
+      <a class="link">注册一个</a>
+    </div>
+
+    <div class="login-note">
+      连接 192.168.1.14:8000 · SSE 长连接<br>
+      登录后可以在左侧切换房间<br>
+      密码只存哈希，服务端拿不到明文
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ 二、聊天页 ══════════════════════ -->
+<section class="app">
+
+  <!-- 上 -->
+  <header class="top">
+    <div class="brand">
+      <div class="mark">⇄</div>
+      <div>
+        <div class="bname">聊天室</div>
+        <div class="btag">CHAT ROOM</div>
+      </div>
+    </div>
+    <div class="top-sep"></div>
+
+    <div class="room-plate">
+      <div class="rp-name"><span class="rp-h">#</span>产品讨论</div>
+      <div class="rp-meta">
+        <i class="led"></i><span class="on">SSE 已连接</span>
+        <span class="sep">·</span><span>12 人在线</span>
+        <span class="sep">·</span><span>消息 1,284 条</span>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <div class="me-chip">
+        <span class="av">阿</span>
+        <span class="me-name">阿哲</span>
+      </div>
+      <button class="ghost">退出登录</button>
+    </div>
+  </header>
+
+  <div class="mid">
+
+    <!-- 左：房间列表 -->
+    <aside class="left">
+      <div class="left-head">
+        <span class="t">房间</span><span class="sec-n">6</span>
+        <button class="add-btn" title="新建房间">＋</button>
+      </div>
+      <input class="filter" placeholder="筛选房间…">
+
+      <div class="rooms">
+        <div class="room active">
+          <div class="rm-txt">
+            <div class="rm-nm">产品讨论<span class="rm-cnt">12 人</span></div>
+            <div class="rm-sub">林可：登录页那版我用手机试了下…</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">14:09</div></div>
+        </div>
+
+        <div class="room unread">
+          <div class="rm-txt">
+            <div class="rm-nm">前端组<span class="rm-cnt">8 人</span></div>
+            <div class="rm-sub">老周：ESLint 那条规则我关掉了</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">14:01</div><div class="badge">3</div></div>
+        </div>
+
+        <div class="room unread">
+          <div class="rm-txt">
+            <div class="rm-nm">摸鱼区<span class="rm-cnt">23 人</span></div>
+            <div class="rm-sub">小满：[图片] 楼下的猫又来了</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">13:47</div><div class="badge">12</div></div>
+        </div>
+
+        <div class="room">
+          <div class="rm-txt">
+            <div class="rm-nm">设计评审<span class="rm-cnt">5 人</span></div>
+            <div class="rm-sub">Ada：配色我按琥珀那版定了</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">12:30</div></div>
+        </div>
+
+        <div class="room">
+          <div class="rm-txt">
+            <div class="rm-nm">运维告警<span class="rm-cnt">3 人</span></div>
+            <div class="rm-sub">系统：磁盘占用 82%</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">昨天</div></div>
+        </div>
+
+        <div class="room">
+          <div class="rm-txt">
+            <div class="rm-nm">新人报到<span class="rm-cnt">17 人</span></div>
+            <div class="rm-sub">徐若：大家好，我是新来的前端</div>
+          </div>
+          <div class="rm-side"><div class="rm-time">周三</div></div>
+        </div>
+      </div>
+
+      <div class="rooms-foot"><span>已加入 6 个房间</span><span class="r">SSE</span></div>
+    </aside>
+
+    <!-- 中：消息流 -->
+    <main class="stream">
+      <div class="stream-head">
+        <span class="sh-t">消息记录</span>
+        <span class="sh-cnt">1,284 条</span>
+        <span class="sh-upd">最近更新 14:09</span>
+        <div class="vu"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+        <span class="vu-num">2.4 msg/s</span>
+        <span class="sh-right"><i class="led"></i><span>SSE 推送中</span></span>
+      </div>
+
+      <div class="msgs">
+        <div class="load-more"><button>加载更早的消息</button></div>
+
+        <div class="day"><span>今天</span></div>
+
+        <div class="msg">
+          <div class="m-rail">
+            <span class="av">林</span>
+            <div class="m-who"><div class="m-name">林可</div><div class="m-time">14:02</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">登录页那版我用手机试了下，输入框在窄屏上会被键盘顶上去，得再收一收。</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail">
+            <span class="av">周</span>
+            <div class="m-who"><div class="m-name">老周</div><div class="m-time">14:05</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">收到，今天改。顺便把「密码至少 8 位」那行小字挪到输入框下面，现在离得太远。</div>
+          </div>
+        </div>
+
+        <div class="sys"><i></i><span>Ada 加入了房间</span></div>
+
+        <div class="msg">
+          <div class="m-rail">
+            <span class="av">满</span>
+            <div class="m-who"><div class="m-name">小满</div><div class="m-time">14:08</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">房间列表我建议显示未读数 —— 只显示人数的话，不知道哪个房间有新消息。</div>
+          </div>
+        </div>
+
+        <div class="msg me">
+          <div class="m-rail">
+            <span class="av">阿</span>
+            <div class="m-who"><div class="m-name">阿哲 · 我</div><div class="m-time">14:09</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">同意，未读做成右边那个小圆点里的数字。房间名太长的时候，人数用灰字跟在后面，别把名字挤没了。</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail">
+            <span class="av">A</span>
+            <div class="m-who"><div class="m-name">Ada</div><div class="m-time">14:11</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">按现在的样子做了一版配色，付在下面：</div>
+            <div class="thumb">
+              <img class="thumb-img" src="assets/palette-03.svg" alt="配色稿">
+              <div class="thumb-cap">配色稿-03.png · 640 × 400 · 点击看原图</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail">
+            <span class="av">周</span>
+            <div class="m-who"><div class="m-name">老周</div><div class="m-time">14:14</div></div>
+          </div>
+          <div class="m-body">
+            <div class="m-text">后端接口先放这儿，命名有意见今天提：</div>
+            <div class="filecard">
+              <span class="mf-ico">PY</span>
+              <div class="mf-txt">
+                <div class="mf-name">auth_routes.py</div>
+                <div class="mf-meta">4.1 KB · 118 行 · UTF-8</div>
+              </div>
+              <a class="mf-btn">下载</a>
+            </div>
+            <div class="code">@router.post("/api/auth/login")
+def login(body: LoginIn, res: Response):
+    user = db.find_user(body.username)
+    if not user or not auth.check_password(body.password, user):
+        raise HTTPException(401, "用户名或密码不对")
+    sid = auth.new_session(user.id)
+    res.set_cookie("sid", sid, httponly=True, samesite="lax")
+    return {"username": user.username}</div>
+          </div>
+        </div>
+
+        <div class="jump"><button>2 条新消息 ↓</button></div>
+      </div>
+    </main>
+
+    <!-- 右：成员 · 房间 · 服务 -->
+    <aside class="right">
+      <div class="sec">在线成员 <span class="sec-n">12</span></div>
+      <div class="rail-card">
+        <div class="mem">
+          <span class="av">阿</span>
+          <div class="mem-txt"><div class="mem-nm">阿哲</div><div class="mem-st">刚刚活跃</div></div>
+          <span class="chip">我</span>
+        </div>
+        <div class="mem">
+          <span class="av">林</span>
+          <div class="mem-txt"><div class="mem-nm">林可</div><div class="mem-st">刚刚活跃</div></div>
+          <span class="chip dim">房主</span>
+        </div>
+        <div class="mem">
+          <span class="av">周</span>
+          <div class="mem-txt"><div class="mem-nm">老周</div><div class="mem-st">刚刚活跃</div></div>
+        </div>
+        <div class="mem">
+          <span class="av">满</span>
+          <div class="mem-txt"><div class="mem-nm">小满</div><div class="mem-st">正在输入…</div></div>
+        </div>
+        <div class="mem">
+          <span class="av">A</span>
+          <div class="mem-txt"><div class="mem-nm">Ada</div><div class="mem-st">2 分钟前</div></div>
+        </div>
+        <div class="mem">
+          <span class="av">徐</span>
+          <div class="mem-txt"><div class="mem-nm">徐若</div><div class="mem-st">9 分钟前</div></div>
+        </div>
+      </div>
+
+      <div class="sec sec-gap">房间概况</div>
+      <div class="rail-card">
+        <div class="kv2"><span>房间</span><b>#产品讨论</b></div>
+        <div class="kv2"><span>成员</span><b>12</b></div>
+        <div class="kv2"><span>消息总数</span><b>1,284</b></div>
+        <div class="kv2"><span>已加载</span><b>最近 20 条</b></div>
+        <div class="kv2"><span>创建于</span><b>9 月 28 日</b></div>
+      </div>
+
+      <div class="sec sec-gap">连接</div>
+      <div class="rail-card">
+        <div class="kv2"><span>传输方式</span><b class="acc">SSE 长连接</b></div>
+        <div class="kv2"><span>已连接</span><b>26 分 11 秒</b></div>
+        <div class="kv2"><span>服务地址</span><b>192.168.1.14:8000</b></div>
+      </div>
+
+      <div class="right-foot">手机连同一个 WiFi，浏览器打开上面的地址即可</div>
+    </aside>
+  </div>
+
+  <!-- 下：输入栏 -->
+  <footer class="bottom">
+    <div class="composer">
+      <button class="tool"><span class="ti">▣</span>图片</button>
+      <button class="tool"><span class="ti">▤</span>文件</button>
+      <input class="comp" placeholder="发消息到 #产品讨论　（Enter 发送 · Shift+Enter 换行 · Ctrl+V 可直接粘贴图片）">
+      <button class="send">发送</button>
+    </div>
+  </footer>
+</section>
+
+<!-- 设计稿专用：切换看登录页 / 聊天页 -->
+<div class="draftbar">
+  <span class="db-t">设计稿</span>
+  <button class="db-b active" data-v="chat">聊天页</button>
+  <button class="db-b" data-v="login">登录页</button>
+</div>
+
+<script>
+  function show(v) {
+    document.body.className = 'view-' + v;
+    document.querySelectorAll('.db-b').forEach(function (x) { x.classList.toggle('active', x.dataset.v === v); });
+  }
+  document.querySelectorAll('.db-b').forEach(function (b) {
+    b.addEventListener('click', function () { show(b.dataset.v); });
+  });
+  if (location.hash === '#login') show('login');   // 直接看登录页：v5-chatroom.html#login
+  if (location.search.indexOf('shot') >= 0) document.body.classList.add('shot');   // 出图时隐藏切换条
+</script>
+</body>
+</html>

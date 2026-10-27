@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>协同剪贴板 · 四框布局设计稿</title>
+<style>
+@font-face{font-family:'InterX';src:url('../../epubui/EasyPub-New/fonts/Inter-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+@font-face{font-family:'NotoSC';src:url('../../epubui/EasyPub-New/fonts/NotoSansSC-VF.ttf') format('truetype');font-weight:100 900;font-display:block}
+/*SKIN*/
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══════════ 上侧边栏 ══════════ -->
+  <header class="top">
+    <div class="brand">
+      <div class="mark">⇄</div>
+      <div>
+        <div class="bname">协同剪贴板</div>
+        <div class="btag">LAN CLIPBOARD</div>
+      </div>
+    </div>
+    <div class="top-sep"></div>
+    <div class="room-chip"><span class="rc-k">房间</span><span class="rc-v">1001</span></div>
+    <div class="combo"><span class="cb-a">CH2 · SSE</span><span class="cb-x">×</span><span class="cb-b">纯文字</span></div>
+
+    <div class="top-right">
+      <div class="seg">
+        <button class="seg-btn active">纯文字</button>
+        <button class="seg-btn">剪贴板读取</button>
+      </div>
+      <div class="me-chip">
+        <span class="avatar">明</span>
+        <span class="me-name">张明</span>
+        <span class="me-ip">· .7</span>
+        <i class="led"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="mid">
+
+    <!-- ══════════ 左侧边栏：三种方案 ══════════ -->
+    <aside class="left">
+      <div class="sec">通信方案</div>
+
+      <div class="chan">
+        <span class="num">01</span>
+        <div class="chan-txt"><div class="nm">HTTP 轮询</div><div class="en">POLLING</div></div>
+        <div class="meter lv2"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="chan active">
+        <span class="num">02</span>
+        <div class="chan-txt"><div class="nm">SSE 推送</div><div class="en">EVENTSTREAM</div></div>
+        <div class="meter lv4"><i></i><i></i><i></i><i></i><i></i></div>
+        <i class="led"></i>
+      </div>
+
+      <div class="chan">
+        <span class="num">03</span>
+        <div class="chan-txt"><div class="nm">WebSocket</div><div class="en">DUPLEX</div></div>
+        <div class="meter lv3"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="sec sec-gap">房间</div>
+      <div class="rail-card">
+        <label class="lbl">房间号</label>
+        <div class="row"><input class="inp" value="1001"><button class="btn pri">进入</button></div>
+        <div class="stat"><i class="led"></i>已连接 · SSE 长连接</div>
+      </div>
+
+      <div class="rail-card">
+        <label class="lbl">我的昵称</label>
+        <div class="row"><input class="inp" value="张明"><button class="btn">改</button></div>
+        <div class="kv">本机 192.168.1.7 · 显示为「张明 · .7」</div>
+      </div>
+
+      <div class="left-foot">
+        <span>192.168.1.7:8000</span>
+        <span class="r">3 人在线</span>
+      </div>
+    </aside>
+
+    <!-- ══════════ 中间：信息显示窗口（聊天流） ══════════ -->
+    <main class="stream">
+      <div class="stream-head">
+        <span class="sh-t">共享记录</span>
+        <span class="sh-cnt">214 条</span>
+        <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="vu-num">3.2 msg/s</span>
+        <span class="sh-right"><i class="led"></i>实时同步中 · 延迟 3 ms</span>
+      </div>
+
+      <div class="msgs">
+
+        <div class="msg">
+          <div class="m-rail"><div class="m-name">张明</div><div class="m-ip">192.168.1.9</div><div class="m-time">14:23:05</div></div>
+          <div class="m-body"><div class="m-text">会议改到周三 14:00，会议室 B203。记得带上上周的流程图打印稿。</div></div>
+        </div>
+
+        <div class="msg me">
+          <div class="m-rail"><div class="m-name">我 · 本机</div><div class="m-ip">192.168.1.7</div><div class="m-time">14:22:41</div></div>
+          <div class="m-body">
+            <div class="thumb"><div class="th-top"></div><div class="th-grid"><span></span><span></span><span></span></div></div>
+            <div class="fileline">
+              <span class="mf-name">截图-1422.png</span>
+              <span class="mf-meta">1440 × 900 · 268 KB</span>
+              <button class="mf-btn">下载</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail"><div class="m-name">平板</div><div class="m-ip">192.168.1.12</div><div class="m-time">14:20:12</div></div>
+          <div class="m-body">
+            <div class="filecard">
+              <span class="mf-ico py">PY</span>
+              <span class="mf-name">clipboard.py</span>
+              <span class="mf-meta">3.2 KB · 128 行 · UTF-8</span>
+              <button class="mf-btn">下载</button>
+            </div>
+            <pre class="code">async function broadcast(room, msg, except) {
+  for (const c of hub.get(room) ?? []) if (c !== except) c.send(msg);
+}</pre>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail"><div class="m-name">张明</div><div class="m-ip">192.168.1.9</div><div class="m-time">14:19:02</div></div>
+          <div class="m-body"><div class="m-text">先把后端两个接口跑通，再换 SSE。轮询版就别加连接状态了，没意义。</div></div>
+        </div>
+
+        <div class="msg me">
+          <div class="m-rail"><div class="m-name">我 · 本机</div><div class="m-ip">192.168.1.7</div><div class="m-time">14:17:33</div></div>
+          <div class="m-body">
+            <div class="filecard">
+              <span class="mf-ico txt">TXT</span>
+              <span class="mf-name">会议纪要.txt</span>
+              <span class="mf-meta">1.1 KB · 24 行 · GBK → 已转 UTF-8</span>
+              <button class="mf-btn">下载</button>
+            </div>
+            <pre class="code">周三 14:00  B203  带上流程图打印稿
+周四前把轮询版跑通，周五换 SSE</pre>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="m-rail"><div class="m-name">平板</div><div class="m-ip">192.168.1.12</div><div class="m-time">14:16:20</div></div>
+          <div class="m-body"><div class="m-text">图片收到了，很清楚。第二版布局我这边看着也同步上了。</div></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ══════════ 右侧边栏：成员 / 服务 / 历史 ══════════ -->
+    <aside class="right">
+      <div class="sec">在线成员 <span class="sec-n">3</span></div>
+      <div class="rail-card">
+        <div class="mem"><i class="led"></i><div class="mem-txt"><div class="nm">张明</div><div class="ip">192.168.1.9</div></div><div class="sig s3"><i></i><i></i><i></i></div><span class="chip">SSE</span></div>
+        <div class="mem"><i class="led"></i><div class="mem-txt"><div class="nm">我 · 本机</div><div class="ip">192.168.1.7</div></div><div class="sig s3"><i></i><i></i><i></i></div><span class="chip">SSE</span></div>
+        <div class="mem"><i class="led w"></i><div class="mem-txt"><div class="nm">平板</div><div class="ip">192.168.1.12</div></div><div class="sig s1"><i></i><i></i><i></i></div><span class="chip dim">轮询</span></div>
+      </div>
+
+      <div class="sec sec-gap">房间 / 服务</div>
+      <div class="rail-card">
+        <div class="kv2"><span>房间号</span><b>1001</b></div>
+        <div class="kv2"><span>消息总数</span><b>214</b></div>
+        <div class="kv2"><span>服务地址</span><b>192.168.1.7:8000</b></div>
+        <div class="kv2"><span>已运行</span><b>1 小时 12 分</b></div>
+        <div class="kv2"><span>数据库</span><b>data/app.db</b></div>
+      </div>
+
+      <div class="sec sec-gap">历史记录 <span class="sec-n">SQLite</span></div>
+      <div class="rail-card">
+        <div class="hist">
+          <div class="hi"><span class="ht">14:23:05</span><span class="hs">会议改到周三 14:00…</span><span class="mini">恢复</span></div>
+          <div class="hi"><span class="ht">14:22:41</span><span class="hs">截图-1422.png</span><span class="mini">恢复</span></div>
+          <div class="hi"><span class="ht">14:19:02</span><span class="hs">先把后端两个接口跑通…</span><span class="mini">恢复</span></div>
+        </div>
+        <div class="row tight"><button class="btn">查看全部 20 条</button></div>
+      </div>
+
+      <div class="right-foot"><span>服务重启后历史仍在</span></div>
+    </aside>
+  </div>
+
+  <!-- ══════════ 下侧边栏 ══════════ -->
+  <footer class="bottom">
+    <input class="comp" placeholder="输入要共享的内容…">
+    <button class="tool"><span class="ti">🖼</span>图片</button>
+    <button class="tool"><span class="ti">📄</span>文件</button>
+    <div class="comp-hint">支持 png / jpg / gif / webp 与 txt、py、md 等纯文本文件，单文件 ≤ 2 MB</div>
+    <button class="send">发送</button>
+  </footer>
+</div>
+
+</body>
+</html>

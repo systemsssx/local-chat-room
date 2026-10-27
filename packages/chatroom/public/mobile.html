@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>聊天室 · 手机版</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23212328'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23E8A33D'%3E%23%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/mobile.css">
+</head>
+<body class="mobile">
+
+<!-- ══════════════════════ 登录 / 注册 ══════════════════════ -->
+<section class="login" id="loginView" hidden>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="mark">#</div>
+      <div>
+        <div class="login-title" id="authTitle">进入聊天室</div>
+        <div class="btag">CHAT ROOM · SSE</div>
+      </div>
+    </div>
+
+    <p class="login-sub" id="authSub">
+      用户名就是聊天室里显示的名字。第一次来点下面的「注册」，之后用同一个账号登录即可。
+    </p>
+
+    <form id="authForm">
+      <div class="field">
+        <label for="authUser">用户名</label>
+        <input class="login-inp" id="authUser" name="username" type="text"
+               placeholder="2–16 个字符，中英文都行" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="authPass">密码</label>
+        <input class="login-inp" id="authPass" name="password" type="password"
+               placeholder="至少 8 位" autocomplete="current-password" required>
+      </div>
+      <div class="form-error" id="authError" hidden></div>
+      <button class="login-btn" id="authSubmit" type="submit">登录</button>
+    </form>
+
+    <div class="login-foot">
+      <span id="authHint">还没有账号？</span>
+      <a class="link" id="authToggle" role="button" tabindex="0">注册一个</a>
+    </div>
+
+    <div class="login-note" id="loginNote">
+      登录后可以在左侧切换房间<br>
+      密码只存哈希，服务端拿不到明文
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ 聊天 ══════════════════════ -->
+<section class="app" id="appView" hidden>
+
+  <header class="top">
+    <button class="icon-btn only-mobile" id="openRooms" title="房间列表">☰</button>
+
+    <div class="brand">
+      <div class="mark">#</div>
+      <div class="brand-text">
+        <div class="bname">聊天室</div>
+        <div class="btag">CHAT ROOM</div>
+      </div>
+    </div>
+    <div class="top-sep"></div>
+
+    <div class="room-plate">
+      <div class="rp-name" id="roomName"><span class="rp-h">#</span>—</div>
+      <div class="rp-meta">
+        <i class="led" id="connLed"></i><span class="on" id="connText">连接中…</span>
+        <span class="sep">·</span><span id="roomMeta">—</span>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <button class="icon-btn only-mobile" id="openMembers" title="成员">☷</button>
+      <div class="me-chip">
+        <span class="av" id="myAvatar">·</span>
+        <span class="me-name" id="myName">—</span>
+      </div>
+      <button class="ghost" id="logoutBtn">退出</button>
+    </div>
+  </header>
+
+  <div class="mid">
+
+    <aside class="left" id="roomsPanel">
+      <div class="left-head">
+        <span class="t">房间</span><span class="sec-n" id="roomCount">0</span>
+        <button class="add-btn" id="newRoomBtn" title="新建房间">＋</button>
+        <button class="add-btn" id="joinRoomBtn" title="凭房间码加入">⌨</button>
+      </div>
+      <input class="filter" id="roomFilter" placeholder="筛选房间…" autocomplete="off">
+      <div class="rooms" id="roomList"></div>
+      <div class="rooms-foot">
+        <span id="connFoot">—</span>
+        <span class="r" id="netAddr">—</span>
+      </div>
+    </aside>
+
+    <main class="stream">
+      <div class="stream-head">
+        <span class="sh-t">消息记录</span>
+        <span class="sh-cnt" id="msgCount">0 条</span>
+        <span class="sh-upd" id="msgUpdated">—</span>
+        <div class="vu" id="vu"></div>
+        <span class="vu-num" id="vuNum">0.0 msg/s</span>
+        <span class="sh-right"><i class="led" id="streamLed"></i><span id="streamState">未连接</span></span>
+      </div>
+
+      <div class="msgs" id="msgs">
+        <div class="load-more" id="loadMoreWrap" hidden><button id="loadMore">加载更早的消息</button></div>
+        <div id="streamList"></div>
+        <div class="stream-empty" id="streamEmpty">这个房间还没有消息 —— 在下面发第一条</div>
+        <div class="jump" id="jumpWrap" hidden><button id="jumpBtn">新消息 ↓</button></div>
+      </div>
+    </main>
+
+    <aside class="right" id="membersPanel">
+      <div class="sec">在线成员 <span class="sec-n" id="onlineCount">0</span></div>
+      <div class="rail-card" id="members"></div>
+
+      <div class="sec sec-gap">房间概况</div>
+      <div class="rail-card" id="roomInfo"></div>
+
+      <div class="sec sec-gap">房间码</div>
+      <div class="rail-card">
+        <div class="code-row">
+          <span class="code-val" id="roomCode">——————</span>
+          <button class="mini" id="copyCode">复制</button>
+          <button class="mini" id="resetCode">重置</button>
+        </div>
+        <div class="kv">把房间码发给别人，对方点左栏的 ⌨ 输入即可加入</div>
+      </div>
+
+      <div class="right-foot" id="rightFoot">—</div>
+    </aside>
+  </div>
+
+  <footer class="bottom">
+    <div class="composer">
+      <button class="tool" id="pickImage" title="图片"><span class="ti">▣</span></button>
+      <button class="tool" id="pickFile" title="文件"><span class="ti">▤</span></button>
+      <input class="comp" id="compInput" placeholder="发消息…" autocomplete="off">
+      <button class="send" id="sendBtn">发送</button>
+    </div>
+    <input type="file" id="fileImage" accept="image/*" class="hidden-file">
+    <input type="file" id="fileDoc" class="hidden-file">
+  </footer>
+</section>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalTitle">新建房间</div>
+        <div class="btag" id="modalTag">CREATE ROOM</div>
+      </div>
+      <button class="modal-x" id="modalClose" title="关闭">×</button>
+    </div>
+
+    <form id="createForm">
+      <div class="field">
+        <label for="roomNameInput">房间名</label>
+        <input class="login-inp" id="roomNameInput" type="text" maxlength="24"
+               placeholder="比如：产品讨论" autocomplete="off" required>
+      </div>
+      <div class="field">
+        <label>谁能进来</label>
+        <div class="seg2" id="visSeg">
+          <button type="button" class="seg2-btn active" data-v="private">凭房间码</button>
+          <button type="button" class="seg2-btn" data-v="public">公开</button>
+        </div>
+        <div class="kv" id="visHint">只有拿到房间码的人才能加入</div>
+      </div>
+      <button class="login-btn" type="submit">创建房间</button>
+    </form>
+
+    <form id="joinForm" hidden>
+      <div class="field">
+        <label for="joinCodeInput">房间码</label>
+        <input class="login-inp code-inp" id="joinCodeInput" type="text" maxlength="6"
+               placeholder="K7M2QX" autocomplete="off" required>
+      </div>
+      <div class="kv">6 位字母数字，不区分大小写（没有易混的 0 O 1 I L）</div>
+      <button class="login-btn" type="submit">加入房间</button>
+    </form>
+
+    <div class="form-error" id="modalError" hidden></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

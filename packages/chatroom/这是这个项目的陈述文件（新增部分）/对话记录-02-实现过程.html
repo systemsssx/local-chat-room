@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>完整对话记录 · 聊天室</title>
+﻿<style>
+
+  :root{
+    --bg:#FBFAF8; --card:#FFFFFF; --tx:#22262C; --tx2:#5B6472; --tx3:#8A93A0;
+    --line:#E6E3DE; --code-bg:#F4F2EE; --accent:#B45309; --link:#1D4ED8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--tx);
+    font-family:'Segoe UI','Microsoft YaHei',system-ui,-apple-system,sans-serif;
+    font-size:15px;line-height:1.75;
+  }
+  .body>*:first-child{margin-top:0}
+  .body>*:last-child{margin-bottom:0}
+  .body p{margin:10px 0;white-space:pre-wrap}          /* pre-wrap：保留原文换行（ASCII 图靠它） */
+  .body li{white-space:pre-wrap}
+  .body h3,.body h4,.body h5,.body h6{margin:18px 0 8px;font-size:15px;font-weight:650}
+  .body h3{font-size:16px}
+  .body ul,.body ol{margin:10px 0;padding-left:26px}
+  .body li{margin:4px 0}
+  .body hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+  .body blockquote{margin:10px 0;padding:8px 14px;background:var(--code-bg);
+                   border-left:3px solid var(--line);border-radius:0 8px 8px 0;
+                   color:var(--tx2);font-size:13.5px}
+  .body blockquote p{margin:4px 0}
+  .body code{background:var(--code-bg);padding:1.5px 6px;border-radius:5px;
+             font-family:ui-monospace,Consolas,'Cascadia Mono',monospace;font-size:13px}
+  .body pre.code{background:#F7F5F1;border:1px solid var(--line);border-radius:10px;
+                 padding:14px 16px;overflow-x:auto;margin:12px 0}
+  .body pre.code code{background:none;padding:0;font-size:12.5px;line-height:1.65;white-space:pre}
+  .body .tw{overflow-x:auto;margin:12px 0}
+  .body table{border-collapse:collapse;font-size:13.5px;width:100%;margin:0}
+  .body th,.body td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  .body th{background:var(--code-bg);font-weight:600;white-space:nowrap}
+  .body a{color:var(--link);text-decoration:none;border-bottom:1px solid rgba(29,78,216,.3)}
+  .body a:hover{border-bottom-color:var(--link)}
+  .body strong{font-weight:650}
+  header.top{
+    position:sticky;top:0;z-index:10;background:rgba(251,250,248,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:12px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  header.top .t{font-weight:650;font-size:15px}
+  @media print{
+    header.top,.toc{display:none!important}
+    body{font-size:11.5pt;background:#fff} .intro{display:none}
+    .body table,.body pre.code{break-inside:avoid}
+  }
+
+  :root{--me:#B45309;--ai:#1D4ED8}
+
+  header.top .legend{display:flex;gap:14px;font-size:13px;margin-left:auto}
+  header.top .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  header.top .legend .m i{background:var(--me)} header.top .legend .a i{background:var(--ai)}
+  header.top .legend .m{color:var(--me)} header.top .legend .a{color:var(--ai)}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px 90px}
+
+  .intro{background:var(--card);border:1px solid var(--line);border-radius:12px;
+         padding:20px 24px;margin:26px 0 34px;font-size:13.5px;color:var(--tx2)}
+  .intro h1{margin:0 0 14px;font-size:20px;color:var(--tx)}
+  .intro ul{margin:8px 0 14px;padding-left:22px}
+  .intro li{margin:4px 0}
+  .intro .src{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--tx3);word-break:break-all}
+
+  section{border-left:4px solid var(--line);padding:2px 0 2px 18px;margin:30px 0}
+  section.me{border-color:var(--me);background:linear-gradient(90deg,rgba(180,83,9,.05),transparent 42%);
+             border-radius:0 10px 10px 0;padding-top:8px;padding-bottom:8px}
+  section.ai{border-color:var(--ai)}
+  section h2{margin:0 0 10px;font-size:14px;font-weight:650;display:flex;align-items:center;gap:9px}
+  section.me h2{color:var(--me)}
+  section.ai h2{color:var(--ai)}
+  section h2 .no{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;
+                 color:var(--tx3);background:var(--code-bg);border-radius:5px;padding:1px 7px}
+  .body .md-h{color:inherit}
+  section.ai .body .md-h{color:var(--ai)}   /* ★ 用户要求：AI 的小标题也换色 */
+  section.me .body .md-h{color:var(--me)}
+  .body h3{font-size:15.5px}
+
+  footer{color:var(--tx3);font-size:12.5px;text-align:center;margin-top:50px;
+         padding-top:22px;border-top:1px solid var(--line)}
+  @media (max-width:640px){ .wrap{padding:0 12px 60px} section{padding-left:12px} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="t">完整对话记录 · 聊天室</span>
+  <span class="legend">
+    <span class="m"><i></i>我的话</span>
+    <span class="a"><i></i>AI 的话</span>
+  </span>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    <h1>完整对话记录 · 聊天室（本会话原文）</h1>
+
+    <p><b>这份文件是什么</b>：本项目从动手到收尾的<b>完整对话原文</b> ——
+    我发的每一句话、AI 给的每一段回复，<b>原样保留，不改写、不润色、不摘要</b>。
+    （唯一的整理：连续几步工具调用归并到上一条 AI 回复下，内容一行未删。）</p>
+
+    <p><b>来源</b>：DSH 会话原始日志 <span class="src">session-a521cef6-7162-44e6-a136-fa1bd8b1eb41/session.v4.jsonl.zstd</span>
+    （1123 个 zstd 帧拼接而成，共 1849 条记录）。
+    由 <code>dev/make-transcript.mjs</code> 逐条抽取，不是人工复述。</p>
+
+    <p><b>颜色</b>：<span style="color:#B45309">■ 我的话</span>　
+    <span style="color:#1D4ED8">■ AI 的话</span>　—— AI 回复里的小标题也换成蓝色。</p>
+
+    <p><b>剔除的内容</b>：</p>
+    <ul>
+      <li>系统通知：权限变更 / 运行时上下文 / 技能目录 / 时间戳注入（19 条）</li>
+      <li>AI 的内部思考块（reasoning，249 个）</li>
+      <li>工具调用的完整参数（只留一行"调用了什么"的摘要；连续几步已归并，原文 269 块 → 归并后 81 块）</li>
+      <li>开头（动手之前的选题讨论）全部去掉：从含 <b>方向二：聊天室</b> 那条开始收</li>
+      <li>末尾（整理文档那段）去掉：遇到含 <b>把那个之前的几个说明文档搬过来</b> 那条为止</li>
+    </ul>
+
+    <p>共 <b>75</b> 个对话块（我 19 / AI 56），
+    归并前 81 块，去掉开头 3 / 中段 0 / 末尾 3。</p>
+
+    <p><b>分开存放</b>：另见《我的开发经历 02》（对这段过程的回顾）与《开发经历总结》（技术层面的总结）；上一份《对话记录 01》是上一个项目（局域网协同剪贴板）的原文，两份性质相同、各自独立成篇。</p>
+  </div>
+
+<section class="me" id="b1">
+  <h2><span class="no">1</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>方向二：聊天室（全栈项目）
+适合选择本选题的同学：
+- 希望完整体验前后端协作，愿意同时开发前端界面与后端服务；
+- 对实时通信、网络连接、用户身份鉴权、数据持久存储感兴趣；
+- 想要掌握前后端联调、接口设计、服务端基础业务开发；
+- 有长期向全栈方向发展的规划，乐于搭建包含客户端与服务端的完整系统。
+选择建议：
+如果你暂时难以确定选题，可以优先考虑 TodoList。聊天室全栈项目需要同时兼顾前后端开发，上手门槛相对更高。
+选题不会限制你入组之后的发展方向。选择 TodoList 的同学后续依然可以参与全栈相关开发，选择聊天室的同学也能够专注深耕前端界面。免试题选题只是你的起点，并非今后的发展边界。
+提交方式与截止时间
+提交方式：推送至 GitHub 仓库后，填写2026 前端 免试题 提交问卷
+截止日期：免试题面批开始当日 解释一下这道题的要求。你看一下这道题，我拿现在的成品来对这道题，要改哪些部分，是不是要把局域网内改成所有互通</p></div>
+</section>
+<section class="ai" id="b2">
+  <h2><span class="no">2</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(List workspace root contents)
+🔧 read(C:\work\README.md)
+🔧 pwsh(List project files recursively)
+🔧 glob(**/<em>免试</em> @ C:\work)
+🔧 read(C:\work\collab-clipboard\README.md)
+🔧 read(C:\work\collab-clipboard\README.md)
+🔧 grep(免试题|题目\s*[123１２３]|题目要求|三个要求|三条要求)
+🔧 grep(聊天室|TodoList|免试题|方向一|方向二)
+🔧 pwsh(Check git repo state of project)
+🔧 read(C:\work\collab-clipboard\思路记录.md)
+🔧 read(C:\work\collab-clipboard\dev\docs-src\项目说明.md)
+🔧 read(C:\work\collab-clipboard\public\js\session.js)
+🔧 read(C:\work\collab-clipboard\public\js\api.js)
+🔧 read(C:\work\collab-clipboard\app\config.py)
+🔧 read(C:\work\collab-clipboard\public\js\transports\ws.js)
+🔧 grep(鉴权|登录|注册|password|token|session_id|Authorization)
+🔧 skill(discernment-nudge)
+🔧 grep(at|time|nick|时间|昵称)</p></blockquote></div>
+</section>
+<section class="ai" id="b3">
+  <h2><span class="no">3</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>我读了交接文件，也实地查了成品的代码与仓库状态，下面按你三个问题回答。</p>
+<hr>
+<h2 class="md-h" id="h1-一-这道题在考什么-只按你贴出来的这段">一、这道题在考什么（只按你贴出来的这段）</h2>
+<div class="tw"><table><thead><tr><th>项</th><th>内容</th></tr></thead><tbody><tr><td>性质</td><td>2026 前端免试题，两个方向二选一，这是<strong>方向二</strong></td></tr><tr><td>交付形态</td><td><strong>一套完整系统</strong>：前端界面 + 后端服务 + 两边之间的接口（不是单个页面）</td></tr><tr><td>点名四个考点</td><td>实时通信、网络连接、<strong>用户身份鉴权</strong>、数据持久存储</td></tr><tr><td>点名四种能力</td><td>前后端联调、接口设计、服务端基础业务开发、完整系统搭建</td></tr><tr><td>提交</td><td>推到 <strong>GitHub 仓库</strong> + 填问卷</td></tr><tr><td>截止</td><td>面批开始当日 → 交付物必须是"clone 下来能一键跑"的形态</td></tr></tbody></table></div>
+<p>注意最后那段"选择建议"的潜台词：<strong>它明说聊天室比 TodoList 门槛高</strong>。所以评分时"你把服务端做出来了、能联调、有鉴权"本身就是得分点，而不是"页面好不好看"单项打分。另外"选题不限制入组后的方向"是招募口径，不是技术要求。</p>
+<p>⚠️ 一个前提问题：你贴的这段只有<strong>选题说明 + 提交规则</strong>，没有方向二的<strong>功能清单/技术栈限制/README 要求</strong>。下面第 2 节的"要改哪些"有一部分取决于那部分正文（我在末尾列了要你确认的几点）。</p>
+<hr>
+<h2 class="md-h" id="h2-二-拿现在的成品对这道题">二、拿现在的成品对这道题</h2>
+<p>先说结论：<strong>复用度很高（我估 60–70%），但有 4 处必须改，其中"身份鉴权"是从 0 开始。</strong></p>
+<h3 class="md-h" id="h3-已经能直接用的-甚至超标">已经能直接用的（甚至超标）</h3>
+<ul>
+<li>前后端分离：FastAPI（<code>server.py</code> + <code>app/</code> 7 模块 4 路由）+ 零构建原生前端</li>
+<li><strong>实时通信</strong>：轮询 / SSE / WebSocket 三套，还带热切换和断线补齐 —— 这一条远超要求</li>
+<li><strong>持久存储</strong>：SQLite，重启不丢、历史可恢复</li>
+<li>聊天室形态基本已具备：房间隔离、在线成员、昵称、<strong>消息行已有昵称和时间</strong>（[render.js:84-86](collab-clipboard/public/js/render.js#L84-L86)）</li>
+<li>桌面版 + 手机版两套界面、一键 <code>启动服务.cmd</code>、103 单元测试 + 105 端到端</li>
+<li>前端全部走相对路径 + <code>location.host</code>（[api.js](collab-clipboard/public/js/api.js#L56-L85)、[ws.js:29-32](collab-clipboard/public/js/transports/ws.js#L29-L32)），WebSocket 按 https 自动切 <code>wss</code> —— <strong>这一点对第 3 问很关键</strong></li>
+</ul>
+<h3 class="md-h" id="h4-必须改的">必须改的</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>缺什么</th><th>现状证据</th><th>要做什么</th></tr></thead><tbody><tr><td>1</td><td><strong>用户身份鉴权</strong></td><td>后端全仓 grep <code>登录/注册/token/password</code> <strong>零命中</strong>；前端只有 localStorage 里自报的昵称（[session.js:12-34](collab-clipboard/public/js/session.js#L12-L34)），谁都能改、谁都能发</td><td>users 表 + 密码哈希（bcrypt/argon2）+ 会话凭证（Cookie 或 JWT）+ `/api/auth/register</td><td>login</td><td>logout</td><td>me`，所有写接口要求凭证，消息归属真实 userId，在线列表来自会话</td></tr><tr><td>2</td><td><strong>定位/命名/README 口径</strong></td><td>标题是「协同剪贴板（局域网）」，[README.md:7](collab-clipboard/README.md#L7) 写着"对应题目：题目 2 · 前后端综合工程"</td><td>改成聊天室口径；补接口表、数据表说明、鉴权流程、演示截图</td></tr><tr><td>3</td><td><strong>Git 仓库不存在</strong></td><td>我查过：项目内没有 <code>.git</code>（提交方式却要求推 GitHub）</td><td><code>git init</code> + 首次提交（[.gitignore](collab-clipboard/.gitignore) 已经正确排除 <code>data/</code>、<code>uploads/</code>、<code>node_modules/</code>）；顺手注意 <code>design/shots/</code> 里有单张 1.4MB 的大截图，README 只引几张即可</td></tr><tr><td>4</td><td><strong>跑题的附属功能</strong></td><td>剪贴板监听、文件上传这些是"协同剪贴板"的主线，不是聊天室的主线</td><td>降级成"附加功能"一段说明，或直接砍掉；<strong>不要让它们占 README 前两屏</strong></td></tr></tbody></table></div>
+<h3 class="md-h" id="h5-要看正文才能定的">要看正文才能定的</h3>
+<p>私聊、未读数、@提及、撤回、房间列表、历史分页/搜索 —— 现在<strong>一个都没有</strong>。题目正文若点名了其中任何一条，就是新增工作量。</p>
+<hr>
+<h2 class="md-h" id="h6-三-要不要把-局域网内-改成-所有互通">三、要不要把"局域网内"改成"所有互通"？</h2>
+<p><strong>不需要真的打通公网。</strong> 四条理由：</p>
+<ol>
+<li><strong>题目没要求上线地址</strong>。交付方式是 GitHub 仓库 + 面批 —— 面批就是你现场演示：本机开两个窗口（普通 + 隐身）就是两个用户，手机连同一 WiFi 证明多端。局域网已经足够证明"多客户端实时"。</li>
+<li><strong>真正被考的是"可公网部署"，而不是"已经部署"</strong> —— 而这一点你现在就满足：相对路径 + <code>location.host</code>、WS 自动 <code>wss</code>、前后端同源无跨域、<code>HOST/PORT</code> 可配（[config.py:41-43](collab-clipboard/app/config.py#L41-L43)）。将来上线只是"加反向代理 + TLS"，<strong>不需要重构代码</strong>。</li>
+<li><strong>成本收益不对等</strong>：公网 = 服务器 + 域名（大陆还要备案）+ 证书 + 进程守护，而且<strong>现在零鉴权，一上公网就是裸奔</strong>。这些时间花在鉴权和聊天室交互上，得分高得多。</li>
+<li><strong>风险</strong>：面批当天你自己的公网地址挂掉，比"在老师电脑上跑起来"糟糕得多。</li>
+</ol>
+<p><strong>如果你的意思是"面试官在自己电脑上也想点开看"</strong>：那就用 Cloudflare Tunnel / ngrok，一条命令、零代码改动给个临时地址，演示完关掉；或者部署到 Render / Fly.io（注意 SQLite 要挂持久卷）。把这段当成 README 里一节「部署说明」，成本十分钟，收益是"我知道怎么上线"——这恰好是加分项。</p>
+<hr>
+<h2 class="md-h" id="h7-四-要你确认的三件事-决定上表第-4-行和-要看正文才能定-那格">四、要你确认的三件事（决定上表第 4 行和"要看正文才能定"那格）</h2>
+<ol>
+<li><strong>方向二正文的功能清单</strong>是什么？有没有点名注册/登录、私聊、多房间、消息类型、历史分页？（你贴的这段没有）</li>
+<li><strong>有没有技术栈限制</strong>？比如必须 Node/React —— 现在是 Python + 原生 JS，若被限定就得换或说明。</li>
+<li><strong>允许复用既往作品吗</strong>？要不要新仓库、是否要求从零写？（面批时被问"这是不是另一个题的产物"要有说法）</li>
+</ol></div>
+</section>
+<section class="me" id="b4">
+  <h2><span class="no">4</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>你先开一个新文件夹新档把，就把我所有原文件（压缩包除外）拷过去，</p></div>
+</section>
+<section class="ai" id="b5">
+  <h2><span class="no">5</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(Recon source folder before copying)
+🔧 pwsh(Copy project into new chat-room folder and verify)</p></blockquote></div>
+</section>
+<section class="ai" id="b6">
+  <h2><span class="no">6</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>新文件夹已建好并完成拷贝：</p>
+<div class="tw"><table><thead><tr><th>项</th><th>结果</th></tr></thead><tbody><tr><td>目标</td><td><code>C:\work\chat-room</code>（名字先按仓库习惯取的英文，要改我随时重命名）</td></tr><tr><td>来源</td><td><code>C:\work\collab-clipboard</code> 全量</td></tr><tr><td>文件数</td><td>源 828 → 目标 828，<strong>逐文件（相对路径 + 字节数）比对完全一致</strong></td></tr><tr><td>体积</td><td>15.65 MB</td></tr><tr><td>压缩包</td><td>源目录内本来就没有压缩包；<code>C:\work\collab-clipboard.zip</code> 在项目外，也没拷过去 → [chat-room](chat-room) 里 <strong>0 个压缩包</strong></td></tr></tbody></table></div>
+<p>抽查关键文件都在：<code>.gitignore</code>、<code>server.py</code>、<code>README.md</code>、<code>public/index.html</code>、<code>public/mobile.html</code>、<code>data/app.db</code>、<code>启动服务.cmd</code>、<code>对话记录-01-实现过程.html</code>、<code>alt-node/src/app.js</code>。</p>
+<p>两点说明（都不影响，按你意思随时调整）：</p>
+<ol>
+<li><code>alt-node/node_modules/</code> 也一并拷了（属于依赖安装产物，已被 <code>.gitignore</code> 排除，推 GitHub 不会带上）。要瘦身我可以删掉，<code>npm i</code> 就能恢复。</li>
+<li>原目录 [collab-clipboard](collab-clipboard) 我一个字没动；新目录现在还是"原样副本"——没改名、没改 README、没 <code>git init</code>。</li>
+</ol>
+<p>下一步要我怎么走？（改名 / 删 node_modules / 开始把它改造成聊天室口径）</p></div>
+</section>
+<section class="me" id="b7">
+  <h2><span class="no">7</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>你先告诉我登录全件要靠什么实现</p></div>
+</section>
+<section class="ai" id="b8">
+  <h2><span class="no">8</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 read(C:\work\chat-room\requirements.txt)
+🔧 read(C:\work\chat-room\app\__init__.py)</p></blockquote></div>
+</section>
+<section class="ai" id="b9">
+  <h2><span class="no">9</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>（按"登录<strong>鉴权</strong>"理解）这块要拆成三条线：<strong>身份</strong>（注册/登录）、<strong>凭证</strong>（登录后发什么、之后每次请求怎么带）、<strong>校验</strong>（服务端怎么验、怎么防越权）。下面说这套项目里该怎么落。</p>
+<hr>
+<h2 class="md-h" id="h1-一-结论先给-cookie-服务端-session-表-密码哈希">一、结论先给：Cookie + 服务端 Session 表 + 密码哈希</h2>
+<p>三个选择里，这个方案在你的项目里有<strong>一个决定性优势</strong>：</p>
+<blockquote><p>你有 <strong>SSE</strong>，而前端的 <code>EventSource</code> <strong>不能自定义请求头</strong> —— 想带 <code>Authorization: Bearer xxx</code> 是带不上的（只能退而求其次塞 URL 参数，那 token 会漏进访问日志）。WebSocket 握手同理，虽然能塞子协议但很别扭。
+<strong>Cookie 是浏览器在所有三种传输上都会自动带的东西</strong>：<code>fetch</code>、<code>EventSource</code>、<code>new WebSocket()</code> 全都带。所以三套传输共用一套凭证，一行额外代码都不用写。</p></blockquote>
+<div class="tw"><table><thead><tr><th>方案</th><th>长什么样</th><th>适合吗</th></tr></thead><tbody><tr><td><strong>服务端 Session（推荐）</strong></td><td>服务端发随机 token，存 <code>sessions</code> 表；Cookie 里只放这个随机串</td><td>✅ 可随时撤销（登出/踢人）、三种传输自动带、无需额外库</td></tr><tr><td>JWT</td><td>签名令牌，服务端不存</td><td>⚠️ 得引 <code>PyJWT</code>；撤销麻烦（要么黑名单表、要么短过期+刷新，等于又回服务端存东西）；收益是"无状态"，你单机 SQLite 根本用不上</td></tr><tr><td>前端存 token 自己塞头</td><td><code>localStorage</code> + <code>Authorization</code></td><td>❌ SSE 走不通；且 <code>localStorage</code> 里能被 XSS 读走</td></tr></tbody></table></div>
+<hr>
+<h2 class="md-h" id="h2-二-三块具体怎么实现">二、三块具体怎么实现</h2>
+<h3 class="md-h" id="h3-1-密码怎么存-不可逆哈希-每个用户独立盐">1. 密码怎么存 —— 不可逆哈希 + 每个用户独立盐</h3>
+<p>绝不能明文，也不要用 <code>md5/sha256(密码)</code> 裸哈希（彩虹表/GPU 爆破）。两个选项：</p>
+<ul>
+<li><strong>零新依赖</strong>（贴合你现在"非标准库只有 4 个"的风格）：<code>hashlib.pbkdf2_hmac('sha256', pw, salt, 600_000)</code>，盐用 <code>secrets.token_bytes(16)</code>，校验用 <code>hmac.compare_digest</code>（常量时间，防时序侧信道）。</li>
+<li><strong>更省心</strong>：<code>pip install bcrypt</code>，<code>bcrypt.hashpw / checkpw</code>，迭代参数由库自己管。</li>
+</ul>
+<blockquote><p>说白了就一句：<strong>库里存的是"算不回去"的东西</strong>。面批被问"密码怎么存的"，这一句就是满分答案。</p></blockquote>
+<h3 class="md-h" id="h4-2-登录成功后发什么-一张-sessions-表">2. 登录成功后发什么 —— 一张 <code>sessions</code> 表</h3>
+<pre class="code"><code>users(id, username UNIQUE, pass_hash, salt, created_at)
+sessions(token_hash, user_id, created_at, expires_at, last_seen)</code></pre>
+<ul>
+<li>token 用 <code>secrets.token_urlsafe(32)</code> 生成，<strong>库里存它的哈希</strong>（库被拖走也不能直接冒充登录）；</li>
+<li>响应里 <code>Set-Cookie: sid=...; HttpOnly; SameSite=Lax; Path=/</code>，上公网（HTTPS）时再加 <code>Secure</code>；</li>
+<li><code>HttpOnly</code> = JS 读不到，XSS 也偷不走；有效期 + 每次访问滑动续期（或 7 天固定过期）。</li>
+</ul>
+<h3 class="md-h" id="h5-3-服务端怎么验-一个依赖-挂在所有要保护的接口上">3. 服务端怎么验 —— 一个依赖，挂在所有要保护的接口上</h3>
+<p>FastAPI 就一个函数的事：读 Cookie → 查 <code>sessions</code> → 查 <code>users</code> → 返回当前用户；验不过就 401。</p>
+<pre class="code"><code>POST /api/auth/register   → 建用户（用户名唯一、密码规则）
+POST /api/auth/login      → 校验密码 → 建 session → Set-Cookie
+POST /api/auth/logout     → 删 session
+GET  /api/auth/me         → 当前是谁（前端启动时问一次，决定显示登录页还是聊天页）</code></pre>
+<p><strong>要保护的和要改的，对应到你的代码：</strong></p>
+<div class="tw"><table><thead><tr><th>位置</th><th>动作</th></tr></thead><tbody><tr><td><code>app/db.py</code></td><td>加 <code>users</code> / <code>sessions</code> 两张表</td></tr><tr><td>新增 <code>app/auth.py</code></td><td>哈希、token、<code>current_user</code> 依赖</td></tr><tr><td>新增 <code>app/routes/auth_routes.py</code></td><td>上面四个接口</td></tr><tr><td><code>app/routes/api_routes.py</code></td><td><code>POST /api/messages</code>、<code>/api/upload</code> 上锁；<strong>消息里的 <code>nickname</code> 不再由客户端传</strong>，改由服务端按会话填</td></tr><tr><td><code>app/routes/sse_routes.py</code></td><td>下行也认身份（在线成员列表要来自会话）</td></tr><tr><td><code>app/websocket.py</code></td><td>握手时读 <code>websocket.cookies</code> 校验，失败用 <code>1008</code> 关闭</td></tr><tr><td>前端</td><td>登录/注册界面、未登录态、登出按钮、401 统一弹回登录；<code>localStorage</code> 里只留房间号/传输方式，昵称改成显示用户名</td></tr></tbody></table></div>
+<hr>
+<h2 class="md-h" id="h6-三-几个必须知道的边界-也正是面批会追问的">三、几个必须知道的边界（也正是面批会追问的）</h2>
+<ol>
+<li><strong>认证 ≠ 鉴权</strong>：认证=你是谁（登录）；鉴权=你能干什么。你这题的实际鉴权规则就三条：<strong>未登录不能发</strong>、<strong>只能以自己的身份发</strong>（不能伪造别人昵称）、<strong>房间数据按房间隔离</strong>。</li>
+<li><strong>CSRF</strong>：<code>SameSite=Lax</code> 已经挡住跨站 POST 带 Cookie；加上你的写接口收的是 <code>application/json</code>（跨站表单发不出来，会触发预检）——够用。要更严就加个 CSRF token 或校验 <code>Origin</code>。</li>
+<li><strong>登录限速</strong>：同一用户名连续失败计数 + 短暂锁定，防爆破。几行代码，很加分。</li>
+<li><strong>token 绝不进 URL</strong>（SSE 场景最容易这么干，别干）。</li>
+<li><strong>HTTPS 才有 <code>Secure</code> Cookie</strong>：局域网 HTTP 演示时不要加 <code>Secure</code>，否则 Cookie 直接不落地 —— 这也是"局域网照样能演，公网部署时才加"的一个开关。</li>
+</ol>
+<hr>
+<h2 class="md-h" id="h7-四-不引新依赖能不能做完-能">四、不引新依赖能不能做完？能。</h2>
+<p><code>hashlib</code> + <code>hmac</code> + <code>secrets</code> + <code>sqlite3</code> + FastAPI 自带的 <code>Response.set_cookie</code> / <code>Cookie</code> 参数，<strong>全部标准库或现有依赖</strong>，<code>requirements.txt</code> 一个字都不用加。只有想上 <code>bcrypt</code>/<code>argon2</code> 时才多一个包。</p>
+<p>需要我把这套写成一份"改造清单 + 接口契约"（先不动代码），还是直接开始按这个方案改 <code>chat-room</code> 里的后端？</p></div>
+</section>
+<section class="me" id="b10">
+  <h2><span class="no">10</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>哪你把ui改一下，只保留sse，其他两个都放弃，然后把左侧边栏删了，改成房间列表，房间号和昵称删了，先把html考出来改，出一版设计稿给我看</p></div>
+</section>
+<section class="ai" id="b11">
+  <h2><span class="no">11</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 skill(frontend-design)
+🔧 read(C:\work\chat-room\public\index.html)
+🔧 read(C:\work\chat-room\design\shot.py)
+🔧 read(C:\work\chat-room\public\css\app.css)
+🔧 read(C:\work\chat-room\design\v4-console-chat.html)
+🔧 read(C:\work\chat-room\public\css\app.css)
+🔧 pwsh(Check fonts and Playwright availability)</p></blockquote></div>
+</section>
+<section class="ai" id="b12">
+  <h2><span class="no">12</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>收到。先按你的要求把设计稿做出来（只保留 SSE、左栏换房间列表、房间号/昵称去掉），放到 <code>chat-room/design/</code> 里，不动 <code>public/</code> 的现有页面。</p>
+<p>先写设计稿文件：</p>
+<blockquote><p>🔧 write(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 pwsh(Locate Chrome and check sample image size)
+🔧 read_image({"file_path": "C:\\work\\chat-room\\uploads\\b2a40186c980.jpeg"})
+🔧 write(C:\work\chat-room\design\assets\palette-03.svg)
+🔧 pwsh(Start temporary static server on 8899)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 pwsh(Verify static server serves draft and fonts)
+🔧 pwsh(Render design draft to PNG with headless Chrome)
+🔧 pwsh(Retry headless Chrome with crash reporter disabled)</p></blockquote></div>
+</section>
+<section class="ai" id="b13">
+  <h2><span class="no">13</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>Chrome 无头渲染被沙箱挡了（<code>mojo platform_channel ... 拒绝访问</code> —— 浏览器多进程 IPC 要命名管道，沙箱里不允许）。这一步必须放宽权限才能给你出图，我只用这一次：</p>
+<blockquote><p>🔧 pwsh(Render design draft screenshots outside sandbox)
+🔧 read_image({"file_path": "C:\\work\\chat-room\\design\\shots\\v5-chatroom.png"})
+🔧 read_image({"file_path": "C:\\work\\chat-room\\design\\shots\\v5-chatroom-login.png"})</p></blockquote></div>
+</section>
+<section class="ai" id="b14">
+  <h2><span class="no">14</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>设计稿渲染出来了。我自己先挑了几处问题（下面一并修掉），改完再给你看定稿：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 edit(C:\work\chat-room\design\v5-chatroom.html)
+🔧 pwsh(Re-render both design draft screenshots)
+🔧 pwsh(Check screenshots and chrome processes)
+🔧 pwsh(Check server and clean up hung chrome processes)
+🔧 job_kill(pwsh-10)
+🔧 pwsh(Retry screenshots with fresh profiles and timeout)
+🔧 pwsh(Test chrome single-process headless launch)
+🔧 pwsh(Try single-process chrome screenshot with direct proxy)</p></blockquote></div>
+</section>
+<section class="ai" id="b15">
+  <h2><span class="no">15</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>Chrome 现在被进程沙箱卡死了（多进程 IPC 要命名管道，单进程模式直接崩），截图这条路暂时走不通——所以这版设计稿请你在浏览器里直接看。先确认服务还在：</p>
+<blockquote><p>🔧 pwsh(Verify draft is served and clean temp profiles)
+🔧 grep(正在输入|刚刚活跃|SSE 长连接|location.search|max-width:640px)</p></blockquote></div>
+</section>
+<section class="ai" id="b16">
+  <h2><span class="no">16</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>设计稿做好了 —— <strong><code>chat-room/design/v5-chatroom.html</code></strong>（<code>public/</code> 里的现有页面我一个字没动）。</p>
+<p>⚠️ 截图这条路被沙箱堵死了：Chrome 多进程 IPC 要命名管道（<code>mojo platform_channel 拒绝访问</code>），单进程模式直接崩（0xC0000005），现在又不允许提权，所以我没法给你贴图。<strong>请直接在浏览器里看</strong>（这是最准的，字体也是真的）：</p>
+<ul>
+<li>聊天页 → http://127.0.0.1:8899/chat-room/design/v5-chatroom.html</li>
+<li>登录页 → http://127.0.0.1:8899/chat-room/design/v5-chatroom.html#login</li>
+</ul>
+<blockquote><p>我临时起了个静态服务（8899，只为加载字体），你看完说一声我就关掉。稿子是固定 1600×1000 的画布，窗口小就 Ctrl+减号 缩放一下。右下角有个「聊天页/登录页」切换小条，那只是设计稿用的。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h1-这版改了什么">这版改了什么</h2>
+<div class="tw"><table><thead><tr><th>位置</th><th>原来</th><th>现在</th></tr></thead><tbody><tr><td><strong>左栏</strong></td><td>三种传输方式的"通信方案"列表</td><td><strong>房间列表</strong>：房间名 + 人数、最后一条消息摘要、时间；未读是琥珀数字角标；顶部有筛选框和「＋ 新建房间」</td></tr><tr><td><strong>顶栏</strong></td><td>房间号输入框 + 进入按钮 + 昵称输入框</td><td><strong>当前房间铭牌</strong>：<code>#产品讨论</code> + <code>● SSE 已连接 · 12 人在线 · 消息 1,284 条</code>；右侧是头像/用户名 + <strong>退出登录</strong></td></tr><tr><td><strong>传输</strong></td><td>轮询 / SSE / WS 三选，消息行标 POLL/SSE/WS 管道</td><td><strong>只剩 SSE</strong>，三方案列表和管道标记都删了（只剩一种管子，标它没意义）；状态灯、右栏「连接」卡片都只讲 SSE</td></tr><tr><td><strong>消息流</strong></td><td>无日期分隔</td><td>加了「今天」分隔条、<code>Ada 加入了房间</code> 系统行；行头是<strong>头像 + 名字 + 时间</strong>，自己的消息名字琥珀色、行首淡琥珀底</td></tr><tr><td><strong>右栏</strong></td><td>在线成员 / 房间服务 / 历史记录（最近 20 条）</td><td>在线成员（含「正在输入…」）/ 房间概况 / 连接。原来的"历史记录"卡片并进消息流：顶部一个「加载更早的消息」，底部保留「N 条新消息 ↓」</td></tr><tr><td><strong>底栏</strong></td><td>纯文字 / 剪贴板读取 两个模式</td><td>只剩 图片 / 文件 / 输入框 / 发送</td></tr><tr><td><strong>登录页</strong></td><td>没有</td><td>新增（昵称输入删了，身份必须来自登录）：用户名 / 密码 / 登录 / 注册链接</td></tr></tbody></table></div>
+<p>配色和字形<strong>沿用原来的精密仪表皮肤</strong>（暖炭灰 + 单一琥珀 + Cascadia Mono 标签 + Georgia 数字），只换结构——这样改动量小，也是你们已经验收过的风格。</p>
+<p>稿里的房间、成员、消息全是假数据，只为看排版和信息密度。</p>
+<hr>
+<h2 class="md-h" id="h2-需要你拍板的-5-件事">需要你拍板的 5 件事</h2>
+<ol>
+<li><strong>剪贴板监听模式</strong>（原来自动读本机剪贴板那个）——聊天室里还留吗？我在稿里去掉了。</li>
+<li><strong>右栏那张「历史记录（最近 20 条）」</strong>并成消息流顶部的「加载更早」，行不行？</li>
+<li><strong>消息行</strong>要不要改成常见的左右气泡？我保留的是你们原来的<strong>整行日志式</strong>（头像+名字在左，正文在右）。</li>
+<li><strong>「＋ 新建房间」</strong>要不要？题目如果只要求"进已有房间"，这个按钮可以去掉。</li>
+<li><strong>注册页</strong>要不要一起出？（现在登录卡片里只有「注册一个」链接，没做注册视图）</li>
+</ol>
+<p>你先看，哪里不对我改；改完这一版再落到 <code>public/</code> 里去实现。</p></div>
+</section>
+<section class="me" id="b17">
+  <h2><span class="no">17</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>我先问几个问题，登录页的原理是我输入用户名和密码后就会产生一个cookie吗，然后用这个cookie才能进入网页，那这个cookie是存在用户端吗，这个cookie是和服务器握手成功的凭据吗</p></div>
+</section>
+<section class="ai" id="b18">
+  <h2><span class="no">18</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>四个问题里，<strong>两个基本对、两个要纠正</strong>。逐个说。</p>
+<hr>
+<h2 class="md-h" id="h1-输入用户名密码后就-产生-一个-cookie-吗">① 输入用户名密码后就"产生"一个 cookie 吗？</h2>
+<p>顺序对了一半 —— <strong>cookie 不是浏览器凭空产生的，是服务端发的、浏览器替你收着</strong>。登录那一次发生的事情是：</p>
+<pre class="code"><code>浏览器 ──POST /api/auth/login  {用户名, 密码}──► 服务端
+                                              ① 查 users 表，拿盐 + 哈希验密码
+                                              ② 验过了 → 随机生成一串 sid（比如 32 字节）
+                                              ③ 往 sessions 表写一行：sid → 用户 id、过期时间
+浏览器 ◄── 200  +  Set-Cookie: sid=abc123…; HttpOnly; SameSite=Lax ── 服务端
+              ↑ 重点是响应头里这一行，浏览器看到它才会把 cookie 存下来</code></pre>
+<p>注意几个细节：</p>
+<ul>
+<li><strong>密码只在这一次请求里出现过</strong>，验完就丢；服务端只留哈希，cookie 里也<strong>没有</strong>密码、没有用户名，只有那串随机数；</li>
+<li>这串随机数本身没有含义，它就是个"编号"，含义全在服务端的 <code>sessions</code> 表里；</li>
+<li>之后<strong>每一次</strong>请求，浏览器会自动加上 <code>Cookie: sid=abc123…</code>，不用你写任何代码。</li>
+</ul>
+<hr>
+<h2 class="md-h" id="h2-用这个-cookie-才能-进入网页-吗">② 用这个 cookie 才能"进入网页"吗？</h2>
+<p>这里要纠正一个常见误会：<strong>cookie 不是"打开网页"的钥匙，是"接口认不认你"的钥匙</strong>。</p>
+<div class="tw"><table><thead><tr><th></th><th>没 cookie 会怎样</th></tr></thead><tbody><tr><td>拿 <code>index.html</code> / CSS / JS</td><td><strong>照样能拿到</strong> —— 这些是公开文件，谁都下得走</td></tr><tr><td>问 <code>/api/auth/me</code>（我是谁）</td><td>返回 <strong>401</strong></td></tr><tr><td>发 <code>POST /api/messages</code>（发消息）</td><td>返回 <strong>401/403</strong>，消息发不出去</td></tr></tbody></table></div>
+<p>前端启动时先问一次 <code>/api/auth/me</code>：401 就画登录页，200 就画聊天页。所以"能不能进"是<strong>前端根据接口的回答画出来的</strong>，不是服务器把网页锁起来了。</p>
+<blockquote><p>想做到"没登录连 HTML 都不给"，那叫服务端重定向（看到没 cookie 就 <code>302</code> 到 <code>/login</code>），是另一种做法；单页应用一般不用，因为前端本来就要靠接口判断。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h3-cookie-存在用户端吗">③ cookie 存在用户端吗？</h2>
+<p><strong>是，存在浏览器里</strong>（Chrome 的 profile 目录里有个 SQLite 文件叫 <code>Cookies</code>，就是它）。三个属性决定它能干什么：</p>
+<div class="tw"><table><thead><tr><th>属性</th><th>作用</th></tr></thead><tbody><tr><td><code>HttpOnly</code></td><td><strong>JavaScript 读不到</strong> —— 就算页面被 XSS 注入，也偷不走这个 cookie</td></tr><tr><td><code>SameSite=Lax</code></td><td>别的网站发起的请求不带它 —— 挡 CSRF</td></tr><tr><td><code>Secure</code></td><td>只在 https 下才带（局域网 http 演示时<strong>不能加</strong>，加了 cookie 直接不落地）</td></tr></tbody></table></div>
+<p>还有两个实际会碰到的点：</p>
+<ul>
+<li><strong>按域名隔离，但不按端口</strong>：<code>localhost:8000</code> 和 <code>localhost:9000</code> 共用一份 cookie；但 <code>localhost</code> 和 <code>192.168.1.14</code> 是<strong>两个不同的域名</strong>，cookie 不通用 —— 你电脑上登录了，手机连局域网 IP 打开还得重新登录，这是正常的；</li>
+<li><strong>不设过期时间</strong> = 会话 cookie，关浏览器就没；设 <code>Max-Age=604800</code> = 存磁盘，七天内在还在。</li>
+</ul>
+<hr>
+<h2 class="md-h" id="h4-是-和服务器握手成功的凭据-吗">④ 是"和服务器握手成功的凭据"吗？</h2>
+<p>这里是第二个要纠正的地方 —— <strong>"握手"这个词有两层，别混在一起</strong>：</p>
+<div class="tw"><table><thead><tr><th>握手</th><th>是什么</th><th>和登录有关系吗</th></tr></thead><tbody><tr><td>TCP / TLS 握手</td><td>传输层把连接建起来，请求发完连接就关了</td><td><strong>没关系</strong>，那是每次请求都可能发生的事</td></tr><tr><td>"登录状态"</td><td>HTTP 协议本身<strong>是无状态的</strong></td><td>协议里根本没有这回事</td></tr></tbody></table></div>
+<p>HTTP 无状态的意思是：<strong>每一句请求在协议看来都是陌生人开口</strong>，服务器不记得你上一句说过什么。所谓"我登录了"这件事，<strong>完全记在服务端自己的一张表里</strong>：</p>
+<pre class="code"><code>浏览器手里的：sid = abc123…          ← 只是张门票，上面只有编号
+服务端表里的：abc123… → 用户 7 号，10 月 14 日过期   ← 名册，认不认由它说了算</code></pre>
+<p>所以更准确的说法是：<strong>cookie 是门票，服务端手里有名册</strong>。保安不是"看你的脸认出你"，而是<strong>拿编号翻名册</strong>。</p>
+<p>这也顺带解释了另外三件事：</p>
+<ul>
+<li><strong>为什么能"踢人"</strong>：把名册上那一行划掉，那张票立刻作废 —— 这就是"服务端会话"比 JWT 好用的地方；</li>
+<li><strong>为什么登出要通知服务端</strong>：光删浏览器里的 cookie 不够（服务端那张票还能用），要两边都清；</li>
+<li><strong>为什么前端说"我登录了"不算数</strong>：前端说的话谁都能改，状态只能放在服务端。</li>
+</ul>
+<hr>
+<h2 class="md-h" id="h5-串起来一句话">串起来一句话</h2>
+<blockquote><p>登录 = 服务端验一次密码，然后<strong>在自己表里记一笔</strong>，顺手给浏览器一张写着编号的门票；之后浏览器每次请求自动出示门票，服务端拿编号翻表——<strong>表上有，就认你</strong>。</p></blockquote>
+<p>面批要是问"你的登录是怎么实现的"，照这句说一遍就行，接着补一句：密码是 pbkdf2 哈希加盐存的，cookie 是 <code>HttpOnly + SameSite=Lax</code>，登出就把 <code>sessions</code> 表那行删掉。</p></div>
+</section>
+<section class="me" id="b19">
+  <h2><span class="no">19</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>那我要建聊群有接口吗，能不能设计成像像某steam游戏一样的创建房间，创建完之后凭房间码进群，进群后这个cookie就在服务器的这个聊群里有记录了，我只要用户登录进去房间列表里就能刷新这个房间。这个聊群的原理是sqlite库可以进行隔离吗</p></div>
+</section>
+<section class="ai" id="b20">
+  <h2><span class="no">20</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 read(C:\work\chat-room\app\db.py)
+🔧 read(C:\work\chat-room\app\rooms.py)
+🔧 read(C:\work\chat-room\app\rooms.py)</p></blockquote></div>
+</section>
+<section class="ai" id="b21">
+  <h2><span class="no">21</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>问得好，这里有个关键概念要先掰正：</p>
+<blockquote><p><strong>cookie 不会"在聊群里留下记录"</strong>。cookie 只回答一件事——"你是谁"。<strong>"你在哪些群"是服务端另一张表的事</strong>（下面第 3 节的 <code>room_members</code>）。cookie 里连用户名都没有，别让它背这个锅。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h1-一-现在有建群接口吗">一、现在有建群接口吗？</h2>
+<p><strong>没有。</strong> 现在的"房间"是<strong>隐式</strong>的：URL 里写 <code>#room=1001</code> 就进去了，服务端连"进"这个动作都没有 —— 房间是发第一条消息时被顺手创建出来的（<code>db.py</code> 里那句 <code>INSERT INTO rooms ... ON CONFLICT</code>）。所以谁都能进任何房间号。</p>
+<p>要做成 Steam 那种"建房 → 发码 → 凭码进"，就是加 <strong>2 张表 + 5 个接口</strong>，传输层（SSE、seq 去重、广播）<strong>一行都不用改</strong>。</p>
+<hr>
+<h2 class="md-h" id="h2-二-steam-那套-逐个对应过来">二、Steam 那套，逐个对应过来</h2>
+<div class="tw"><table><thead><tr><th>Steam</th><th>我们</th></tr></thead><tbody><tr><td>创建大厅，拿到 Lobby ID</td><td><code>POST /api/rooms</code> → 返回<strong>房间码</strong></td></tr><tr><td>把码发给好友加入</td><td><code>POST /api/rooms/join {code}</code></td></tr><tr><td>公开 / 仅好友 / 私密</td><td><code>rooms.visibility</code> = <code>public</code> / <code>private</code></td></tr><tr><td>大厅成员列表</td><td><code>room_members</code> 表</td></tr><tr><td>房主改设置、踢人</td><td><code>rooms.owner_id</code> + <code>role</code></td></tr></tbody></table></div>
+<hr>
+<h2 class="md-h" id="h3-三-表怎么建-在现有-schema-上加">三、表怎么建（在现有 schema 上加）</h2>
+<pre class="code"><code>users        (id, username UNIQUE, pass_hash, salt, created_at)
+sessions     (sid_hash PK, user_id, created_at, expires_at)
+
+rooms (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,   -- 内部用，不出现在 URL 里
+  code       TEXT UNIQUE NOT NULL,                -- 房间码，给人念的
+  name       TEXT NOT NULL,
+  owner_id   INTEGER NOT NULL,                    -- 房主
+  visibility TEXT NOT NULL DEFAULT 'private',     -- private=只能凭码进 / public=列表可见
+  created_at INTEGER NOT NULL
+);
+
+room_members (
+  room_id       INTEGER NOT NULL,
+  user_id       INTEGER NOT NULL,
+  role          TEXT NOT NULL DEFAULT 'member',   -- owner | member
+  joined_at     INTEGER NOT NULL,
+  last_read_seq INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (room_id, user_id)                  -- ★ "这个人属于这个群"就是这一行
+);
+
+messages (..., room_id INTEGER NOT NULL, ...)     -- 现在的 room TEXT 改成 room_id</code></pre>
+<p><strong>你说的"进群后就在服务器这个聊群里有记录"，指的就是 <code>room_members</code> 里插进去的那一行。</strong> 进群 = 插一行；退群/被踢 = 删那一行。</p>
+<blockquote><p>顺带一个改动点：现在的 <code>rooms</code> 表存的是"房间当前内容 + 版本号"（协同剪贴板那套"共享文本框"），改成聊天室后那几列可以删掉，<code>rooms</code> 变成<strong>房间实体表</strong>。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h4-四-接口清单">四、接口清单</h2>
+<pre class="code"><code>POST   /api/rooms             建群 → {id, code, name}（创建者自动成为 owner + 成员）
+POST   /api/rooms/join        {code} → 入群（幂等：已经在群里就直接返回，不报错）
+GET    /api/rooms             我加入的房间列表          ← 你说的"刷新房间列表"就是它
+GET    /api/rooms/{id}        房间概况 + 成员（仅成员可见）
+DELETE /api/rooms/{id}/leave  退群
+POST   /api/rooms/{id}/code   重置房间码（仅房主）</code></pre>
+<p><strong>已有的这些接口全都要加一道"是不是成员"的检查</strong>（现在是没有的）：
+<code>/api/snapshot/{room}</code>、<code>/api/messages/{room}</code>、<code>/api/history/{room}</code>、<code>/api/upload</code>、<code>/api/sse/{room}</code>。</p>
+<p>流程图：</p>
+<pre class="code"><code>阿哲 建群  POST /api/rooms {name:"产品讨论"}
+          → rooms 插一行（code=K7M2QX, owner=阿哲）
+          → room_members 插一行（阿哲, owner）
+          → 返回 {id:3, code:"K7M2QX"}      ← 把码发给老周
+
+老周 入群  POST /api/rooms/join {code:"K7M2QX"}
+          → rooms 里按 code 查到 id=3
+          → room_members 插一行（老周, member）   ← "进群"就是这一件事
+          → 返回 {id:3, name:"产品讨论"}
+
+老周 打开页面
+          → GET /api/rooms  → [{id:3, name:"产品讨论", 未读 0, 成员 2}]   ← 左栏房间列表
+          → GET /api/sse/3  → 先查 room_members，是成员才给订阅推送</code></pre>
+<p><strong>房间码的几条讲究</strong>（面批会被问）：</p>
+<ul>
+<li>6–8 位，字符集去掉易混的 <code>0 O 1 I L</code>（Steam 也这么干）：<code>ABCDEFGHJKMNPQRSTUVWXYZ23456789</code>；</li>
+<li><code>code</code> 建 UNIQUE 索引，插入撞了就重生成；随机用 <code>secrets.choice</code>，<strong>别用自增 id 当码</strong>（顺序号能被别人一路试过去）；</li>
+<li>可重置；私密房间的码<strong>不出现在任何公开列表</strong>里；</li>
+<li>加入失败统一提示"房间码无效"，<strong>不要</strong>区分"码不存在"和"这个群不让你进"。</li>
+</ul>
+<hr>
+<h2 class="md-h" id="h5-五-登录后房间列表能刷新-怎么实现">五、"登录后房间列表能刷新"怎么实现</h2>
+<p>两种，建议都做：</p>
+<ol>
+<li><strong>拉</strong>：登录后 / 进页面时调 <code>GET /api/rooms</code> —— 这就是"刷新"。</li>
+<li><strong>推</strong>：现在的 <code>hub</code> 是<strong>按房间分组</strong>的队列（<code>_sse[room] = 队列集合</code>）。再加一组<strong>按用户分组</strong>的 <code>_sse_user[user_id]</code> 即可：</li>
+</ol>
+<ul>
+<li>有人把你拉进群 → 往 <code>user:{你的id}</code> 频道推 <code>room_joined</code> → 左栏<strong>自动冒出</strong>这个房间，不用你手动刷；</li>
+<li>退群 → <code>room_left</code>；有人进群 → 推给该<strong>房间</strong>频道（<code>member_joined</code>）。</li>
+</ul>
+<p><strong>顺带把未读角标也解决了</strong>：未读数 = <code>该房间最大 seq − room_members.last_read_seq</code>。进房间时把 <code>last_read_seq</code> 更新到最新，角标自动清零——不用单独存一份计数，也不会算错。</p>
+<hr>
+<h2 class="md-h" id="h6-六-sqlite-能-隔离-吗-这里要掰开说">六、SQLite 能"隔离"吗？—— 这里要掰开说</h2>
+<p><strong>能，但隔离不是靠"一个群一个库"，而是靠"每行带 <code>room_id</code> + 每次查询都带上它"。</strong></p>
+<div class="tw"><table><thead><tr><th>做法</th><th>评价</th></tr></thead><tbody><tr><td>每个群一个 <code>.db</code> 文件（<code>ATTACH DATABASE</code> 或按群分文件）</td><td>❌ 能做但<strong>不该做</strong>：连接管理、备份、迁移、跨群统计全部翻倍复杂，收益接近零。群里几万条消息，SQLite 单文件毫无压力</td></tr><tr><td>每个群一张表（<code>messages_3</code>、<code>messages_4</code>…）</td><td>❌ 更不该做：建表要动态拼 SQL，索引和迁移全乱</td></tr><tr><td><strong>一张 messages 表，每行带 <code>room_id</code></strong></td><td>✅ <strong>正解</strong>，微信/QQ/Slack 都是这么干的</td></tr></tbody></table></div>
+<p>所谓"隔离"实际是两件事，别混：</p>
+<p><strong>① 数据隔离 —— 靠查询条件 + 索引</strong></p>
+<pre class="code"><code>SELECT * FROM messages WHERE room_id = ? AND seq &gt; ? ORDER BY seq LIMIT 50;
+--                     ^^^^^^^^^^^^^^^ 永远带着它
+CREATE INDEX idx_messages_room_seq ON messages(room_id, seq);   -- 你已经有了，改列名即可</code></pre>
+<p><strong>② 权限隔离 —— 每次访问前先问一句"你是这个群的人吗"</strong></p>
+<pre class="code"><code>def require_member(room_id: int, user_id: int) -&gt; None:
+    if not db.is_member(room_id, user_id):
+        raise HTTPException(403, "你不在这个房间里")</code></pre>
+<p><strong>这才是真正的风险点</strong>：数据库本身没问题，出事的永远是<strong>某个路由忘了加 <code>WHERE room_id</code> 或忘了查成员</strong>，于是别人能读到不属于他的群。所以别在八个路由里各手写一遍，<strong>收口到一个函数</strong>，所有读房间数据的地方必须先过它。这一条比"用什么数据库"重要得多，也是面试官最想听的答法。</p>
+<blockquote><p>另外别把两个"隔离"搞混：SQLite 的 <code>WAL</code> / 事务 / 写锁管的是<strong>并发和一致性</strong>（你现在的 <code>_lock</code> 就在干这个），<strong>不是权限</strong>。</p></blockquote>
+<p><strong>什么时候才需要真的物理隔离？</strong> 多租户/企业级（合规要求、单个群体量极大）——一个群一个实例。你这个免试题用不上，硬上反而显得臃肿。</p>
+<hr>
+<h2 class="md-h" id="h7-一句话总结">一句话总结</h2>
+<blockquote><p>cookie 管"你是谁"，<code>room_members</code> 管"你在哪些群"，消息靠 <code>room_id</code> 分行存放、靠"每次都带 <code>room_id</code>"和"先查成员"来隔离 —— <strong>群与群之间不靠分库，靠查询条件和权限检查</strong>。</p></blockquote>
+<p>要不要我把这套写成一份<strong>接口契约 + 建表 SQL</strong>（<code>chat-room/docs/</code> 里，先不动代码）？你过一遍再让我动 <code>app/</code>。</p></div>
+</section>
+<section class="me" id="b22">
+  <h2><span class="no">22</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>所以cookie的作用是什么，这个过程不是只认你的用户id吗</p></div>
+</section>
+<section class="ai" id="b23">
+  <h2><span class="no">23</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>一句话：<strong>cookie 是送凭据的快递盒，user_id 是盒子里写着的东西 —— 而盒子上的编号只有服务器能发、能核对、能作废。</strong></p>
+<hr>
+<h2 class="md-h" id="h1-为什么不能-只认-user_id">为什么不能"只认 user_id"</h2>
+<p>因为 <strong>HTTP 是无状态的</strong>，服务端每收到一句请求，都相当于一个陌生人开口说话。它凭什么相信"我是 7 号"？</p>
+<p>看你现在接口的样子（改造前就是这样）：</p>
+<pre class="code"><code>// 前端自己在请求体里报身份
+body: JSON.stringify({ clientId: clientId(), nickname: nickname(), ...payload })</code></pre>
+<p>那任何人 F12 改一行、或者用 curl 敲一句：</p>
+<pre class="code"><code>curl -X POST http://192.168.1.14:8000/api/messages/3 \
+     -d '{"userId":1,"text":"我是房主，这个群解散了"}'</code></pre>
+<p><strong>你就变成 1 号了。</strong> 这不是危言耸听 —— <strong>客户端能随便改的东西，一律不能当身份</strong>。</p>
+<div class="tw"><table><thead><tr><th></th><th>user_id</th><th>cookie 里的那串随机数（sid）</th></tr></thead><tbody><tr><td>谁生成</td><td>服务端（users 表自增）</td><td>服务端（<code>secrets.token_urlsafe(32)</code>）</td></tr><tr><td>能猜到吗</td><td><strong>能</strong>，7、8、9 挨着试</td><td>猜不到，256 位随机</td></tr><tr><td>客户端能改吗</td><td>能改，改成 1 就冒充管理员</td><td>能改，但<strong>改成什么都没用</strong>（对不上名册）</td></tr><tr><td>能撤销吗</td><td>只能注销账号</td><td>删掉 <code>sessions</code> 那一行，立刻失效</td></tr><tr><td>多设备</td><td>只有"一个你"</td><td>手机一张、电脑一张，各自能单独踢</td></tr></tbody></table></div>
+<p><strong>关键差别：user_id 是"明文"，sid 是"对不上就对不上"的乱码。</strong> 安全不来自保密，来自<strong>随机 + 名册在服务端</strong>。</p>
+<hr>
+<h2 class="md-h" id="h2-那我把-user_id-直接塞进-cookie-不就行了">那我把 user_id 直接塞进 cookie 不就行了？</h2>
+<p><strong>不行 —— 因为 cookie 就存在用户自己的电脑上，用户想改随时能改</strong>（F12 → Application → Cookies，双击就能编辑）。</p>
+<p>所以规则是：<strong>cookie 里放的东西，必须是"改了也没用"的</strong>。</p>
+<ul>
+<li>放 <code>sid=abc123…</code> → 你改成 <code>sid=xyz</code>，服务端名册里查不到 → 401。✅</li>
+<li>放 <code>userId=1</code> → 你改成 7，服务端一看"哦，7 号" → 冒充成功。❌</li>
+</ul>
+<p><strong>cookie 是个信封，它本身不带任何安全性；安全性全在信封里装什么。</strong></p>
+<hr>
+<h2 class="md-h" id="h3-那-cookie-的作用到底是什么">那 cookie 的作用到底是什么</h2>
+<p>三个，缺一不可：</p>
+<p><strong>① 搬运</strong> —— 这是它相对"自己存 token 再手动塞请求头"最大的好处：</p>
+<p>浏览器<strong>自动</strong>把 cookie 加到每一次同源请求上，你不用写一行代码。而且 —— 这正好是你这个项目的关键点：</p>
+<pre class="code"><code>fetch()        → 自动带 ✅
+EventSource    → 自动带 ✅   （它根本不支持自定义请求头，Bearer token 在这条路上走不通）
+WebSocket 握手 → 自动带 ✅</code></pre>
+<p><strong>② 存放 + 保护</strong> —— 存在浏览器专门的地方，能挂三个属性：</p>
+<div class="tw"><table><thead><tr><th>属性</th><th>挡什么</th></tr></thead><tbody><tr><td><code>HttpOnly</code></td><td>JS 读不到 → XSS 也偷不走</td></tr><tr><td><code>SameSite=Lax</code></td><td>别的网站发起的请求不带 → 挡 CSRF</td></tr><tr><td><code>Secure</code></td><td>只在 https 下带（局域网 http 演示时不能加）</td></tr></tbody></table></div>
+<p><strong>③ 作用域 + 生命周期</strong> —— 按域名自动隔离（<code>localhost</code> 的 cookie 不会发到 <code>192.168.1.14</code>），过期时间由服务端定，登出时两边一起清。</p>
+<hr>
+<h2 class="md-h" id="h4-串起来看这个过程">串起来看这个过程</h2>
+<pre class="code"><code>【登录】 你：用户名 + 密码
+        服务端：验哈希 → 确认你是 users 表第 7 行
+                → 生成随机 sid=abc123… → 写 sessions 表：abc123… → 7
+                → Set-Cookie: sid=abc123…        ← 给你发一张工牌
+
+【之后】 浏览器自动带上：Cookie: sid=abc123…
+        服务端：拿 abc123… 翻 sessions 表 → 得到 user_id=7 → 才知道你是谁
+
+        ↑ 注意最后这一步：user_id 是服务端**自己查出来的**，
+          不是客户端**告诉它的**。这就是全部区别。</code></pre>
+<p><strong>cookie 不"认"你，sessions 表也不"认"你 —— 是服务端拿着你出示的东西去查了它自己的账本，然后决定认不认。</strong></p>
+<hr>
+<h2 class="md-h" id="h5-落到你的改造上">落到你的改造上</h2>
+<p>现在接口里 <code>clientId</code> 和 <code>nickname</code> 是前端<strong>自报</strong>的（<code>api.js</code> 第 69 行那样）。改造后这两个字段：</p>
+<ul>
+<li><strong>请求体里不再接受</strong>（传了也忽略）；</li>
+<li>服务端从 <code>cookie → sessions → users</code> 查出来填进消息里。</li>
+</ul>
+<p>所以你那份"改造清单"里可以加一条：<strong>所有消息的发送者信息，一律以服务端查出来的为准</strong>。面批问"为什么不能信前端传的用户 id"，答上面那句"客户端能改的东西不能当身份"就够了。</p></div>
+</section>
+<section class="me" id="b24">
+  <h2><span class="no">24</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>那我可不可以这么理解，cookie是人脸识别，userid是身份证。服务器那端有记录你的人脸信息，你说话加房间创房间都是用身份证的，但是必须刷脸</p></div>
+</section>
+<section class="ai" id="b25">
+  <h2><span class="no">25</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>方向对了一大半，但<strong>"人脸"这个词会给你埋一个坑</strong>——cookie 更准确的是<strong>门禁卡</strong>。两处要改：</p>
+<hr>
+<h2 class="md-h" id="h1-你说对的两处">✔ 你说对的两处</h2>
+<div class="tw"><table><thead><tr><th>你的说法</th><th>对在哪</th></tr></thead><tbody><tr><td>服务器那端有记录</td><td>对。<code>sessions</code> 表就是那本名册：<code>sid → user_id</code></td></tr><tr><td>干什么都必须先刷一下</td><td>对。HTTP 无状态，<strong>每一句</strong>请求都得重新出示一次，没有"刷一次管一天"这回事</td></tr></tbody></table></div>
+<hr>
+<h2 class="md-h" id="h2-要改的第一处-cookie-不是脸-是卡">✏️ 要改的第一处：cookie 不是脸，是卡</h2>
+<p><strong>脸长在你身上，偷不走、也复制不了；cookie 是存在你电脑上的一串字符，别人偷得走，你自己也能复制到另一台机器。</strong></p>
+<pre class="code"><code>把 A 电脑 Chrome 里的 sid 复制出来，填进 B 电脑的 cookie → B 电脑直接就是"你"，不用密码</code></pre>
+<p>人脸识别做不到这件事——你没法把脸复印一份给别人。</p>
+<div class="tw"><table><thead><tr><th></th><th>人脸（生物特征）</th><th>门禁卡 / cookie</th></tr></thead><tbody><tr><td>能被偷吗</td><td>不能</td><td><strong>能</strong>（XSS 偷、网络截、直接拷文件）</td></tr><tr><td>能复制到别的设备吗</td><td>不能</td><td><strong>能</strong>（这就是会话劫持）</td></tr><tr><td>能挂失吗</td><td>不用挂失</td><td><strong>要</strong>（删 <code>sessions</code> 那行）</td></tr><tr><td>能过期吗</td><td>脸不会过期</td><td><strong>会</strong>（<code>Max-Age</code>）</td></tr><tr><td>服务端要存底吗</td><td>不用</td><td><strong>必须存</strong>（名册）</td></tr></tbody></table></div>
+<p><strong>这正好解释了你那几个属性为什么必须加</strong>：</p>
+<ul>
+<li><code>HttpOnly</code> → JS 读不到卡号，XSS 偷不走；</li>
+<li><code>Secure</code> → 只走 https，路上截不到；</li>
+<li><code>SameSite=Lax</code> → 别的网站不能拿你的卡去刷；</li>
+<li>过期 + 服务端删行 → <strong>挂失补办</strong>。</li>
+</ul>
+<blockquote><p>顺便：现实里<strong>真有"刷脸"式方案</strong> —— Passkey / WebAuthn（私钥锁在设备安全芯片里，导不出来）、双向 TLS 客户端证书。它们对应"刷脸"，偷不走。但成本和复杂度都高，你这个免试题用 cookie 门禁卡完全够用，能说清"cookie 是卡不是脸"反而是加分项。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h3-要改的第二处-更重要-请求里根本不带-user_id">✏️ 要改的第二处（更重要）：<strong>请求里根本不带 user_id</strong></h2>
+<p>"你说话、建房间都用身份证"这句，听着像"每句话前面报一遍身份证号"。<strong>不是。</strong>如果客户端每句话都报 user_id，那服务端就是在信客户端 —— 又回到"改成 1 号就能冒充"的老路了。</p>
+<p>正确的流程是：<strong>卡是客户端出示的，号是服务端自己查出来的。</strong></p>
+<pre class="code"><code>你发消息：POST /api/messages
+          Cookie: sid=abc123…          ← 客户端只出示这个
+          body: { text: "..." }        ← body 里没有 user_id，没有昵称
+
+服务端：   abc123… → 查 sessions → user_id = 7
+          → 往这条消息上盖 7 号的章（再查 users 表拿用户名）
+          → 入库</code></pre>
+<p>也就是说：<strong>user_id 是服务端内部流转时用的字段，客户端从头到尾都不需要知道、更不该发送它。</strong></p>
+<ul>
+<li>建房间 → 服务端把 <code>rooms.owner_id</code> 写成它查出来的 7；</li>
+<li>发消息 → <code>messages.user_id</code> 写成 7；</li>
+<li>进群 → <code>room_members</code> 插 <code>(群id, 7)</code>。</li>
+</ul>
+<p><strong>客户端只"刷卡"，剩下全是服务端的事。</strong></p>
+<hr>
+<h2 class="md-h" id="h4-修正后的完整类比">修正后的完整类比</h2>
+<blockquote><p><strong>cookie = 门禁卡</strong>（刷卡进门，卡可以被偷、被复制、能挂失）
+<strong>user_id = 员工号</strong>（公司内部账本上的编号，你自己从来不报它）</p>
+<p>你每次进门刷卡 → 保安拿卡号<strong>查名册</strong>，知道你是 7 号 → 你在公司里做的事（发言、建群、当房主）<strong>全部记在 7 号名下</strong>。
+名册在公司手里，卡上只有一串看不懂的号码 —— <strong>这就是为什么卡丢了要挂失，而不是"再报一次员工号"。</strong></p></blockquote>
+<p>一句话版本，面批可以直接说：</p>
+<blockquote><p>客户端只出示 cookie，服务端拿 cookie 查自己的会话来确认用户 id；<strong>用户 id 由服务端查出来，绝不由客户端传</strong>。</p></blockquote></div>
+</section>
+<section class="me" id="b26">
+  <h2><span class="no">26</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>懂了，哪userid的目的是为了省略吗，为什么不直接拿cookie当userid</p></div>
+</section>
+<section class="ai" id="b27">
+  <h2><span class="no">27</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>两个问题分开答：<strong>user_id 不是"省略"，是"身份代号"；而 cookie 里的 sid 恰恰不能当身份用</strong> —— 因为两者的<strong>寿命差了一个数量级</strong>。</p>
+<hr>
+<h2 class="md-h" id="h1-一-user_id-的本职-给-这个人-一个稳定的代号">一、user_id 的本职：给"这个人"一个稳定的代号</h2>
+<p>数据库里凡是"谁干的"地方，都要指向同一个人：</p>
+<pre class="code"><code>messages.user_id        这条消息谁发的
+room_members.user_id    谁在这个群里
+rooms.owner_id          群是谁建的</code></pre>
+<p>它只需要满足三点：<strong>短、不变、没含义</strong>（数据库里叫"代理键"）。短是顺带的，<strong>不变</strong>才是关键。</p>
+<blockquote><p>顺带一句：所以也<strong>不要用用户名当主键</strong> —— 用户名能改，一改所有历史归属就断了。</p></blockquote>
+<hr>
+<h2 class="md-h" id="h2-二-为什么不拿-sid-当-user_id-寿命不一样">二、为什么不拿 sid 当 user_id：寿命不一样</h2>
+<div class="tw"><table><thead><tr><th></th><th>user_id（员工号）</th><th>sid（门禁卡号）</th></tr></thead><tbody><tr><td>和人的关系</td><td><strong>一个号 = 一个人</strong></td><td><strong>一个人可以有好几张卡</strong>（手机一张、电脑一张、无痕一张）</td></tr><tr><td>活多久</td><td>跟账号同寿命</td><td>几天就过期</td></tr><tr><td>会变吗</td><td>永远不变</td><td>每次重新登录都换一张</td></tr><tr><td>要能失效吗</td><td>不能（历史数据都指着它）</td><td><strong>必须能</strong>（登出、被踢、改密码）</td></tr></tbody></table></div>
+<p>这是本质区别：<strong>sid 是"会消失的东西"，不能拿去当"要长期存在的东西"。</strong></p>
+<hr>
+<h2 class="md-h" id="h3-三-真拿-sid-当-user_id-会出什么事">三、真拿 sid 当 user_id，会出什么事</h2>
+<p>假设阿哲在电脑和手机上各登录了一次：</p>
+<pre class="code"><code>users:     7 | 阿哲
+sessions:  abc… → 7      （电脑）
+           xyz… → 7      （手机）</code></pre>
+<p>正常情况（两层）：</p>
+<pre class="code"><code>messages:     seq=101  user_id=7      电脑发的
+              seq=102  user_id=7      手机发的     ← 都是"阿哲"，聚合、统计、@他都正常
+room_members: (群3, user_id=7)                        ← 群里就一个阿哲</code></pre>
+<p>如果拿 sid 当 user_id：</p>
+<pre class="code"><code>messages:     seq=101  user_id=abc…   ← 阿哲的电脑
+              seq=102  user_id=xyz…   ← 阿哲的手机      ✗ 同一个人的消息裂成两份
+room_members: (群3, abc…)、(群3, xyz…)                 ✗ 群成员列表出现两个"阿哲"</code></pre>
+<p>还有更荒诞的：<strong>退出登录再登进来 = 换了个身份</strong>，之前发的消息、进的群全跟你没关系了 —— 因为你换了一张卡，公司就以为来了个新员工。</p>
+<hr>
+<h2 class="md-h" id="h4-四-那-多查一次库-不亏吗">四、那"多查一次库"不亏吗？</h2>
+<p><code>SELECT user_id FROM sessions WHERE sid = ?</code> —— 主键索引查一次，微秒级。而且它换来了：</p>
+<ul>
+<li><strong>能踢单个设备</strong>：删 <code>abc…</code> 那一行，手机那张卡照用；</li>
+<li><strong>能改密码后强制全部重登</strong>：把该 user_id 的所有 session 删掉，历史数据纹丝不动；</li>
+<li><strong>能挂失补办</strong>：卡没了，人还是那个人。</li>
+</ul>
+<p>这是拿一次索引查询换来的东西，非常划算。</p>
+<hr>
+<h2 class="md-h" id="h5-五-补一个容易绕进去的点">五、补一个容易绕进去的点</h2>
+<p>有人会说"那用 JWT 不就不用查表了吗" —— 但<strong>JWT 的 token 里装的也是 user_id</strong>（签名保护着它）。也就是说：</p>
+<blockquote><p><strong>token 从来不是用来"替代"身份的，它是用来"指代"身份的。</strong> 里面永远得有个 user_id。</p></blockquote>
+<p>区别只在于：JWT 把 user_id 写在令牌里（服务端不存表 → 但没法撤销），我们把它放在 <code>sessions</code> 表里（能撤销）。<strong>两条路都离不开 user_id。</strong></p>
+<hr>
+<h2 class="md-h" id="h6-回到你的门禁卡类比">回到你的门禁卡类比</h2>
+<pre class="code"><code>员工号（user_id）：一辈子一个，公司账本、工资、工位记录都用它
+门禁卡（sid）    ：可以有好几张，丢了挂失补一张，卡号每次都不一样</code></pre>
+<p><strong>拿卡号当员工号 → 你换张卡，公司就不认识你了。</strong> 所以卡上写的永远是"一个号码"，而不是"你是谁" —— 刷卡之后由保安翻名册，把它翻译成员工号。</p>
+<p>一句话：</p>
+<blockquote><p><strong>sid 回答"你这次是怎么进来的"，user_id 回答"你到底是谁"。前者可以有很多张、会过期；后者只有一个，且永远不变。</strong></p></blockquote></div>
+</section>
+<section class="me" id="b28">
+  <h2><span class="no">28</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>哦哦懂了，我忘了这一点了，我网页上爬虫的cookie也是要几天换的，我没想到这一点</p></div>
+</section>
+<section class="ai" id="b29">
+  <h2><span class="no">29</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>对，就是这个感觉 —— 你爬虫里那张 cookie 就是<strong>别人（或你自己）登录成功后拿到的一张门禁卡</strong>，几天后失效，其实就是服务端名册上那一行过期或被划掉了，你只能重新刷卡再要一张。</p>
+<p>这段经验直接能搬到这个项目上，有两个现成的设计点：</p>
+<ol>
+<li><strong>滑动续期</strong>：爬虫里你常看到每次请求都回一个 <code>Set-Cookie</code>，把过期时间往后推 —— 聊天室也这么做：用户每活跃一次，<code>sessions.expires_at</code> 往后延（比如再过 7 天）。这样正常用的人永远不会被踢出去，而闲置的卡自然会失效。</li>
+<li><strong>过期后的体验</strong>：爬虫里是脚本自己重拿 cookie；网页里得是<strong>前端自动弹回登录页</strong>。所以所有接口的 401 要统一处理（<code>/api/auth/me</code> 一旦 401，就把界面切回登录页），而不是让用户看到一片空白或者一句生硬的报错。</li>
+</ol>
+<p>另外你能顺手想通一件事：为什么很多站点还看 IP、UA —— 因为卡是<strong>可以被复制</strong>的，复制之后"拿卡的人"和"刷卡的人"可能根本不在同一台机器上。你的项目不用做这么严，但如果面批被问到"cookie 被偷了怎么办"，答"<code>HttpOnly</code> + <code>Secure</code> + 短期过期 + 服务端可撤销"就够了。</p></div>
+</section>
+<section class="me" id="b30">
+  <h2><span class="no">30</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>懂了，那你现在开始大改把，先把http和ws的脚本清掉，然后给登入和建房间留接口（建房间的ui里要有对应的按钮功能，点完之后要有弹窗（模仿登录）），然后建列表服务。还有什么你补充，总之开干</p></div>
+</section>
+<section class="ai" id="b31">
+  <h2><span class="no">31</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>明白，开干。先把计划钉下来，再动手。</p>
+<blockquote><p>🔧 todo_write(11 项)
+🔧 write(C:\work\chat-room\docs\接口契约.md)</p></blockquote></div>
+</section>
+<section class="ai" id="b32">
+  <h2><span class="no">32</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>契约冻结。现在写后端——先是配置与数据层：</p>
+<blockquote><p>🔧 write(C:\work\chat-room\app\config.py)
+🔧 read(C:\work\chat-room\app\config.py)
+🔧 read(C:\work\chat-room\server.py)
+🔧 read(C:\work\chat-room\app\rooms.py)
+🔧 write(C:\work\chat-room\app\config.py)
+🔧 write(C:\work\chat-room\app\db.py)
+🔧 write(C:\work\chat-room\app\auth.py)
+🔧 write(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\db.py)
+🔧 read(C:\work\chat-room\app\routes\api_routes.py)
+🔧 read(C:\work\chat-room\app\routes\sse_routes.py)
+🔧 read(C:\work\chat-room\app\routes\net_routes.py)
+🔧 read(C:\work\chat-room\app\routes\__init__.py)
+🔧 write(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 write(C:\work\chat-room\app\routes\room_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\routes\room_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\room_routes.py)
+🔧 write(C:\work\chat-room\app\routes\api_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 write(C:\work\chat-room\app\routes\sse_routes.py)
+🔧 write(C:\work\chat-room\app\routes\net_routes.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\routes\net_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\net_routes.py)
+🔧 write(C:\work\chat-room\app\routes\__init__.py)
+🔧 write(C:\work\chat-room\app\__init__.py)
+🔧 write(C:\work\chat-room\server.py)
+🔧 pwsh(Delete websocket module and smoke-test the app)
+🔧 pwsh(List registered routes)
+🔧 pwsh(Check test client dependencies)
+🔧 read(C:\work\chat-room\tests\_base.py)
+🔧 read(C:\work\chat-room\tests\test_net.py)
+🔧 write(C:\work\chat-room\tests\_base.py)
+🔧 write(C:\work\chat-room\tests\test_auth.py)
+🔧 pwsh(Remove obsolete test files)
+🔧 write(C:\work\chat-room\tests\test_rooms.py)
+🔧 edit(C:\work\chat-room\tests\_base.py)
+🔧 write(C:\work\chat-room\tests\test_messages.py)
+🔧 pwsh(Run the new unit test suite)</p></blockquote></div>
+</section>
+<section class="ai" id="b33">
+  <h2><span class="no">33</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>99 项跑通 97 项，两个失败都是<strong>真问题</strong>（不是测试写错那种）：自己发的消息被算成未读。修掉：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\tests\test_messages.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 pwsh(Re-run unit tests after fixes)</p></blockquote></div>
+</section>
+<section class="ai" id="b34">
+  <h2><span class="no">34</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>后端跑通（<strong>99 项单元测试全绿</strong>）。现在做前端——先清掉 HTTP/WS 传输，再搭登录与房间。</p>
+<blockquote><p>🔧 todo_write(11 项)
+🔧 pwsh(Clear old frontend files)
+🔧 write(C:\work\chat-room\public\index.html)
+🔧 write(C:\work\chat-room\_new\index.html)
+🔧 write(C:\work\chat-room\_new\css\app.css)
+🔧 write(C:\work\chat-room\_new\js\ui.js)
+🔧 write(C:\work\chat-room\_new\js\api.js)
+🔧 write(C:\work\chat-room\_new\js\state.js)
+🔧 write(C:\work\chat-room\_new\js\store.js)
+🔧 write(C:\work\chat-room\_new\js\sse.js)
+🔧 write(C:\work\chat-room\_new\js\render.js)
+🔧 write(C:\work\chat-room\_new\js\rooms.js)
+🔧 write(C:\work\chat-room\_new\js\auth.js)
+🔧 write(C:\work\chat-room\_new\js\composer.js)
+🔧 write(C:\work\chat-room\_new\js\main.js)
+🔧 edit(C:\work\chat-room\_new\js\main.js)
+🔧 edit(C:\work\chat-room\_new\js\main.js)
+🔧 edit(C:\work\chat-room\_new\js\main.js)
+🔧 write(C:\work\chat-room\_new\mobile.html)
+🔧 write(C:\work\chat-room\_new\css\mobile.css)
+🔧 pwsh(Install new frontend and syntax-check JS)
+🔧 pwsh(Cross-check element ids between JS and HTML)
+🔧 write(C:\work\chat-room\dev\ui-check.py)
+🔧 pwsh(Run frontend id cross-check)
+🔧 edit(C:\work\chat-room\dev\ui-check.py)
+🔧 pwsh(Re-run frontend id cross-check)</p></blockquote></div>
+</section>
+<section class="ai" id="b35">
+  <h2><span class="no">35</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>后端与前端接好了，现在写一个<strong>不依赖浏览器</strong>的端到端脚本（Chrome 在沙箱里起不来，正好用 HTTP 层验证全流程）：</p>
+<blockquote><p>🔧 write(C:\work\chat-room\dev\e2e-check.py)
+🔧 pwsh(Remove obsolete dev verification scripts)
+🔧 write(C:\work\chat-room\dev\e2e-check.py)
+🔧 read(C:\work\chat-room\启动服务.cmd)
+🔧 read(C:\work\chat-room\跑单元测试.cmd)
+🔧 pwsh(Clean obsolete artifacts and archive legacy docs)
+🔧 read(C:\work\chat-room\.gitignore)
+🔧 write(C:\work\chat-room\.gitignore)
+🔧 write(C:\work\chat-room\requirements.txt)
+🔧 write(C:\work\chat-room\启动服务.cmd)
+🔧 write(C:\work\chat-room\跑单元测试.cmd)
+🔧 write(C:\work\chat-room\跑端到端.cmd)
+🔧 read(C:\work\chat-room\放行防火墙.cmd)
+🔧 edit(C:\work\chat-room\放行防火墙.cmd)
+🔧 edit(C:\work\chat-room\放行防火墙.cmd)</p></blockquote></div>
+</section>
+<section class="ai" id="b36">
+  <h2><span class="no">36</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>后端、前端、清理都到位了。起服务跑端到端验证：</p>
+<blockquote><p>🔧 pwsh(Start the chat room server)
+🔧 pwsh(Run end-to-end verification against live server)
+🔧 job_output({"job_id": "pwsh-30"})</p></blockquote></div>
+</section>
+<section class="ai" id="b37">
+  <h2><span class="no">37</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>E2E 抓到一个真 bug：<code>hub.frame</code> 不存在（<code>frame</code> 是模块级函数，不是 Hub 的方法）。修掉：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\app\routes\sse_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\sse_routes.py)
+🔧 edit(C:\work\chat-room\dev\e2e-check.py)
+🔧 write(C:\work\chat-room\tests\test_sse.py)
+🔧 edit(C:\work\chat-room\tests\test_sse.py)
+🔧 pwsh(Run SSE unit tests)
+🔧 job_kill(pwsh-32)
+🔧 write(C:\work\chat-room\tests\test_sse.py)
+🔧 job_kill(pwsh-30)
+🔧 pwsh(Ensure port 8000 is free)
+🔧 pwsh(Restart chat room server)
+🔧 pwsh(Run all verification after fixes)
+🔧 edit(C:\work\chat-room\tests\test_sse.py)
+🔧 edit(C:\work\chat-room\dev\e2e-check.py)
+🔧 edit(C:\work\chat-room\dev\e2e-check.py)
+🔧 pwsh(Re-run unit and end-to-end verification)
+🔧 pwsh(Show the failing unit test detail)
+🔧 edit(C:\work\chat-room\tests\test_sse.py)
+🔧 pwsh(Re-run unit tests)</p></blockquote></div>
+</section>
+<section class="ai" id="b38">
+  <h2><span class="no">38</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>后端全绿（113 单元 + 43 端到端）。现在写文档，先核对一下接口清单：</p>
+<blockquote><p>🔧 pwsh(List API paths from OpenAPI spec)
+🔧 write(C:\work\chat-room\README.md)
+🔧 read(C:\work\chat-room\README.md)
+🔧 write(C:\work\chat-room\README.md)
+🔧 read(C:\work\chat-room\手动测试清单.md)
+🔧 read(C:\work\chat-room\目录结构.txt)
+🔧 write(C:\work\chat-room\手动测试清单.md)
+🔧 pwsh(Count lines of source files)
+🔧 write(C:\work\chat-room\目录结构.txt)</p></blockquote></div>
+</section>
+<section class="ai" id="b39">
+  <h2><span class="no">39</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>文档写完。现在让一个独立复核者去挑骨头（我自己写的东西，自己看不出问题）：</p>
+<blockquote><p>🔧 subagent({"description": "Adversarial review of chat-room", "prompt": "你是一名严格的代码复核者。请对一个刚写完的 Python)
+🔧 job_kill(pwsh-34)
+🔧 pwsh(Reset demo database and uploads)
+🔧 pwsh(Start server on clean database)
+🔧 pwsh(Verify server and static assets respond)</p></blockquote></div>
+</section>
+<section class="ai" id="b40">
+  <h2><span class="no">40</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>趁复核跑着，把契约文档和实现再对齐一遍（避免文档说一套代码做一套）：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\docs\接口契约.md)
+🔧 edit(C:\work\chat-room\docs\接口契约.md)
+🔧 grep(HTTPException|status\.)
+🔧 edit(C:\work\chat-room\app\routes\room_routes.py)
+🔧 list_agents({})</p></blockquote></div>
+</section>
+<section class="ai" id="b41">
+  <h2><span class="no">41</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>趁复核还没回，我自己先补一个竞态防护（连点切房间时，迟到的响应会把上一个房间的消息画到新房间里）：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 read(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 pwsh(Re-check JS syntax and element ids)
+🔧 read(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 pwsh(Verify after frontend cleanup)
+🔧 job_list({})
+🔧 write(C:\work\chat-room\design\README.md)
+🔧 pwsh(Final end-to-end run on current code)
+🔧 job_kill(pwsh-43)
+🔧 pwsh(Wipe test data again for clean handover)
+🔧 pwsh(Restart server on clean database)
+🔧 pwsh(Confirm clean server is up)
+🔧 send_message({"target": "825097d5-6a69-47fd-811d-5094c4c8a1c0", "message": "进展同步：如果你已经读完代码，请直接把结论按原要求给我)</p></blockquote></div>
+</section>
+<section class="ai" id="b42">
+  <h2><span class="no">42</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>复核者没回来（target 已失效）。我自己按同样的清单做一遍定向审计，同时再派一个范围更小的复核：</p>
+<blockquote><p>🔧 grep(require_member|@router\.(get|post|delete|put))
+🔧 subagent({"description": "Audit room permission checks", "prompt": "只做一件事，做完立刻给结论，不要写代码、不要改文件。\n\n目)
+🔧 grep(^def (leave_room|reset_code|dissolve_room|post_message)|^asy)
+🔧 todo_write(11 项)
+🔧 pwsh(Check served HTML and leftover old-feature references)
+🔧 pwsh(Archive legacy doc sources too)
+🔧 edit(C:\work\chat-room\README.md)
+🔧 edit(C:\work\chat-room\目录结构.txt)
+🔧 pwsh(Final verification and repo overview)</p></blockquote></div>
+</section>
+<section class="ai" id="b43">
+  <h2><span class="no">43</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>全部装好了，服务正在跑，你先看东西：</p>
+<p><strong>→ &lt;http://localhost:8000&gt;</strong>（注册一个账号 → 左栏 <strong>＋</strong> 建房间 → 复制房间码 → 另开一个无痕窗口注册第二个人 → 用 <strong>⌨</strong> 输码进群）</p>
+<hr>
+<h2 class="md-h" id="h1-这一轮做了什么">这一轮做了什么</h2>
+<div class="tw"><table><thead><tr><th>层</th><th>内容</th></tr></thead><tbody><tr><td><strong>清传输</strong></td><td>删掉 <code>polling.js</code> / <code>ws.js</code> / <code>transports/</code> / <code>backend websocket.py</code> / <code>alt-node/</code>（Node 对照实现），只留 <strong>SSE 一条长连接</strong>；<code>requirements.txt</code> 里的 <code>websockets</code> 也去掉了</td></tr><tr><td><strong>登录</strong></td><td><code>app/auth.py</code> + <code>auth_routes.py</code>：注册 / 登录 / 登出 / 我是谁。pbkdf2 加盐哈希、<code>sessions</code> 名册（只存 sid 的哈希）、Cookie <code>HttpOnly + SameSite=Lax</code>、7 天滑动续期、登录失败 5 次锁 60 秒。<strong>接口里没有 userId 入参</strong>，署名一律服务端从会话里取</td></tr><tr><td><strong>房间</strong></td><td><code>room_routes.py</code> + <code>rooms.py</code>：建群（生成 6 位房间码）/ 凭码入群（幂等）/ 房间列表 / 概况 / 退群（房主自动转让）/ 重置房间码 / 解散</td></tr><tr><td><strong>隔离</strong></td><td><code>require_member()</code> 收口，<strong>11 个涉及房间的入口逐个审计过，全都有校验</strong>；快照 / 发送 / 历史 / 上传 / SSE / 连接实况，非成员一律 403</td></tr><tr><td><strong>未读</strong></td><td><code>未读 = 房间最大 seq − last_read_seq</code>，进房间自动清零，自己发的不算未读</td></tr><tr><td><strong>前端</strong></td><td>新的 <code>public/</code>：登录卡片（登录/注册同卡切换）+ 房间列表（含筛选、未读角标）+ <strong>建房间 / 加入房间弹窗</strong>（和登录卡片同一套样式）+ 成员与房间码面板 + 消息流（日期分隔、图片、文件卡片、翻页、新消息提示）</td></tr><tr><td><strong>验证</strong></td><td><strong>113 项单元测试</strong>（3 秒）+ <strong>43 项端到端</strong>（纯 HTTP 跑真服务器）+ 前端静态检查（JS 用到的 66 个 id 在两份页面里都在）</td></tr><tr><td><strong>文档</strong></td><td>[README.md](chat-room/README.md) 重写（登录原理 / 隔离原理 / 接口表 / 已知问题）、[接口契约.md](chat-room/docs/接口契约.md)、[手动测试清单.md](chat-room/手动测试清单.md)（8 组浏览器手点项）、[目录结构.txt](chat-room/目录结构.txt)、[design/README.md](chat-room/design/README.md)</td></tr></tbody></table></div>
+<p>顺手抓到的两个真 bug（都是测试先红了才发现的）：<code>hub.frame</code> 不存在导致 SSE 接上却一片安静（HTTP 还是 200，很阴）、自己发的消息被算成未读。</p>
+<hr>
+<h2 class="md-h" id="h2-我替你拍板的几件事-不同意就说-改起来都便宜">我替你拍板的几件事（不同意就说，改起来都便宜）</h2>
+<ol>
+<li><strong>剪贴板监听模式砍了</strong> —— 聊天室用不上，而且它只能在 <code>localhost</code> 下工作；</li>
+<li><strong>消息行保持"日志式"</strong>（左栏谁+时间、右边正文），没改成左右气泡；</li>
+<li><strong>右栏那张"历史记录（最近 20 条）"卡片并进消息流</strong>，改成顶部「加载更早的消息」；</li>
+<li><strong><code>alt-node/</code> 删了</strong>（原项目 <code>collab-clipboard</code> 里还有一份，没丢）；</li>
+<li><strong>上个项目的叙述文档</strong>（对话记录 / 开发经历 / 项目说明 / 思路记录）移到了 [docs/legacy-协同剪贴板/](chat-room/docs/legacy-协同剪贴板)，不在仓库根目录碍眼，也没删。</li>
+</ol>
+<hr>
+<h2 class="md-h" id="h3-还差的三件事-都要你过一眼">还差的三件事（都要你过一眼）</h2>
+<ol>
+<li><strong>浏览器里的东西我验不了</strong>：Chrome 在沙箱里起不来（多进程 IPC 要命名管道），所以视觉、滚动、弹窗、手机抽屉这些只能你点 —— 照 [手动测试清单.md](chat-room/手动测试清单.md) 走一遍，哪条不对告诉我；</li>
+<li><strong><code>git init</code> + 推 GitHub</strong> 还没做（提交方式要求），等你确认这版能用了再推，免得推一版废的上去；</li>
+<li><strong>README 第十节「AI 协作说明」</strong>是我按你以前的口径写的（思路你出、代码 AI 协助、你验收）——这段是给你面批用的，措辞你自己顺一遍更稳。</li>
+</ol>
+<blockquote><p>另外：设计稿的静态服务（8899）我还开着，[v5-chatroom.html](chat-room/design/v5-chatroom.html) 可以直接看；不用了我就关掉。我另外派的一个独立复核还没回来，回来我把结论转给你。</p></blockquote>
+<blockquote><p>🔧 present(README.md, 手动测试清单.md)</p></blockquote></div>
+</section>
+<section class="ai" id="b44">
+  <h2><span class="no">44</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>上面两张卡片是给你直接打开的（README 和手动测试清单）。服务在跑、数据是干净的，你去点一遍，有不对的地方我接着改。</p></div>
+</section>
+<section class="ai" id="b45">
+  <h2><span class="no">45</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>复核回来了，抓到一个<strong>真问题</strong>：<code>/api/rooms/public</code> 把公开房间的房间码一起返回了 —— 那样"凭码进群"对公开房间就形同虚设。另一个是上传的文件走无鉴权静态目录。两个都修：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\app\db.py)
+🔧 edit(C:\work\chat-room\app\db.py)
+🔧 edit(C:\work\chat-room\app\db.py)</p></blockquote></div>
+</section>
+<section class="ai" id="b46">
+  <h2><span class="no">46</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>复核给了 <strong>3 个严重 + 4 个中等</strong>，都是真问题。挨个修（这批里面 XSS 那条最要命）：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\app\config.py)
+🔧 edit(C:\work\chat-room\app\__init__.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\rooms.py)
+🔧 edit(C:\work\chat-room\app\routes\room_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\auth_routes.py)
+🔧 edit(C:\work\chat-room\app\routes\net_routes.py)
+🔧 edit(C:\work\chat-room\app\db.py)
+🔧 edit(C:\work\chat-room\app\db.py)
+🔧 edit(C:\work\chat-room\app\routes\net_routes.py)
+🔧 read(C:\work\chat-room\public\js\sse.js)
+🔧 edit(C:\work\chat-room\public\js\sse.js)
+🔧 read(C:\work\chat-room\public\js\render.js)
+🔧 edit(C:\work\chat-room\public\js\render.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 read(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\css\app.css)
+🔧 read(C:\work\chat-room\public\css\app.css)
+🔧 edit(C:\work\chat-room\public\css\app.css)
+🔧 read(C:\work\chat-room\public\js\api.js)
+🔧 read(C:\work\chat-room\public\js\state.js)
+🔧 edit(C:\work\chat-room\public\js\api.js)
+🔧 edit(C:\work\chat-room\public\js\state.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\tests\test_messages.py)
+🔧 edit(C:\work\chat-room\tests\test_rooms.py)
+🔧 edit(C:\work\chat-room\tests\test_rooms.py)
+🔧 pwsh(Run tests after security fixes)
+🔧 edit(C:\work\chat-room\app\routes\api_routes.py)
+🔧 pwsh(Re-run tests after upload validation fix)
+🔧 edit(C:\work\chat-room\dev\e2e-check.py)
+🔧 edit(C:\work\chat-room\dev\e2e-check.py)
+🔧 job_kill(pwsh-53)
+🔧 pwsh(Stop server and wipe test data)
+🔧 pwsh(Restart server with security fixes)
+🔧 pwsh(Run extended end-to-end verification)</p></blockquote></div>
+</section>
+<section class="ai" id="b47">
+  <h2><span class="no">47</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>51 项端到端全过。现在把文档同步到新行为：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\docs\接口契约.md)
+🔧 edit(C:\work\chat-room\docs\接口契约.md)
+🔧 edit(C:\work\chat-room\docs\接口契约.md)
+🔧 edit(C:\work\chat-room\README.md)
+🔧 edit(C:\work\chat-room\README.md)
+🔧 edit(C:\work\chat-room\README.md)
+🔧 edit(C:\work\chat-room\README.md)
+🔧 pwsh(Verify frontend and recount lines)
+🔧 pwsh(Count remaining files and total lines)
+🔧 write(C:\work\chat-room\目录结构.txt)
+🔧 job_kill(pwsh-64)
+🔧 pwsh(Wipe test data for clean handover)
+🔧 pwsh(Start final clean server)
+🔧 pwsh(Verify clean server and uploads protection)</p></blockquote></div>
+</section>
+<section class="ai" id="b48">
+  <h2><span class="no">48</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>复核报告到了（两份都回来了），抓到的东西比我自己看的多。<strong>全部修完并验证</strong>：</p>
+<hr>
+<h2 class="md-h" id="h1-严重-3-条-都已修-加了回归测试">严重（3 条，都已修 + 加了回归测试）</h2>
+<div class="tw"><table><thead><tr><th>#</th><th>问题</th><th>怎么修的</th></tr></thead><tbody><tr><td>1</td><td><strong>上传 <code>.html</code> = 同源存储型 XSS</strong>：<code>.html</code> 在白名单里，上传后浏览器按 <code>text/html</code> 内联执行，脚本就在我们的源里跑、能读走 Cookie；而且 <code>uploads/</code> 是无鉴权静态目录，未登录都能打开</td><td>三处一起改：① <code>TEXT_EXT</code> 删掉 <code>.html/.htm/.svg/.xml</code>；② <code>is_text()</code> 改成<strong>扩展名白名单说了算</strong>（原来 <code>text/*</code> 的 MIME 直接放行，白名单等于摆设）；③ 下载不再走静态目录，改成 <code>GET /uploads/{name}</code> —— <strong>验登录 + 验"你是不是那个房间的成员"</strong>，非图片一律 <code>attachment</code> + <code>text/plain</code> + <code>nosniff</code></td></tr><tr><td>2</td><td><strong>公开房间列表泄漏房间码</strong>：<code>/api/rooms/public</code> 把 <code>code</code> 一起返回，谁都能抄走，"凭码入群"形同虚设</td><td>列表里<strong>不给码</strong>（公开只意味着"看得见有这个房间"），想进还是问群主要码；契约同步</td></tr><tr><td>3</td><td><strong>消息 <code>file</code> 字段整段信客户端</strong>：可以塞 <code>url: "javascript:alert(document.cookie)"</code>、塞 3MB 的 preview</td><td>服务端<strong>白名单重建</strong>：URL 必须是 <code>/uploads/&lt;文件名&gt;</code>、而且那个文件<strong>确实上传到了这个房间</strong>；名称截 120 字、预览截 2000 字、多余键丢掉。前端 <code>render.js</code> 再加一道 <code>safeUrl()</code> 兜底</td></tr></tbody></table></div>
+<h2 class="md-h" id="h2-中等-4-条">中等（4 条）</h2>
+<ul>
+<li><strong>切房间竞态</strong>：快照回来时校验"房间没被切走"，SSE 消息按 <code>roomId</code> 过滤，翻页同理；</li>
+<li><strong>并发进冷房间会丢消息</strong>（两个协程各建一份内存桶，后写的覆盖前一个 → 那条消息进"孤儿桶"，<code>since()</code> 永远补不到）：每房间加锁 + 双重检查 + 只往登记在册的桶追加；</li>
+<li><strong>被移出房间后 SSE 静默死掉</strong>：<code>EventSource</code> 遇 403 永不重连，而 error 事件不带状态码 —— 现在主动 recheck（5 秒节流），发现房间没了就自动切房间；顺带补上了<strong>「退出房间」按钮</strong>（之前 <code>leaveRoom</code> 接口根本没有入口）；</li>
+<li><strong>PBKDF2 堵住事件循环</strong>：20 万次哈希约 0.1 秒，直接在 async 路由里算会把所有请求和 SSE 心跳一起卡住 → 扔进 <code>asyncio.to_thread</code>。</li>
+</ul>
+<h2 class="md-h" id="h3-轻微">轻微</h2>
+<p>并发同名注册返回 500 → 改成 409；<code>/api/health</code> 不再吐 pid 和库统计（只回 <code>ok</code>/<code>uptimeSec</code>）；搜索里的 <code>%</code>、<code>_</code> 做了 LIKE 转义；删掉几处死代码。</p>
+<p><strong>复核明确确认没问题的</strong>：所有房间入口非成员一律 403（逐条实测）、消息署名无法伪造（客户端传 <code>userId/username</code> 被忽略）、登出/过期/滑动续期/登录锁定逻辑正确、SQL 全参数化、seq 不重复、外键级联无残留、前端没有把用户串拼进 <code>innerHTML</code>。</p>
+<hr>
+<h2 class="md-h" id="h4-现在的状态">现在的状态</h2>
+<pre class="code"><code>单元测试   131 项全绿（原 113，新增 18 项专门盯这次的修复）
+端到端     51 项全绿（原 43，新增下载鉴权 / .html 拒绝 / 伪造 file / 公开房间不给码）</code></pre>
+<p>服务已经<strong>用干净数据库重启</strong>，你在 &lt;http://localhost:8000&gt; 看到的就是最新版。刚才顺手验了一下线上行为：</p>
+<pre class="code"><code>GET /uploads/whatever.png  →  401（没登录，正是要的效果）
+GET /api/health            →  {"ok":true,"uptimeSec":5}</code></pre>
+<p>细节都写进 [README.md](chat-room/README.md) 的「4.5 上传的文件谁能下载」和「踩过的坑」两节了 —— 那三条坑（<code>hub.frame</code>、并发丢消息、<code>file</code> 字段）面批的时候正好是能讲的点：<strong>问题是怎么被发现的</strong>（端到端脚本 / 独立复核），比"我一次写对了"可信。</p>
+<p>剩下还是那两件要你做的：浏览器里按 [手动测试清单.md](chat-room/手动测试清单.md) 点一遍（我这边跑不了浏览器），以及 <code>git init</code> 推 GitHub。</p></div>
+</section>
+<section class="me" id="b49">
+  <h2><span class="no">49</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>现在是成品了吗，我直接实测</p></div>
+</section>
+<section class="ai" id="b50">
+  <h2><span class="no">50</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(Confirm server ready for user testing)
+🔧 job_kill(pwsh-5)</p></blockquote></div>
+</section>
+<section class="ai" id="b51">
+  <h2><span class="no">51</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p><strong>可以实测了。</strong> 服务在线（干净数据库，没有任何测试残留），直接开：</p>
+<h2 class="md-h" id="h1-h">→ &lt;http://localhost:8000&gt;</h2>
+<p><strong>两分钟走一遍：</strong></p>
+<ol>
+<li>点「注册一个」→ 用户名 <code>阿哲</code>、密码 <code>password123</code> → 直接进聊天页；</li>
+<li>左栏 <strong>＋</strong> → 填「产品讨论」→ 保持「凭房间码」→ 创建 → 右栏出现 6 位房间码，点「复制」；</li>
+<li><strong>另开一个无痕窗口</strong>打开同一个地址 → 注册 <code>老周</code> → 左栏 <strong>⌨</strong> → 粘房间码 → 进群；</li>
+<li>两个窗口对着发消息，看是不是<strong>几乎同时</strong>出现；阿哲这边看右栏老周从「在线」变「离线」（关掉无痕窗口时）。</li>
+</ol>
+<h2 class="md-h" id="h2-重点看这几处-都是我这边验不了-只有你能判断的">重点看这几处（都是我这边验不了、只有你能判断的）</h2>
+<div class="tw"><table><thead><tr><th>看什么</th><th>在哪</th></tr></thead><tbody><tr><td>布局、配色、字号</td><td>整个界面（我跑不了浏览器，视觉只有你能判断）</td></tr><tr><td>建房间弹窗 / 加入房间弹窗</td><td>左栏 ＋ 和 ⌨ —— 样式和登录卡片是一套</td></tr><tr><td>滚动策略</td><td>往上翻历史时让对方发消息，画面<strong>不该跳</strong>，底部浮「N 条新消息 ↓」</td></tr><tr><td>翻页</td><td>滚到最上面点「加载更早的消息」，阅读位置不该跳</td></tr><tr><td>图片/文件</td><td>点「图片」发一张、截图后直接 Ctrl+V、发一个 <code>.py</code></td></tr><tr><td>手机版</td><td>手机连同一 WiFi 开 <code>http://&lt;你电脑IP&gt;:8000</code>，☰ 和 ☷ 两个抽屉</td></tr><tr><td><strong>隔离</strong>（最有说服力）</td><td>注册第三个人，地址栏直接敲 <code>/api/snapshot/1</code> → 应该是 <code>{"detail":"你不在这个房间里"}</code></td></tr></tbody></table></div>
+<p>完整 8 组清单在 [手动测试清单.md](chat-room/手动测试清单.md)，一项项对着点就行。</p>
+<h2 class="md-h" id="h3-说明两件事">说明两件事</h2>
+<ul>
+<li>我把设计稿那个 8899 静态服务关掉了，免得跟正式服务混；设计稿本身还在 [design/v5-chatroom.html](chat-room/design/v5-chatroom.html)（双击能看，字体退回系统字体）。</li>
+<li><strong>还没做</strong>的：<code>git init</code> + 推 GitHub（等你确认这版没问题再推）、以及 README 第十节「AI 协作说明」的措辞你自己顺一遍 —— 那是给面批看的。</li>
+</ul>
+<p>哪一步不对、或者哪个地方看着别扭，直接把现象告诉我（有报错就贴 Console 里那行），我接着改。</p></div>
+</section>
+<section class="me" id="b52">
+  <h2><span class="no">52</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>用户端的网址是什么</p></div>
+</section>
+<section class="ai" id="b53">
+  <h2><span class="no">53</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(Get the addresses users should open)</p></blockquote></div>
+</section>
+<section class="ai" id="b54">
+  <h2><span class="no">54</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>两个地址，看谁用：</p>
+<div class="tw"><table><thead><tr><th>谁</th><th>网址</th></tr></thead><tbody><tr><td><strong>你自己这台电脑</strong>（浏览器直接开）</td><td><strong>&lt;http://localhost:8000&gt;</strong></td></tr><tr><td><strong>手机 / 平板</strong>（连同一个 WiFi）</td><td><strong>&lt;http://192.168.1.14:8000&gt;</strong></td></tr></tbody></table></div>
+<p>两个地址进的是<strong>同一个服务、同一份数据</strong> —— 电脑上注册的账号，手机上用同一个账号登录就能接着聊；手机上注册的账号，电脑上也能登。</p>
+<p>手机连首页之前，如果打不开，按这四条排查：</p>
+<ol>
+<li>手机和电脑<strong>在同一个 WiFi</strong>（不是手机流量）；</li>
+<li>Windows 防火墙拦了入站 → 双击项目里的 [放行防火墙.cmd](chat-room/放行防火墙.cmd)，<strong>右键"以管理员身份运行"</strong>；</li>
+<li>电脑换过网络 / 重连过路由 → IP 可能变了，重新看服务窗口横幅里那行"局域网访问"，或者页面上左栏底部也显示着当前地址；</li>
+<li>路由器开了 <strong>AP 隔离</strong>（客户端隔离）→ 手机连不上电脑，换手机热点或关掉隔离。</li>
+</ol>
+<p>服务窗口那三行就是它自己报的（每次启动都会打印）：</p>
+<pre class="code"><code>本机访问    http://localhost:8000
+局域网访问  ↓ 手机/平板连同一个 WiFi，浏览器直接输下面的地址
+            http://192.168.1.14:8000</code></pre>
+<blockquote><p>另外提醒一句：<code>192.168.1.14</code> 是<strong>你这台电脑在局域网里的地址</strong>，换个 WiFi 或重启路由就可能变成别的（比如 <code>192.168.2.7</code>）。所以发地址之前先看一眼服务窗口，别用昨天记下来的那个。</p></blockquote></div>
+</section>
+<section class="me" id="b55">
+  <h2><span class="no">55</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>✗ 端口 8000 已被占用
+· 可能已经有一个服务在跑（上一次的窗口没关掉？）
+· 想再开一个  → 换端口：  python server.py --port 8001
+· 想重开这个  → 先关掉占用 8000 的那个窗口</p>
+<p>[server stopped]
+请按任意键继续. . .</p></div>
+</section>
+<section class="ai" id="b56">
+  <h2><span class="no">56</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>那个占着 8000 的就是<strong>我这边后台跑着的服务</strong>（给你测试用的）。既然你要自己双击启动，我把它停掉、把端口让出来 —— 你自己起的那个窗口，你能看到启动横幅、关掉窗口就等于停服务，更顺手。</p>
+<blockquote><p>🔧 job_kill(pwsh-69)
+🔧 pwsh(Free port 8000 for the user)</p></blockquote></div>
+</section>
+<section class="ai" id="b57">
+  <h2><span class="no">57</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>端口已经让出来了，<strong>现在再双击一次 [启动服务.cmd](chat-room/启动服务.cmd) 就能起来</strong>（它会自己打开浏览器）。</p>
+<p>启动后窗口里应该长这样 —— 这几行就是你的"地址牌"，手机按第二行输：</p>
+<pre class="code"><code>  聊天室 · 服务已启动
+──────────────────────────────────────────────────────────────
+  本机访问    http://localhost:8000
+  局域网访问  ↓ 手机/平板连同一个 WiFi，浏览器直接输下面的地址
+              http://192.168.1.14:8000
+──────────────────────────────────────────────────────────────
+  监听        0.0.0.0:8000（局域网内可见）
+  实时通道    SSE 一条长连接（浏览器自动带 Cookie 完成鉴权）
+  数据        SQLite · data/app.db（重启不丢：0 个账号 / 0 个房间 / 0 条消息）</code></pre>
+<p>两件事提醒一下：</p>
+<ol>
+<li><strong>关掉那个黑窗口 = 停服务</strong>。测试期间别关它，否则页面会变成"重连中…"（数据不会丢，重启后还在）；</li>
+<li>想换端口（比如 8000 又被占了）：<code>python server.py --port 8001</code>，或者直接改 <code>app/config.py</code> 里的默认值。</li>
+</ol>
+<p>起完告诉我一声，或者直接开始点 —— 有问题把现象发我。</p></div>
+</section>
+<section class="me" id="b58">
+  <h2><span class="no">58</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>会弹出一个undifine的红色弹窗</p></div>
+</section>
+<section class="ai" id="b59">
+  <h2><span class="no">59</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>一个红色提示里显示 <code>undefined</code>，说明是前端某处把 <code>undefined</code> 当文案填进去了。我先查环境能不能直接把页面跑起来复现：</p>
+<blockquote><p>🔧 pwsh(Check for browser automation libs and server state)
+🔧 pwsh(Inspect live database to see user progress)</p></blockquote></div>
+</section>
+<section class="ai" id="b60">
+  <h2><span class="no">60</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>你已经跑通了主流程（数据库里能看到：<code>systemo</code> 建了房间「测试」，<code>hh</code> 用码进来了，4 条消息）—— 所以这个红提示是某个具体动作触发的。我先给显示层加一道"绝不会把 undefined 显示出来"的闸，同时把原始值打到控制台，好定位：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\public\js\ui.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 read(C:\work\chat-room\public\js\ui.js)
+🔧 read(C:\work\chat-room\public\js\auth.js)
+🔧 edit(C:\work\chat-room\public\js\ui.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 edit(C:\work\chat-room\public\js\auth.js)
+🔧 read(C:\work\chat-room\public\js\rooms.js)
+🔧 read(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\rooms.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 pwsh(Verify after frontend hardening)</p></blockquote></div>
+</section>
+<section class="me" id="b61">
+  <h2><span class="no">61</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>所有的发消息都是正常的，但是就是会有一个弹窗很烦</p></div>
+</section>
+<section class="ai" id="b62">
+  <h2><span class="no">62</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 grep(throw|catch \(|toast\(|showError\(|modalError\()</p></blockquote></div>
+</section>
+<section class="ai" id="b63">
+  <h2><span class="no">63</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>所有的 <code>throw</code> 都是 <code>ApiError</code>（带 message），所以"undefined"只可能来自<strong>某个 catch 收到了非 Error</strong>，或者 <strong>401 被并发触发、反复弹同一个提示</strong>。我先堵掉后者（这种"很烦"的重复弹窗最像它）：</p>
+<blockquote><p>🔧 read(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 pwsh(Verify JS after guard changes)</p></blockquote></div>
+</section>
+<section class="me" id="b64">
+  <h2><span class="no">64</span><span class="who">👤 我（选择）</span></h2>
+  <div class="body"><ul>
+<li><strong>那个“很烦的弹窗”具体长什么样、在哪？</strong>
+→ 屏幕底部中间浮出的一个红色小条</li>
+<li><strong>它是什么时候冒出来的？</strong>
+→ 每次发消息都会</li>
+</ul></div>
+</section>
+<section class="ai" id="b65">
+  <h2><span class="no">65</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>抱歉，这个烦人的弹窗我先做了两件事（<strong>但你需要 Ctrl+F5 硬刷新一次才能生效</strong>，否则浏览器还在跑旧 JS）：</p>
+<ol>
+<li><strong>加了文案闸</strong>：任何要显示的文字都过 <code>displayText()</code>，空值一律换成兜底文案 —— 界面上<strong>再也不会出现 "undefined"</strong>，同时把<strong>原始值和调用栈打到控制台</strong>（这样能直接定位是谁传的空值）；</li>
+<li><strong>"登录已过期"只提示一次</strong>：401 常常一次来一串（并发请求 + SSE 重连），原来每个都会弹一次，这就是"很烦"的来源之一。</li>
+</ol>
+<p>刷新后再复现一次，然后把 <strong>F12 → Console 里第一条红字</strong>发我 —— 新代码会打印 <code>[文案] 收到空值…</code> 加调用栈，一眼就能定位。顺便也可以看一眼服务那个黑窗口，如果里面在<strong>反复刷同一段 traceback</strong>，那就是另一个问题（SSE 断了在无限重连），把最后几行给我。</p>
+<p>为了少来回几趟，先确认两件事：</p></div>
+</section>
+<section class="ai" id="b66">
+  <h2><span class="no">66</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>每次发消息都弹 → 说明 <code>sendText()</code> 的 catch 每次都在跑，而消息又确实发出去了 —— 问题出在"发出去之后的渲染/刷新"那几步。我把这两个文件按现状读一遍找真凶：</p>
+<blockquote><p>🔧 read(C:\work\chat-room\public\js\composer.js)
+🔧 read(C:\work\chat-room\public\js\main.js)
+🔧 read(C:\work\chat-room\public\js\main.js)</p></blockquote></div>
+</section>
+<section class="ai" id="b67">
+  <h2><span class="no">67</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p><strong>抓到了。</strong> 是我上一轮改 <code>absorb()</code> 时弄出来的：</p>
+<p>自己发的消息<strong>总是走两条路到达</strong> —— POST 的响应 + SSE 推送。两条路谁先到不一定：通常 SSE 先到（消息立刻出现 ✓），随后 POST 响应再进来一次，这次被 <code>seq</code> 去重后 <code>added</code> 是<strong>空数组</strong>，而我没加"空就返回"的判断，于是 <code>added[added.length - 1]</code> 变成 <code>undefined</code>，再读 <code>.at</code> 就抛 <code>Cannot read properties of undefined (reading 'at')</code> —— 每次发消息必抛，被 catch 接住弹红条，消息却已经正常显示了。</p>
+<p>修：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\public\js\main.js)
+🔧 grep(\[[a-zA-Z_.]+\.length - 1\]|\[0\])
+🔧 pwsh(Verify after absorb fix)
+🔧 edit(C:\work\chat-room\README.md)</p></blockquote></div>
+</section>
+<section class="ai" id="b68">
+  <h2><span class="no">68</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>修好了 —— 根因就是这个：</p>
+<pre class="code"><code>你发消息 → 服务端存下 → 同时做两件事回到前端：
+   ① SSE 推给你（先到，消息立刻显示 ✅）
+   ② POST 的响应（后到，同一条消息，被 seq 去重 → added 是空数组）
+      而我上一轮加的判断只挡了"整个数组为空"，没挡"去重后为空"，
+      于是代码去读 added[-1].at → undefined.at → 抛异常 → 被 catch 接住 → 弹红条</code></pre>
+<p>所以现象才这么怪：<strong>消息一切正常，就是每次发都弹一个红条</strong>（条上写的是 <code>Cannot read properties of undefined (reading 'at')</code> —— 你看到的 "undefined" 就是这句里的）。</p>
+<h2 class="md-h" id="h1-你需要做一件事-ctrl-f5-硬刷新">你需要做一件事：Ctrl + F5 硬刷新</h2>
+<p>浏览器还缓存着旧 JS，刷新后才会加载修好的版本。然后随便发几条消息 —— <strong>红条应该没有了</strong>。</p>
+<p>顺带这一轮还改了两处（都在这份 JS 里）：</p>
+<ul>
+<li>所有要显示的文案过 <code>displayText()</code> 闸，<strong>空值再也不会显示成 "undefined"</strong>（会换成兜底文案，并把原始值打到控制台）；</li>
+<li><strong>"登录已过期"只提示一次</strong>：401 常常一次来一串（并发请求 + SSE 重连），原来每个都会弹一次。</li>
+</ul>
+<p>如果刷新后还有别的红条，F12 → Console 现在会打印调用栈，把第一行红字发我就能直接定位。这个坑我也记进 [README.md](chat-room/README.md) 的「踩过的坑」了 —— 它正好说明一件事：<strong>单元测试和 HTTP 端到端都不经过渲染层，浏览器里手点这一步不能省</strong>。</p></div>
+</section>
+<section class="me" id="b69">
+  <h2><span class="no">69</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>怎么网页启动的是剪贴板那个项目的啊</p></div>
+</section>
+<section class="ai" id="b70">
+  <h2><span class="no">70</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(Identify which project is serving port 8000)
+🔧 pwsh(Check which project the running server serves)</p></blockquote></div>
+</section>
+<section class="ai" id="b71">
+  <h2><span class="no">71</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>我查了现场 —— <strong>8000 上跑的确实是聊天室</strong>，不是剪贴板：</p>
+<pre class="code"><code>监听 8000 的进程    PID 29180
+它的父进程          cmd /c "C:\work\chat-room\启动服务.cmd"   ← 就是新项目
+GET / 返回的页面     &lt;title&gt;聊天室&lt;/title&gt;，里面有 loginView    ← 新版登录页</code></pre>
+<p>所以你看到的那个剪贴板页面，几乎可以肯定是<strong>早上那个还没刷新的旧标签页</strong>（浏览器把上次的标签恢复了，点它其实没重新请求），或者你直接打开了旧项目文件夹里的 <code>index.html</code>。</p>
+<h2 class="md-h" id="h1-三秒分辨你在看哪个">三秒分辨你在看哪个</h2>
+<div class="tw"><table><thead><tr><th>看这里</th><th>旧（剪贴板）</th><th>新（聊天室）</th></tr></thead><tbody><tr><td>浏览器标签标题</td><td><code>协同剪贴板 · 局域网</code></td><td><strong>聊天室</strong></td></tr><tr><td>左栏标题</td><td>「通信方案」（轮询 / SSE / WS）</td><td><strong>「房间」</strong></td></tr><tr><td>右上角</td><td>昵称输入框</td><td><strong>退出登录</strong> 按钮</td></tr><tr><td>第一屏</td><td>直接进聊天界面</td><td><strong>登录/注册卡片</strong></td></tr></tbody></table></div>
+<h2 class="md-h" id="h2-怎么弄对">怎么弄对</h2>
+<p><strong>新开一个标签页</strong>，地址栏敲 <code>http://localhost:8000</code>（或者在那个旧页面上按 <strong>Ctrl + F5</strong> 强制刷新）。刷新后会看到登录卡片，用你之前注册的 <code>systemo</code> 登录就能回到「测试」房间 —— 你之前发的 4 条消息都还在。</p>
+<h2 class="md-h" id="h3-为什么这么容易点错">为什么这么容易点错</h2>
+<p>旧项目 <code>C:\work\collab-clipboard</code> 我特意留着当备份（里面的东西一个字没动，刚才看它的数据库还是今天凌晨 1:14 的样子），但它的启动脚本<strong>跟新项目同名</strong>：<code>启动服务.cmd</code>。你要是从文件夹历史记录里点，很容易点成那个。</p>
+<p>要我一劳永逸地分开吗？给你两个选项，说一声我就做：</p>
+<ol>
+<li>把旧项目的启动脚本改名成 <strong><code>启动服务（旧剪贴板项目·备份）.cmd</code></strong> —— 最小改动，一眼能认出来；</li>
+<li>把整个旧项目挪到 <strong><code>C:\work\_archive\collab-clipboard\</code></strong> —— 新项目旁边就再也没有同名脚本了。</li>
+</ol></div>
+</section>
+<section class="me" id="b72">
+  <h2><span class="no">72</span><span class="who">👤 我</span></h2>
+  <div class="body"><p>连接失败，房间不存在</p></div>
+</section>
+<section class="ai" id="b73">
+  <h2><span class="no">73</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><blockquote><p>🔧 pwsh(Check server identity and current data state)</p></blockquote></div>
+</section>
+<section class="ai" id="b74">
+  <h2><span class="no">74</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>数据是好的，问题在<strong>你那个标签页里跑的还是旧页面</strong>（早上那个剪贴板页面）：它还在用旧接口轮询 <code>/api/snapshot/1001</code>，而新服务端里没有 1001 这个房间，于是回你一句 <strong><code>{"detail":"房间不存在"}</code></strong> —— 那句就是新服务端 [rooms.py](chat-room/app/rooms.py) 里的原文。旧页面拿它当错误提示弹出来，就是你看到的"连接失败 / 房间不存在"。</p>
+<p>顺便把这个坑堵死（以后改前端不用再跟缓存斗）：</p>
+<blockquote><p>🔧 edit(C:\work\chat-room\app\__init__.py)
+🔧 pwsh(Verify middleware change does not break anything)</p></blockquote></div>
+</section>
+<section class="ai" id="b75">
+  <h2><span class="no">75</span><span class="who">🤖 AI</span></h2>
+  <div class="body"><p>8000 上跑的<strong>确实是聊天室</strong>，数据也都完好：</p>
+<pre class="code"><code>监听进程     PID 29180 · 父进程 = C:\work\chat-room\启动服务.cmd
+GET /        &lt;title&gt;聊天室&lt;/title&gt;，里面有 loginView（新版登录页）
+数据库       账号 2 个：hh、systemo    房间 1 个：测试（码 FF6H9H）  成员 2  消息 4 条</code></pre>
+<p>那句 <strong>"房间不存在"</strong> 是新服务端的原文（<code>require_room()</code> 里那句），意思是：<strong>有个旧页面正在打新服务端</strong>。旧剪贴板前端还在按老接口轮询 <code>/api/snapshot/1001</code>，而新服务端里根本没有 1001 这个房间 —— 于是回了这句 404 给那个旧页面，它就弹出来了。</p>
+<h2 class="md-h" id="h1-现在这样做-最稳的一步到位">现在这样做（最稳的一步到位）</h2>
+<p><strong>地址栏直接敲 <code>http://127.0.0.1:8000</code></strong></p>
+<p>用 <code>127.0.0.1</code> 等于换了个"来源"，浏览器缓存和 localStorage 都是全新的 —— 旧标签页、旧缓存、旧房间号全部绕开，你看到的必然是新版。认准两点：标题是 <strong>聊天室</strong>、第一屏是<strong>登录/注册卡片</strong>。</p>
+<blockquote><p>代价是要重新登录一次（因为换了来源）。用 <code>systemo</code> 登进去，「测试」房间和那 4 条消息都还在。</p>
+<p>想继续用 <code>localhost</code> 的话：关掉那个旧标签页 → 新开一个 → 按 <strong>Ctrl + Shift + R</strong> 强刷。</p></blockquote>
+<h2 class="md-h" id="h2-顺手堵了一个坑-要重启才生效">顺手堵了一个坑（要重启才生效）</h2>
+<p>我给服务端加了一道<strong>防呆</strong>：页面和 JS/CSS 现在都带 <code>Cache-Control: no-cache</code>，浏览器每次会先回来问一句"变了没"——没变就 304 省流量，变了立刻拿新版本。<strong>以后不会再出现"我改了前端、浏览器还是旧页面"这种事</strong>，也不会再有旧页面打新接口的怪现象。</p>
+<p>生效办法：<strong>关掉那个黑窗口，重新双击 <code>启动服务.cmd</code></strong>。</p>
+<h2 class="md-h" id="h3-旧项目要不要我处理掉-你上次没回-我再问一次">旧项目要不要我处理掉（你上次没回，我再问一次）</h2>
+<p><code>C:\work\collab-clipboard</code> 是我给你留的备份，但它那个 <code>启动服务.cmd</code> 跟新项目<strong>同名</strong>，就是这次混淆的根源。说一声我就做：</p>
+<ol>
+<li>改名 → <code>启动服务（旧·备份·勿用）.cmd</code>；</li>
+<li>或者整个挪到 <code>C:\work\_archive\collab-clipboard\</code>。</li>
+</ol></div>
+</section>
+
+  <footer>共 75 个对话块 · 由 dev/make-transcript.mjs 从会话原始日志自动抽取 · 不改写、不摘要</footer>
+</div>
+
+</body>
+</html>

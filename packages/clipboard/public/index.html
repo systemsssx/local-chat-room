@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- 手机（窄屏）自动切到适配版；想强制看桌面版就在地址后加 ?desktop -->
+<script>
+  (function () {
+    if (location.search.indexOf('desktop') >= 0) return;
+    if (Math.min(window.screen.width, window.innerWidth) <= 860) {
+      location.replace('/mobile.html' + location.hash);
+    }
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>协同剪贴板 · 局域网</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23212328'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23E8A33D'%3E%E2%87%84%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══════════ 上侧边栏：品牌 · 房间 · 组合 · 模式选择栏 ══════════ -->
+  <header class="top">
+    <div class="brand">
+      <div class="mark">⇄</div>
+      <div>
+        <div class="bname">协同剪贴板</div>
+        <div class="btag">LAN CLIPBOARD</div>
+      </div>
+    </div>
+    <div class="top-sep"></div>
+    <div class="room-chip"><span class="rc-k">房间</span><span class="rc-v" id="roomChipValue">1001</span></div>
+    <div class="combo" title="2 种输入模式 × 3 种传输方式 = 6 种组合，共用同一个信息窗口">
+      <span class="cb-a" id="comboA">CH2 · SSE 推送</span>
+      <span class="cb-x">×</span>
+      <span class="cb-b" id="comboB">纯文字</span>
+    </div>
+
+    <div class="top-right">
+      <div class="seg" id="modeSeg">
+        <button class="seg-btn active" data-mode="text">纯文字</button>
+        <button class="seg-btn" data-mode="clipboard">剪贴板读取</button>
+      </div>
+      <div class="me-chip">
+        <span class="avatar" id="avatar">我</span>
+        <span class="me-name" id="nickChip">用户</span>
+        <i class="led" id="meLed"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="mid">
+
+    <!-- ══════════ 左侧边栏：三种传输方式 ══════════ -->
+    <aside class="left">
+      <div class="sec">通信方案</div>
+      <div id="channels"></div>
+
+      <div class="sec sec-gap">当前管道</div>
+      <div class="rail-card">
+        <div class="kv" id="transportHint">—</div>
+        <div class="kv mono" id="transportPath">—</div>
+      </div>
+
+      <div class="sec sec-gap">房间</div>
+      <div class="rail-card">
+        <label class="lbl">房间号</label>
+        <div class="row"><input class="inp" id="roomInput" value="1001" autocomplete="off"><button class="btn pri" id="roomBtn">进入</button></div>
+        <div class="stat"><i class="led" id="leftLed"></i><span id="leftStatus">连接中…</span></div>
+      </div>
+
+      <div class="rail-card">
+        <label class="lbl">我的昵称</label>
+        <div class="row"><input class="inp" id="nickInput" autocomplete="off"><button class="btn" id="nickBtn">改</button></div>
+        <div class="kv">发送者显示为「昵称 · IP 短尾」</div>
+      </div>
+
+      <div class="left-foot"><span id="leftAddr">—</span><span class="r" id="leftOnline">—</span></div>
+    </aside>
+
+    <!-- ══════════ 中间：信息显示窗口（六个组合共用这一个） ══════════ -->
+    <main class="stream">
+      <div class="stream-head">
+        <span class="sh-t">共享记录</span>
+        <span class="sh-cnt" id="streamCount">0 条</span>
+        <span class="sh-upd" id="streamUpdated">最近更新 —</span>
+        <div class="vu" id="vu"></div>
+        <span class="vu-num" id="vuNum">0.0 msg/s</span>
+        <span class="sh-right"><i class="led" id="streamLed"></i><span id="streamStatus">未连接</span></span>
+      </div>
+      <div class="msgs" id="msgs">
+        <div id="streamList"></div>
+        <div class="stream-empty" id="streamEmpty">这个房间还没有内容 —— 在下面发第一条</div>
+      </div>
+    </main>
+
+    <!-- ══════════ 右侧边栏：成员 · 服务 · 历史 ══════════ -->
+    <aside class="right">
+      <div class="sec">在线成员 <span class="sec-n" id="memberCount">0</span></div>
+      <div class="rail-card" id="members"></div>
+
+      <div class="sec sec-gap">房间 / 服务</div>
+      <div class="rail-card" id="serviceInfo"></div>
+
+      <div class="sec sec-gap">历史记录 <span class="sec-n">SQLite</span></div>
+      <div class="rail-card">
+        <div id="historyList"></div>
+        <div class="row tight"><button class="btn" id="refreshHistory">刷新历史</button></div>
+      </div>
+
+      <div class="right-foot"><span>同一份历史，六种组合共享</span></div>
+    </aside>
+  </div>
+
+  <!-- ══════════ 下侧边栏：输入源（两种模式在这里切换） ══════════ -->
+  <footer class="bottom" id="composerMount"></footer>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

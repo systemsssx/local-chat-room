@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的开发经历 · 局域网聊天室（全栈）</title>
+<style>
+
+  :root{
+    --bg:#FBFAF8; --card:#FFFFFF; --tx:#22262C; --tx2:#5B6472; --tx3:#8A93A0;
+    --line:#E6E3DE; --code-bg:#F4F2EE; --accent:#B45309; --link:#1D4ED8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--tx);
+    font-family:'Segoe UI','Microsoft YaHei',system-ui,-apple-system,sans-serif;
+    font-size:15px;line-height:1.75;
+  }
+  .body>*:first-child{margin-top:0}
+  .body>*:last-child{margin-bottom:0}
+  .body p{margin:10px 0;white-space:pre-wrap}          /* pre-wrap：保留原文换行（ASCII 图靠它） */
+  .body li{white-space:pre-wrap}
+  .body h3,.body h4,.body h5,.body h6{margin:18px 0 8px;font-size:15px;font-weight:650}
+  .body h3{font-size:16px}
+  .body ul,.body ol{margin:10px 0;padding-left:26px}
+  .body li{margin:4px 0}
+  .body hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+  .body blockquote{margin:10px 0;padding:8px 14px;background:var(--code-bg);
+                   border-left:3px solid var(--line);border-radius:0 8px 8px 0;
+                   color:var(--tx2);font-size:13.5px}
+  .body blockquote p{margin:4px 0}
+  .body code{background:var(--code-bg);padding:1.5px 6px;border-radius:5px;
+             font-family:ui-monospace,Consolas,'Cascadia Mono',monospace;font-size:13px}
+  .body pre.code{background:#F7F5F1;border:1px solid var(--line);border-radius:10px;
+                 padding:14px 16px;overflow-x:auto;margin:12px 0}
+  .body pre.code code{background:none;padding:0;font-size:12.5px;line-height:1.65;white-space:pre}
+  .body .tw{overflow-x:auto;margin:12px 0}
+  .body table{border-collapse:collapse;font-size:13.5px;width:100%;margin:0}
+  .body th,.body td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  .body th{background:var(--code-bg);font-weight:600;white-space:nowrap}
+  .body a{color:var(--link);text-decoration:none;border-bottom:1px solid rgba(29,78,216,.3)}
+  .body a:hover{border-bottom-color:var(--link)}
+  .body strong{font-weight:650}
+  header.top{
+    position:sticky;top:0;z-index:10;background:rgba(251,250,248,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:12px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  header.top .t{font-weight:650;font-size:15px}
+  @media print{
+    header.top,.toc{display:none!important}
+    body{font-size:11.5pt;background:#fff} .intro{display:none}
+    .body table,.body pre.code{break-inside:avoid}
+  }
+
+  :root{--accent:#B45309}
+  header.top .sub{color:var(--tx3);font-size:12.5px}
+
+  .layout{max-width:1180px;margin:0 auto;padding:26px 22px 90px;
+          display:grid;grid-template-columns:236px minmax(0,1fr);gap:40px;align-items:start}
+  /* 没有小标题（也就没有目录）时改单栏，正文窄一点更好读 */
+  .layout.no-toc{grid-template-columns:minmax(0,1fr);max-width:860px}
+  .layout.no-toc .body{font-size:15.5px;line-height:1.95}
+  .layout.no-toc .body p{margin:16px 0;text-indent:2em}   /* 中文习惯：段首空两格 */
+  .toc{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto;
+       font-size:13px;background:var(--card);border:1px solid var(--line);
+       border-radius:12px;padding:14px 16px}
+  .toc-t{font-weight:650;font-size:12px;letter-spacing:.1em;color:var(--tx3);margin-bottom:8px}
+  .toc ol{margin:0;padding-left:18px}
+  .toc li{margin:6px 0;line-height:1.5}
+  .toc a{color:var(--tx2);text-decoration:none;border:0}
+  .toc a:hover{color:var(--accent)}
+
+  h1.doc{font-size:27px;line-height:1.35;margin:6px 0 6px;letter-spacing:-.01em}
+  .lead{color:var(--tx2);font-size:13.5px;margin:0 0 30px;padding-left:14px;
+        border-left:3px solid var(--accent)}
+  .lead p{margin:5px 0;white-space:pre-wrap}
+
+  .body h2{font-size:19px;margin:40px 0 14px;padding-bottom:8px;
+           border-bottom:2px solid var(--line);color:var(--accent);font-weight:650}
+  .body h2:first-child{margin-top:0}
+  .body h3,.body h4{color:var(--tx);font-weight:650}
+  .body h3{font-size:16px;margin:26px 0 8px}
+  .body h4{font-size:14.5px;margin:20px 0 6px}
+  .body .md-h{scroll-margin-top:76px}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr);gap:22px;padding:18px 14px 70px}
+    .toc{position:static;max-height:none}
+    h1.doc{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="t">我的开发经历 · 局域网聊天室（全栈）</span>
+  <span class="sub">局域网聊天室 · 全栈</span>
+</header>
+
+<div class="layout">
+  <nav class="toc"><div class="toc-t">目录</div><ol><li><a href="#h1-先把分工说清楚">先把分工说清楚</a></li><li><a href="#h2-一-我做的几个决定">一、我做的几个决定</a></li><li><a href="#h3-二-靠提问把-登录-这件事弄明白">二、靠提问把"登录"这件事弄明白</a></li><li><a href="#h8-三-界面-先出设计稿-再动手">三、界面：先出设计稿，再动手</a></li><li><a href="#h9-四-结构上最重要的一件事-把权限收口">四、结构上最重要的一件事：把权限收口</a></li><li><a href="#h10-五-测试-这次多了一层">五、测试：这次多了一层</a></li><li><a href="#h11-六-独立复核抓出来的三个严重问题">六、独立复核抓出来的三个严重问题</a></li><li><a href="#h12-七-我自己实测才发现的那个-bug">七、我自己实测才发现的那个 bug</a></li><li><a href="#h13-八-时间大概花在哪">八、时间大概花在哪</a></li><li><a href="#h14-九-还没做好的地方">九、还没做好的地方</a></li><li><a href="#h15-最后">最后</a></li></ol></nav>
+  <main>
+    <h1 class="doc">我的开发经历 · 局域网聊天室（全栈）</h1>
+    <div class="lead"><p>这次是拿上一个项目（协同剪贴板）当底子，改成一个<strong>有登录、有房间、只有一条实时通道</strong>的聊天室。
+下面是我这边做过的事、卡住的地方，以及最后是怎么收尾的。</p></div>
+    <div class="body"><h2 class="md-h" id="h1-先把分工说清楚">先把分工说清楚</h2>
+<div class="tw"><table><thead><tr><th></th><th>谁做的</th></tr></thead><tbody><tr><td><strong>定方向</strong></td><td>我：只留 SSE、砍掉轮询和 WebSocket；左栏三种传输改成房间列表；房间号和昵称输入框全删；进群必须凭房间码；登录用 Cookie 会话</td></tr><tr><td><strong>写代码</strong></td><td>AI：后端拆成 auth / rooms / db / 五个路由，前端重写成十个小模块，单元测试、端到端脚本、这份文档</td></tr><tr><td><strong>抠概念</strong></td><td>我：cookie 到底存在哪、sid 和用户 id 的区别、能不能拿 cookie 当用户 id、SQLite 怎么做到"隔离" —— 这四件事我一个一个问明白了才让它动后端</td></tr><tr><td><strong>挑错</strong></td><td>我：实测点出来一堆问题（页面打开是旧项目、每次发消息弹红条）。另外我还让一个<strong>独立的复核</strong>去挑刺，它挑出三个严重问题</td></tr><tr><td><strong>没让 AI 干的</strong></td><td>《项目说明》那篇是我自己手敲的，AI 不代笔</td></tr></tbody></table></div>
+<h2 class="md-h" id="h2-一-我做的几个决定">一、我做的几个决定</h2>
+<ol>
+<li><strong>只留 SSE</strong>。三种传输里，轮询费流量、WebSocket 双向用不上（聊天室发消息本来就是普通 POST），留一个最好维护的。砍掉之后左栏那三个"通信方案"就没意义了 —— 所以左栏直接改成房间列表。</li>
+<li><strong>房间和身份都从界面上挪走</strong>。原来顶栏有"房间号输入框 + 进入"和"昵称输入框"，聊天室里房间应该从列表里选、身份应该来自登录，这两个输入框留着只会让人乱。</li>
+<li><strong>进群凭房间码</strong>。像游戏开房那样：建完房给一个 6 位码，发给谁谁能进。我特意确认过：码不能用自增 id（顺序号能被一路试过去），所以是随机生成、去掉容易念错的 <code>0O1IL</code>。</li>
+<li><strong>登录用 Cookie 会话，不用 JWT</strong>。理由很实际：<code>EventSource</code> 不支持自定义请求头，Bearer token 根本带不上去；Cookie 是浏览器在 fetch / EventSource 上都会自动带的东西。</li>
+<li><strong>砍掉"剪贴板监听"模式</strong>。那是上一个项目的能力，聊天室用不上，而且它只能在 <code>localhost</code> 下工作。</li>
+</ol>
+<h2 class="md-h" id="h3-二-靠提问把-登录-这件事弄明白">二、靠提问把"登录"这件事弄明白</h2>
+<p>这块我最不想含糊，因为登录最容易做成假的。我问了四轮：</p>
+<h3 class="md-h" id="h4-例子一-cookie-是-握手成功的凭据-吗">例子一：cookie 是"握手成功的凭据"吗</h3>
+<p><strong>不是。</strong> 握手（TCP/TLS）是传输层的事，请求发完就没了；HTTP 本身<strong>没有状态</strong>，每一句请求在服务器看来都是陌生人开口。所谓"我登录了"这件事，是<strong>服务端自己在<code>sessions</code> 表里记的一笔账</strong>：你出示的随机串对得上表里的行，才认你是那个人。</p>
+<p>我自己的总结是：<strong>cookie 是门票，服务端手里有名册</strong>。保安不是看你的脸认出你，是拿编号去翻名册。</p>
+<h3 class="md-h" id="h5-例子二-为什么-cookie-里不直接放用户-id">例子二：为什么 cookie 里不直接放用户 id</h3>
+<p>一开始我以为"反正服务端认的是用户 id，那 cookie 里装 id 不就行了"。<strong>不行</strong>，两个原因：</p>
+<ul>
+<li>cookie 存在<strong>用户自己的电脑上</strong>，用户想改随时能改（F12 里双击就能编辑）。装随机串时改了就对不上名册；装用户 id 时，改成 1 就冒充了管理员；</li>
+<li>身份是<strong>长期</strong>的（跟账号同寿命），门票是<strong>短期</strong>的（几天过期、可以有好几张、要能随时作废）。拿票号当身份，等于"换张卡公司就不认识你了"。</li>
+</ul>
+<p>这一条我自己有体会：<strong>我爬虫里那张 cookie 就是几天要换一次</strong>，跟这里是一回事。</p>
+<h3 class="md-h" id="h6-例子三-那接口里还传不传用户-id">例子三：那接口里还传不传用户 id</h3>
+<p><strong>不传。</strong> 客户端只出示 cookie，服务端拿 cookie 查出用户 id —— <strong>id 是服务端查出来的，不是客户端告诉它的</strong>。所以现在发消息的请求体里没有 <code>userId</code>、没有昵称，署名一律由服务端填。</p>
+<h3 class="md-h" id="h7-例子四-sqlite-怎么-隔离">例子四：SQLite 怎么"隔离"</h3>
+<p>我原本以为要"一个群一个数据库"。AI 的解释让我改了主意：<strong>不是一房一库，是一张表 + 每行带 <code>room_id</code></strong>，隔离靠两件事 —— ① 查询永远带 <code>room_id</code>；② 访问之前先问一句"你是这个房间的成员吗"。一个群一个库会让连接、备份、迁移全部翻倍复杂，收益接近零。</p>
+<p><strong>真正会出事的是"忘了加 WHERE"或"漏了一次成员检查"</strong>，所以这一条我要求<strong>收口成一个函数</strong>，所有路由都过它，不许每个路由各写一遍。</p>
+<h2 class="md-h" id="h8-三-界面-先出设计稿-再动手">三、界面：先出设计稿，再动手</h2>
+<p>按老规矩，代码之前先要一版<strong>能看的设计稿</strong>。这次的改动在结构上：</p>
+<div class="tw"><table><thead><tr><th>位置</th><th>改成</th></tr></thead><tbody><tr><td>左栏</td><td>三种传输方式 → <strong>房间列表</strong>（房间名 + 人数 + 最后一条摘要 + 未读角标）</td></tr><tr><td>顶栏</td><td>房间号/昵称输入框 → <strong>当前房间铭牌 + 我 + 退出登录</strong></td></tr><tr><td>消息行</td><td>去掉 POLL/SSE/WS 管道标记，位置让给头像</td></tr><tr><td>右栏</td><td>去掉"历史记录"卡片（消息流本身就是历史），换成成员 / 房间概况 / <strong>房间码</strong></td></tr><tr><td>新增</td><td>登录卡片、<strong>建房间与加入房间弹窗</strong>（和登录卡片同一套样式）</td></tr></tbody></table></div>
+<p>设计稿我看了之后提了几处（消息正文太宽、右下角切换条挡内容、成员列表里"正在输入"挂在我不对），改完才落到 <code>public/</code> 里实现。配色和字形沿用原来的"精密仪表"皮肤 —— 改动量小，也是已经验收过的风格。</p>
+<h2 class="md-h" id="h9-四-结构上最重要的一件事-把权限收口">四、结构上最重要的一件事：把权限收口</h2>
+<p>后端所有涉及房间的接口，第一步都是同一个函数 <code>require_member(room_id, user_id)</code>：</p>
+<ul>
+<li>不是这个房间的成员 → 一律 403；</li>
+<li>快照、发消息、翻页、上传、SSE、房间详情、连接实况、退群、换码、解散 —— <strong>11 个入口逐个查过</strong>，没有一个能绕过去。</li>
+</ul>
+<p>这件事最后是被一份<strong>独立的复核报告</strong>确认的（它把 11 个入口一个一个打了标记），不是我自己说"我写了"就算数。</p>
+<h2 class="md-h" id="h10-五-测试-这次多了一层">五、测试：这次多了一层</h2>
+<div class="tw"><table><thead><tr><th>层</th><th>数量</th><th>测什么</th></tr></thead><tbody><tr><td>单元测试</td><td><strong>131 项</strong>（约 4 秒）</td><td>认证、会话、房间、成员、消息、上传下载、SSE 订阅表</td></tr><tr><td>静态检查</td><td>66 个 id</td><td>JS 用到的元素 id 在两份页面里都在，且两份一致</td></tr><tr><td>端到端</td><td><strong>51 项</strong></td><td>对着真服务器跑完整流程（纯 HTTP）</td></tr></tbody></table></div>
+<p><strong>端到端为什么不用浏览器</strong>：这台机器上浏览器自动化起不来（多进程 IPC 要命名管道，被环境挡了）。所以端到端改成纯 HTTP 跑服务端，<strong>浏览器里的东西用手动测试清单兜底</strong> ——这个分工后来被证明是对的，也暴露了一个只有手点才能发现的 bug（见下一节）。</p>
+<h2 class="md-h" id="h11-六-独立复核抓出来的三个严重问题">六、独立复核抓出来的三个严重问题</h2>
+<p>我让一个独立的复核去挑刺（只读、不许改文件），它挑出来的东西比我预期的多：</p>
+<ol>
+<li><strong>上传 <code>.html</code> = 同源存储型 XSS</strong>。我一开始把 <code>.html</code> 放进允许的文本扩展名里了，上传后浏览器会按 <code>text/html</code> <strong>内联执行</strong>它 —— 别人打开那条下载链接，脚本就在我们的源里跑，能直接读走 Cookie。改法有两层：白名单里删掉 <code>.html/.svg/.xml</code>，<strong>并且</strong>把下载改成"验成员 + 非图片一律当附件 + nosniff"，同时 <code>uploads/</code> 不再用静态目录挂出去（否则连登录都不用就能下载）。</li>
+<li><strong>公开房间的列表里带着房间码</strong>。等于把邀请码贴在公告栏上，"凭码入群"成了一句空话。现在列表不给码。</li>
+<li><strong>消息里的 <code>file</code> 字段整段信客户端</strong>。那是客户端拼的 JSON，可以塞 <code>url: "javascript:…"</code>、塞 3MB 的预览。现在服务端按白名单重建，并要求"那个文件确实上传到了这个房间"。</li>
+</ol>
+<p>还有四个中等问题：切房间的竞态、并发进冷房间会丢消息、被移出房间后 SSE 静默死掉、pbkdf2 跑在事件循环里把所有请求堵住。这些都在当天修完，并且各自补了回归测试。</p>
+<h2 class="md-h" id="h12-七-我自己实测才发现的那个-bug">七、我自己实测才发现的那个 bug</h2>
+<p>修完之后我自己开两个窗口测。结果出现一个很烦的现象：<strong>消息一切正常，但每发一条就弹一个红色的报错条</strong>。</p>
+<p>查下来根因挺有意思：</p>
+<pre class="code"><code>我发消息 → 服务端存下 → 同一件事从两条路回到前端：
+   ① SSE 推给我（先到 —— 消息立刻显示）
+   ② POST 的响应（后到 —— 同一条消息，被 seq 去重后剩下一个空数组）
+   代码没挡住"去重后为空"，于是去读 空数组[-1].at → 抛异常 → 被 catch 接住 → 弹红条</code></pre>
+<p>这个 bug <strong>单元测试和端到端都抓不到</strong>（它们不经过渲染层），只有真的在浏览器里点才会暴露。我把它记进 README 的"踩过的坑"了 —— 它正好说明为什么"能在浏览器里点一遍"这件事不能省。</p>
+<p>顺带我还发现自己看错了一次：页面打开的其实是<strong>早上那个旧项目的标签页</strong>（浏览器恢复了它），它还在按老接口轮询，新服务端回它一句"房间不存在"。后来我给页面加了 <code>no-cache</code>，以后改前端不会再出现"我改了、浏览器还是旧的"。</p>
+<h2 class="md-h" id="h13-八-时间大概花在哪">八、时间大概花在哪</h2>
+<div class="tw"><table><thead><tr><th>阶段</th><th>大概占比</th></tr></thead><tbody><tr><td>问清楚概念（登录 / 会话 / 隔离）</td><td>两成 —— <strong>我认为这是最值钱的两成</strong></td></tr><tr><td>后端重写（换 schema、加鉴权、房间服务）</td><td>三成</td></tr><tr><td>前端重写（登录卡片、房间列表、弹窗、SSE 单连接）</td><td>三成</td></tr><tr><td>测试、复核、修安全问题</td><td>两成</td></tr></tbody></table></div>
+<h2 class="md-h" id="h14-九-还没做好的地方">九、还没做好的地方</h2>
+<ol>
+<li><strong>私聊、@提及、撤回、表情</strong>都没做 —— 题目要的是房间内实时聊天，这几样属于加分项；</li>
+<li>消息列表<strong>没有虚拟滚动</strong>，一个房间几千条会变卡（内存里只留最近 500 条，更早的翻页查库）；</li>
+<li><strong>公开房间只有接口，前端还没做浏览页</strong> —— 目前一律凭码入群；</li>
+<li>上传的图片<strong>没有服务端缩略图</strong>，大图直接原图下发；</li>
+<li><strong>没有 HTTPS</strong>：局域网演示时 Cookie 的 <code>Secure</code> 开关必须关掉；真要上公网，前面得挂一层反向代理；</li>
+<li><strong>没有找回密码</strong>（没有邮箱系统），忘了只能重新注册；</li>
+<li>限速只做了"登录失败锁定"，发消息没有节流。</li>
+</ol>
+<h2 class="md-h" id="h15-最后">最后</h2>
+<p>上一个项目我是"边做边学"，这一次是"先把概念问清楚再动手"，效果好得多 ——尤其是登录和隔离这两块，问明白之后，后面所有的代码都在同一个逻辑上，没有再返工。</p></div>
+  </main>
+</div>
+
+</body>
+</html>

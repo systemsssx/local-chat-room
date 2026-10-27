@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <rect width="640" height="400" fill="#101113"/>
+  <text x="40" y="58" fill="#F2EDE4" font-family="sans-serif" font-size="26" font-weight="600">配色稿 · 03</text>
+  <text x="40" y="86" fill="#7A756E" font-family="sans-serif" font-size="15">精密仪表 —— 暖炭灰机箱 + 单一琥珀强调</text>
+
+  <g stroke="#3A3D43" stroke-width="1">
+    <rect x="40"  y="120" width="100" height="100" rx="8" fill="#151618"/>
+    <rect x="152" y="120" width="100" height="100" rx="8" fill="#212328"/>
+    <rect x="264" y="120" width="100" height="100" rx="8" fill="#E8A33D"/>
+    <rect x="376" y="120" width="100" height="100" rx="8" fill="#F2EDE4"/>
+    <rect x="488" y="120" width="100" height="100" rx="8" fill="#7A756E"/>
+  </g>
+
+  <g font-family="monospace" font-size="13" fill="#A8A29A">
+    <text x="40"  y="248">#151618</text>
+    <text x="152" y="248">#212328</text>
+    <text x="264" y="248">#E8A33D</text>
+    <text x="376" y="248">#F2EDE4</text>
+    <text x="488" y="248">#7A756E</text>
+  </g>
+
+  <line x1="40" y1="288" x2="600" y2="288" stroke="#2C2E33"/>
+  <text x="40" y="326" fill="#A8A29A" font-family="sans-serif" font-size="15">正文 13px / 行高 1.72 · 数字 Georgia · 标签 Cascadia Mono</text>
+  <text x="40" y="360" fill="#5A564E" font-family="sans-serif" font-size="14">正文对比度 ≥ 4.5:1，琥珀只用在强调与状态</text>
+</svg>

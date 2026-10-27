@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- viewport-fit=cover：让 env(safe-area-inset-*) 在刘海屏上生效 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#151618">
+<meta name="mobile-web-app-capable" content="yes">
+<title>协同剪贴板 · 手机版</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23212328'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23E8A33D'%3E%E2%87%84%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/mobile.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══ 顶栏：房间 + 两个抽屉入口 ══ -->
+  <header class="top">
+    <button class="icon-btn" id="btnLeft" aria-label="通信方式与房间">☰</button>
+    <div class="room-chip"><span class="rc-k">房间</span><span class="rc-v" id="roomChipValue">1001</span></div>
+    <span class="top-spacer"></span>
+    <i class="led" id="meLed"></i>
+    <button class="icon-btn" id="btnRight" aria-label="成员、服务与历史">☷</button>
+  </header>
+
+  <!-- ══ 组合条：三种传输 × 两种输入模式（＝6 种组合）══ -->
+  <div class="bar">
+    <div class="seg" id="channels"></div>
+    <div class="seg" id="modeSeg">
+      <button class="seg-btn active" data-mode="text">纯文字</button>
+      <button class="seg-btn" data-mode="clipboard">剪贴板</button>
+    </div>
+  </div>
+
+  <!-- ══ 信息窗口（六个组合共用这一个）══ -->
+  <main class="stream">
+    <div class="stream-head">
+      <span class="sh-cnt" id="streamCount">0 条</span>
+      <span class="sh-upd" id="streamUpdated">最近更新 —</span>
+      <span class="sh-right"><i class="led" id="streamLed"></i><span id="streamStatus">未连接</span></span>
+      <!-- 手机屏幕窄，电平条不显示；但 main.js 需要这两个节点存在 -->
+      <div class="vu" id="vu"></div><span class="vu-num" id="vuNum">0.0 msg/s</span>
+    </div>
+    <div class="msgs" id="msgs">
+      <div id="streamList"></div>
+      <div class="stream-empty" id="streamEmpty">这个房间还没有内容<br>在下面发第一条</div>
+    </div>
+  </main>
+
+  <!-- ══ 底部输入源（两种模式在这里切换）══ -->
+  <footer class="bottom" id="composerMount"></footer>
+</div>
+
+<!-- ══ 左抽屉：房间 / 昵称 / 当前管道（原桌面版左侧栏）══ -->
+<aside class="drawer left" id="drawerLeft">
+  <div class="drawer-head"><span>通信方式与房间</span><button class="drawer-x" data-close aria-label="关闭">✕</button></div>
+  <div class="drawer-body">
+
+    <div class="sec">房间</div>
+    <div class="rail-card">
+      <label class="lbl">房间号</label>
+      <div class="row">
+        <input class="inp" id="roomInput" value="1001" autocomplete="off" inputmode="text">
+        <button class="btn pri" id="roomBtn">进入</button>
+      </div>
+      <div class="stat"><i class="led" id="leftLed"></i><span id="leftStatus">连接中…</span></div>
+    </div>
+
+    <div class="sec">我的昵称</div>
+    <div class="rail-card">
+      <div class="row" style="margin:0">
+        <input class="inp" id="nickInput" autocomplete="off">
+        <button class="btn" id="nickBtn">改</button>
+      </div>
+      <div class="kv" style="margin-top:10px">发送者显示为「昵称 · IP 短尾」</div>
+    </div>
+
+    <div class="sec">当前管道</div>
+    <div class="rail-card">
+      <div class="kv" id="transportHint">—</div>
+      <div class="kv mono" id="transportPath">—</div>
+      <div class="kv mono" id="comboA">—</div>
+    </div>
+
+    <div class="sec">本机</div>
+    <div class="rail-card">
+      <div class="kv mono" id="leftAddr">—</div>
+      <div class="kv" id="leftOnline" style="margin-top:6px">—</div>
+      <!-- 下面几个是 main.js 要写、手机上不显示的 -->
+      <span id="comboB" hidden>—</span>
+      <span id="nickChip" hidden></span>
+      <span id="avatar" hidden></span>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ 右抽屉：成员 / 服务 / 历史（原桌面版右侧栏）══ -->
+<aside class="drawer right" id="drawerRight">
+  <div class="drawer-head"><span>成员 · 服务 · 历史</span><button class="drawer-x" data-close aria-label="关闭">✕</button></div>
+  <div class="drawer-body">
+    <div class="sec">在线成员 <span id="memberCount">0</span></div>
+    <div class="rail-card" id="members"></div>
+
+    <div class="sec">房间 / 服务</div>
+    <div class="rail-card" id="serviceInfo"></div>
+
+    <div class="sec">历史记录</div>
+    <div class="rail-card">
+      <div id="historyList"></div>
+      <div class="row tight"><button class="btn" id="refreshHistory">刷新历史</button></div>
+    </div>
+  </div>
+</aside>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- 复用桌面版的入口逻辑：main.js 只认 DOM id，不关心它们排成什么样 -->
+<script type="module" src="/js/main.js"></script>
+
+<!-- 抽屉开合：纯界面交互，放在这里，免得和 main.js 的两套布局逻辑混在一起 -->
+<script>
+(function () {
+  var scrim = document.getElementById('scrim');
+  var left = document.getElementById('drawerLeft');
+  var right = document.getElementById('drawerRight');
+
+  function closeAll() {
+    left.classList.remove('show');
+    right.classList.remove('show');
+    scrim.classList.remove('show');
+  }
+  function open(drawer) {
+    closeAll();
+    drawer.classList.add('show');
+    scrim.classList.add('show');
+  }
+
+  document.getElementById('btnLeft').addEventListener('click', function () { open(left); });
+  document.getElementById('btnRight').addEventListener('click', function () { open(right); });
+  scrim.addEventListener('click', closeAll);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'), function (b) {
+    b.addEventListener('click', closeAll);
+  });
+
+  // 在抽屉里点了「进入」/「改」，顺手把抽屉收起来
+  ['roomBtn', 'nickBtn'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () {
+      setTimeout(closeAll, 260);
+    });
+  });
+
+  // Esc 关闭（外接键盘时用得上）
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+
+  // 从屏幕左/右边缘往里滑也能拉出抽屉（手机上更顺手）
+  var x0 = null, y0 = null;
+  document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    x0 = t.clientX; y0 = t.clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > 50) return;      // 太短或太竖，当滚动处理
+    if (dx > 0 && x0 === null && t.clientX < 240) open(left); // 从左边缘往右滑
+    if (dx < 0 && t.clientX > window.innerWidth - 80) open(right); // 从右边缘往左滑
+  }, { passive: true });
+
+  // 当前用手机版 —— 让用户知道（地址栏上方的提示）
+  setTimeout(function () {
+    var box = document.getElementById('toast');
+    if (!box) return;
+    if (box.textContent && box.textContent.indexOf('手机') === -1) {
+      box.textContent = box.textContent + '（手机版）';
+    }
+  }, 300);
+})();
+</script>
+</body>
+</html>

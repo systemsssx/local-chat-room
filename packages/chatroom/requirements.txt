@@ -1,0 +1,10 @@
+# 聊天室 —— Python 后端依赖
+#
+# 安装：python -m pip install -r requirements.txt
+#
+# 只列非标准库的包。SQLite（sqlite3）、密码哈希（hashlib/hmac）、随机数（secrets）、
+# 局域网地址发现（socket）全部由 Python 标准库提供 —— 登录鉴权没有引入任何第三方库。
+
+fastapi>=0.115          # Web 框架
+uvicorn>=0.30           # ASGI 服务器
+python-multipart>=0.0.9 # FastAPI 解析 multipart 上传（图片/文件）需要

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的开发经历 · 局域网协同剪贴板</title>
+<style>
+
+  :root{
+    --bg:#FBFAF8; --card:#FFFFFF; --tx:#22262C; --tx2:#5B6472; --tx3:#8A93A0;
+    --line:#E6E3DE; --code-bg:#F4F2EE; --accent:#B45309; --link:#1D4ED8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--tx);
+    font-family:'Segoe UI','Microsoft YaHei',system-ui,-apple-system,sans-serif;
+    font-size:15px;line-height:1.75;
+  }
+  .body>*:first-child{margin-top:0}
+  .body>*:last-child{margin-bottom:0}
+  .body p{margin:10px 0;white-space:pre-wrap}          /* pre-wrap：保留原文换行（ASCII 图靠它） */
+  .body li{white-space:pre-wrap}
+  .body h3,.body h4,.body h5,.body h6{margin:18px 0 8px;font-size:15px;font-weight:650}
+  .body h3{font-size:16px}
+  .body ul,.body ol{margin:10px 0;padding-left:26px}
+  .body li{margin:4px 0}
+  .body hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+  .body blockquote{margin:10px 0;padding:8px 14px;background:var(--code-bg);
+                   border-left:3px solid var(--line);border-radius:0 8px 8px 0;
+                   color:var(--tx2);font-size:13.5px}
+  .body blockquote p{margin:4px 0}
+  .body code{background:var(--code-bg);padding:1.5px 6px;border-radius:5px;
+             font-family:ui-monospace,Consolas,'Cascadia Mono',monospace;font-size:13px}
+  .body pre.code{background:#F7F5F1;border:1px solid var(--line);border-radius:10px;
+                 padding:14px 16px;overflow-x:auto;margin:12px 0}
+  .body pre.code code{background:none;padding:0;font-size:12.5px;line-height:1.65;white-space:pre}
+  .body .tw{overflow-x:auto;margin:12px 0}
+  .body table{border-collapse:collapse;font-size:13.5px;width:100%;margin:0}
+  .body th,.body td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  .body th{background:var(--code-bg);font-weight:600;white-space:nowrap}
+  .body a{color:var(--link);text-decoration:none;border-bottom:1px solid rgba(29,78,216,.3)}
+  .body a:hover{border-bottom-color:var(--link)}
+  .body strong{font-weight:650}
+  header.top{
+    position:sticky;top:0;z-index:10;background:rgba(251,250,248,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:12px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  header.top .t{font-weight:650;font-size:15px}
+  @media print{
+    header.top,.toc{display:none!important}
+    body{font-size:11.5pt;background:#fff} .intro{display:none}
+    .body table,.body pre.code{break-inside:avoid}
+  }
+
+  :root{--accent:#B45309}
+  header.top .sub{color:var(--tx3);font-size:12.5px}
+
+  .layout{max-width:1180px;margin:0 auto;padding:26px 22px 90px;
+          display:grid;grid-template-columns:236px minmax(0,1fr);gap:40px;align-items:start}
+  /* 没有小标题（也就没有目录）时改单栏，正文窄一点更好读 */
+  .layout.no-toc{grid-template-columns:minmax(0,1fr);max-width:860px}
+  .layout.no-toc .body{font-size:15.5px;line-height:1.95}
+  .layout.no-toc .body p{margin:16px 0;text-indent:2em}   /* 中文习惯：段首空两格 */
+  .toc{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto;
+       font-size:13px;background:var(--card);border:1px solid var(--line);
+       border-radius:12px;padding:14px 16px}
+  .toc-t{font-weight:650;font-size:12px;letter-spacing:.1em;color:var(--tx3);margin-bottom:8px}
+  .toc ol{margin:0;padding-left:18px}
+  .toc li{margin:6px 0;line-height:1.5}
+  .toc a{color:var(--tx2);text-decoration:none;border:0}
+  .toc a:hover{color:var(--accent)}
+
+  h1.doc{font-size:27px;line-height:1.35;margin:6px 0 6px;letter-spacing:-.01em}
+  .lead{color:var(--tx2);font-size:13.5px;margin:0 0 30px;padding-left:14px;
+        border-left:3px solid var(--accent)}
+  .lead p{margin:5px 0;white-space:pre-wrap}
+
+  .body h2{font-size:19px;margin:40px 0 14px;padding-bottom:8px;
+           border-bottom:2px solid var(--line);color:var(--accent);font-weight:650}
+  .body h2:first-child{margin-top:0}
+  .body h3,.body h4{color:var(--tx);font-weight:650}
+  .body h3{font-size:16px;margin:26px 0 8px}
+  .body h4{font-size:14.5px;margin:20px 0 6px}
+  .body .md-h{scroll-margin-top:76px}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr);gap:22px;padding:18px 14px 70px}
+    .toc{position:static;max-height:none}
+    h1.doc{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="t">我的开发经历 · 局域网协同剪贴板</span>
+  <span class="sub">四个小时，我这边怎么想的怎么拍的板</span>
+</header>
+
+<div class="layout">
+  <nav class="toc"><div class="toc-t">目录</div><ol><li><a href="#h1-先把分工说清楚">先把分工说清楚</a></li><li><a href="#h2-一-我做的几个决定">一、我做的几个决定</a></li><li><a href="#h3-二-靠提问把不懂的地方弄明白">二、靠提问把不懂的地方弄明白</a></li><li><a href="#h9-三-界面这块改了三回">三、界面这块改了三回</a></li><li><a href="#h10-四-交付形态-双击启动-手机能连">四、交付形态：双击启动 + 手机能连</a></li><li><a href="#h11-五-用起来发现的问题">五、用起来发现的问题</a></li><li><a href="#h12-六-p2p-那道题">六、P2P 那道题</a></li><li><a href="#h13-七-单元测试">七、单元测试</a></li><li><a href="#h14-八-四个小时大概花在哪">八、四个小时大概花在哪</a></li><li><a href="#h15-九-还没做好的地方">九、还没做好的地方</a></li></ol></nav>
+  <main>
+    <h1 class="doc">我的开发经历 · 局域网协同剪贴板</h1>
+    <div class="lead"><p>2026-10-06 晚上做的，前后四个小时（20:00 开始，次日 00:17 结束，跨度 4 小时 23 分）。
+技术细节在《开发经历总结》里，我跟 AI 的完整对话在《对话记录 01 · 实现过程》。</p></div>
+    <div class="body"><h2 class="md-h" id="h1-先把分工说清楚">先把分工说清楚</h2>
+<p>一开始就说好：<strong>我出思路，它写代码，README 里能看出我的思路</strong>。</p>
+<p>这么定是有原因的。这题要交付的东西我自己得讲得清楚，所以定了个规矩：<strong>不懂的地方不拍板，先问明白再决定。</strong> 实际做下来代码基本都是它写的，我这四个小时里花时间最多的其实不是写代码，是问问题 —— 下面第二节专门记这件事。</p>
+<hr>
+<h2 class="md-h" id="h2-一-我做的几个决定">一、我做的几个决定</h2>
+<p>先把我拍过板的东西列一下，后面的内容基本都围着它们转。</p>
+<div class="tw"><table><thead><tr><th>决定</th><th>我凭什么定的</th></tr></thead><tbody><tr><td><strong>范围</strong>：三个任务全做 + SQLite 历史 + 系统剪贴板自动同步</td><td>题目里这些是分开的任务，我想要的是一套东西能跑通全流程，而不是三个互不相干的小 demo</td></tr><tr><td><strong>界面骨架</strong>：六个组合 = 2 种输入 × 3 种传输，四面框</td><td>两种输入方式和三种传输本来就是两回事，组合起来才是 6 种。这不光影响界面，也决定了后面代码怎么拆</td></tr><tr><td><strong>六个组合共用一份数据源</strong></td><td>如果每个组合各存一份消息，那"历史互通"就是假的。所以先定死：切换只换管道和输入方式，消息只有一份</td></tr><tr><td><strong>交互模型从"共享输入框"改成"聊天室"</strong></td><td>数据源在服务端，就不再是"多人共用一个输入框"，而是一台设备往里发东西、所有人看到同一份历史</td></tr><tr><td><strong>不做输入防抖</strong></td><td>接着上一条：这题不是逐键同步，是"内容确认后才发一条"，没有需要防抖的场景</td></tr><tr><td><strong>数据存服务端</strong></td><td>追问清楚"数据源在哪台电脑上"之后才定的。存本地就没有协同可言</td></tr><tr><td><strong>换成 Python（FastAPI）+ 多文件结构</strong></td><td>题目首推的就是 Python；多文件是为了结构清楚，别堆在一个文件里</td></tr><tr><td><strong>交付不做 exe，做"双击启动 + 手机能连"</strong></td><td>我要的是那个交互，不是 .exe 这个后缀。真 exe 每改一次代码就得重打，不划算</td></tr><tr><td><strong>手机单独出一版</strong></td><td>桌面版是四面框，手机竖屏放不下，压扁了没法用</td></tr><tr><td><strong>P2P 那道题的结论</strong>：不做</td><td>聊天室要历史、要权威，这些只有服务端能给；再加 P2P 只是多一套复杂度</td></tr></tbody></table></div>
+<p>这些决定里有几个是我先想出来、再去跟 AI 对齐的；也有几个是听它讲完之后才定的。下面按做的事儿的顺序记。</p>
+<hr>
+<h2 class="md-h" id="h3-二-靠提问把不懂的地方弄明白">二、靠提问把不懂的地方弄明白</h2>
+<p>这是我这四个小时里做得最多的一件事，单独记一下。</p>
+<h3 class="md-h" id="h4-为什么这么干">为什么这么干</h3>
+<p>不懂的地方拍板，后面一定要返工。所以我的做法是：<strong>碰到不认识的词、不确定的设计，先问到能用自己的话讲一遍，再决定怎么做。</strong> 有几次问得比较久，但问完确实省事。</p>
+<h3 class="md-h" id="h5-例子一-双向-这两个字-问了五轮">例子一："双向"这两个字，问了五轮</h3>
+<p>题目里反复说"双向"，我一开始真不确定指什么，连着问了五轮，中间还猜错：</p>
+<div class="tw"><table><thead><tr><th>我问的</th><th>当时我的理解</th></tr></thead><tbody><tr><td>什么是双向</td><td>不知道</td></tr><tr><td>文本修改通过 WebSocket 发送，所以双向发生在这步是吗</td><td>以为是"发消息这一步"</td></tr><tr><td>也就是说双向的意思是服务器原来没有编辑本地端的权限，现在有了？</td><td>猜的，不对</td></tr><tr><td>哦懂了，前两种要什么数据只能本地端找服务器问，后一种相当于<strong>本地端和服务器坐在同一张桌子吃饭</strong></td><td>这下差不多对上了</td></tr><tr><td>SSE 多了新数据会触发逻辑、服务器推给你，你要走另一条通道传数据；WebSocket 里这两条通道是一条通道</td><td>自己复述一遍才算清楚</td></tr></tbody></table></div>
+<p><strong>这一步的产出</strong>：搞清楚了三种传输的本质差别 —— 前两种下行靠服务端推、上行还得另开一条路，WebSocket 是上下行同一条连接。后面 README 里"三种方式的区别"那节、还有后端为什么只有 WS 那条路上行也走 socket，都是照着这个判断写的。</p>
+<h3 class="md-h" id="h6-例子二-局域网到底是怎么连上的">例子二：局域网到底是怎么连上的</h3>
+<p>后端开工我提的要求是"先搞定局域网连接，解释一下局域网内是怎么连接上的"，然后一路往下问：</p>
+<ul>
+<li>ARP、TCP 是啥？→ IP 转 MAC 由内核查 ARP 表，三次握手也是内核做的</li>
+<li>局域网里握手的是谁？这些 ARP、TCP 啥的？→ 分层：应用代码只管发请求，下面几层是操作系统</li>
+<li><strong>那我握手需要的只是调用操作系统去发送请求的代码吗？</strong> → 是，应用代码不碰 ARP/TCP</li>
+</ul>
+<p><strong>这一步的产出</strong>：知道网络这层我只需要管到"应用层怎么发请求"，下面几层是内核的事。后来手机连不上时，我第一反应是去查防火墙规则，而不是去改代码 —— 因为连接失败的原因大概率在系统层，不在应用层。（实际查下来 <code>python.exe</code> 的入站规则确实覆盖了 Public profile，而这台机器的 WiFi 正好被 Windows 归成"公用网络"。）</p>
+<p>顺带还问了分帧。我问的原话是：</p>
+<blockquote><p>之后自己解析 WebSocket 帧：opcode、掩码、payload 长度、分片重组，这个逻辑还有什么别的地方有用到吗？<strong>有人帮我干过的事我为什么还要再干一遍？</strong></p></blockquote>
+<p>问完才分清：帧的编解码是浏览器和库的事，但"TCP 之上怎么划分消息"这个问题本身得懂，不然不知道 WebSocket 替你解决了什么。长度前缀我是用大白话确认的：<strong>"那 2 就是先告诉你这条消息有多少字，然后让机器去算是吧"</strong>。</p>
+<h3 class="md-h" id="h7-例子三-库到底是什么形式">例子三：库到底是什么形式</h3>
+<p>轮到我拍板存数据的时候，我的问题是：</p>
+<blockquote><p>OK，现在建库吧。你告诉我库是什么形式的（CSV 吗，那图片怎么办），第二个他的接口是怎么接的。</p></blockquote>
+<p><strong>这一步的产出</strong>：CSV 不行（没事务、并发写会坏）；图片不该入库（二进制放磁盘，库里只存 URL 和元信息）；接口就是两张表 —— 房间当前状态 + 历史记录，靠 <code>seq</code> 去重。最后落地就是 <code>data/app.db</code> 一个 SQLite 文件，拷走它就等于备份。</p>
+<h3 class="md-h" id="h8-例子四-换-python-之后冒出来的一批概念">例子四：换 Python 之后冒出来的一批概念</h3>
+<p>换栈是我拍的，但我那时候对 Python 的 Web 框架基本一无所知，所以又是一轮逐个问：</p>
+<ul>
+<li><strong>FastAPI 干嘛的？</strong> → 它不写业务，负责把 HTTP 请求翻译成 Python 函数调用</li>
+<li><strong>config.py 为啥要单独写一个 py？他是负责生成 .config 的吗？</strong> → 猜错了，它不生成任何文件，它本身就是配置</li>
+<li><strong>这个写法跟我写一个本地的程序带有上网请求的好不一样</strong> → 差别就是客户端"我调用别人"、服务端"我被别人调用"</li>
+<li><strong>那我客户端和服务端要分别打包成两个不同的程序？</strong> → 不用，客户端就是服务端托管的那几个网页文件</li>
+<li><strong>你给我的 html 界面是服务端还是客户端，应该是客户端吧，那服务端的启动入口在哪？</strong> → 是客户端；入口是 <code>server.py</code></li>
+<li><strong>我 <code>npm run build</code> 打包出来的结果是什么？</strong> → 这项目零构建，<code>public/</code> 本身就是产物</li>
+</ul>
+<p><strong>这一步的产出</strong>：搞清楚了这个项目里"谁是客户端、谁是服务端、交付的时候交什么"。所以后来我提"双击启动 + 手机能连"的时候，目标很明确 —— 要打包的就是服务端那一份，客户端不用管。</p>
+<p>"跟我写一个本地的程序带有上网请求的好不一样"这句是我自己比出来的。</p>
+<hr>
+<h2 class="md-h" id="h9-三-界面这块改了三回">三、界面这块改了三回</h2>
+<p>这块主要问题在我，一开始没说清楚。</p>
+<p><strong>第一次</strong>，我给了一张手画的草图和一个参考项目：</p>
+<blockquote><p>我要侧边栏有三个板块，每个板框两个小栏……ui 参考 <code>C:\work\epubui\EasyPub-New</code> 的 index.html，侧边栏按他的写法，小栏就模仿书库功能中的本地图书和精选推荐。</p></blockquote>
+<p>它理解成"文字 / 历史 / 图片"三块，猜错了。</p>
+<p><strong>第二次</strong>我说清楚：</p>
+<blockquote><p>我的意思是三种大栏做侧边栏，对应三种功能，纯文字和读取放上面作为上面的选择栏，一共 2×3 六种组合……中间的空白部分再做一个信息显示窗口，下面是输入框（如果是读取剪贴板就没有输入框）……做成聊天式的形式，一条信息横向要占满。</p></blockquote>
+<p><strong>第三次</strong>又补一句：</p>
+<blockquote><p>说错了，是上下左右侧边栏。</p></blockquote>
+<p>到这儿骨架才定下来：上面是纯文字/剪贴板，左边三种传输，下面输入，右边成员·服务·历史，中间信息窗口。</p>
+<p>这轮我还提了一件对后面影响比较大的事：</p>
+<blockquote><p>我想的是六个板块的互通问题，怎么让六个板块共用一个信息窗口，切换的只是发送信息的模式（历史记录也是互通）。</p></blockquote>
+<p><strong>这句话后来变成了前端的架构</strong>：一份数据源，切换只换"管道"和"输入方式"两根轴。如果一开始我就把这两根轴讲清楚，前面大概能少改两回 —— 这是我这次做得不好的地方。</p>
+<hr>
+<h2 class="md-h" id="h10-四-交付形态-双击启动-手机能连">四、交付形态：双击启动 + 手机能连</h2>
+<p>我先问有没有双击启动的 exe。它说真 exe 要打包、改代码得重打，我就把目标说清楚了：</p>
+<blockquote><p>我现在要的是，我 exe 启动服务端，然后我在手机上输入网址，可以连接上这个服务器。</p></blockquote>
+<p>再补一句：</p>
+<blockquote><p>不用，假的 exe 也行，但就是我要的这个交互逻辑。</p></blockquote>
+<p>所以最后做的是 <code>启动服务.cmd</code> 加一份防火墙放行脚本，没去打包。</p>
+<p>手机那边我提的是：</p>
+<blockquote><p>你针对手机做一个适配版 html。</p></blockquote>
+<p>桌面版四面框在手机上放不下，所以做成顶栏 + 组合条 + 全宽消息流 + 底部输入，左右侧栏收进两个抽屉；窄屏访问根地址会自动跳过去。</p>
+<hr>
+<h2 class="md-h" id="h11-五-用起来发现的问题">五、用起来发现的问题</h2>
+<p>这几处是我自己用的时候觉得不对、报给它查的。修都是它修的，我负责说现象和追问。</p>
+<p><strong>① 自动滚动其实是坏的</strong></p>
+<blockquote><p>更新一个小点，现在有最新消息会下滑到底部</p></blockquote>
+<p>查下去发现比我说的问题还大：自动滚动一直没生效过 —— 代码在给 <code>#streamList</code> 设 <code>scrollTop</code>，但真正能滚的是它爸 <code>#msgs</code>。</p>
+<p><strong>② 发消息时到底会不会滑到底部</strong></p>
+<p>它说"你自己发消息时也不会拽到底部"，我记得是会，就回了句"会啊"。后来它承认上句说得太绝对：在底部时确实会拽，不拽的只有"先翻上去、再发消息"这种边缘情况，然后把那块补上了。</p>
+<p><strong>③ 剪贴板"被拒绝"</strong></p>
+<p>我先报的是"剪贴板读取被拒绝"。它改完一版之后我又补了一句：</p>
+<blockquote><p>这个是不是有 timeout 啊，为啥我明明检测到了发出去了但是还是显示被拒绝</p></blockquote>
+<p>后来查出真因是：消息其实发出去了，是失败时留下的那行红字没被清掉，一直挂在界面上。</p>
+<p><strong>④ 复制图片不行</strong></p>
+<p>查出来老的实现只调了 <code>readText()</code>，它只能读文本，图片根本没检测到，得换成 <code>navigator.clipboard.read()</code>。</p>
+<p><strong>⑤ 复制文件 + WS 不崩</strong></p>
+<blockquote><p>顺便把复制文件也加上，如果 ws 走不了的就直接拒绝请求不要崩溃。</p></blockquote>
+<p>后半句查出一个漏洞：<strong>64KB 的大小限制只在 HTTP 路由里校验，WebSocket 那条路整个绕过去了</strong>。修法是把校验收口到 <code>room_store.push()</code>。另外服务端改成单条坏消息只回个 error 帧、不断开连接。"复制文件"最后发现是浏览器的安全边界（网页不给读本地文件），只能靠 Ctrl+V。</p>
+<hr>
+<h2 class="md-h" id="h12-六-p2p-那道题">六、P2P 那道题</h2>
+<p>听完它讲 WebRTC 那一套，我先把结论说了：</p>
+<blockquote><p>所以 P2P 没有性价比的原因是因为我做了聊天室型的交互模式是吗？</p></blockquote>
+<p>它回了个"一半对"，又铺开讲了信令、STUN/TURN、端到端加密一大套。我把话说直了：</p>
+<blockquote><p>我的意思就是这个，聊天室要求有服务器，有服务器就不好用 P2P，为什么你总是理解不了我的意思呢</p></blockquote>
+<p>这句我说得有点急。不过我的意思确实一句话就能说完：</p>
+<pre class="code"><code>聊天室 → 必须有服务器（存历史、当权威） → 服务器本来就在内容路径上
+       → 再引入 P2P 只是多一套复杂度</code></pre>
+<p>后来 README 里这道题就按这条主线写。</p>
+<hr>
+<h2 class="md-h" id="h13-七-单元测试">七、单元测试</h2>
+<p>我先问的是概念：</p>
+<blockquote><p>你先别急，单元测试的意思是就是比如我测试一个 py 脚本跑不跑的动吗？</p></blockquote>
+<p>搞清楚"跑得动"和"喂各种输入看返回对不对"不是一回事之后才让它写。最后 103 个用例、1.25 秒跑完，用 Python 标准库 <code>unittest</code>，每个用例都拿临时数据库。</p>
+<p>这块我拖晚了。要是早点写，前面"冷房间第一条重复"和"WS 绕过大小限制"这两个坑，写的时候就能发现。</p>
+<hr>
+<h2 class="md-h" id="h14-八-四个小时大概花在哪">八、四个小时大概花在哪</h2>
+<p>时间是从会话日志里抽的，不是我估的：</p>
+<div class="tw"><table><thead><tr><th>时间</th><th>花了多久</th><th>做的事</th></tr></thead><tbody><tr><td>20:00 – 20:12</td><td>约 12 分钟</td><td>读题目、定范围（全部 + 系统剪贴板自动同步）</td></tr><tr><td>20:12 – 21:40</td><td><strong>约 1 小时 28 分</strong>（最久的一段）</td><td>出 UI 设计稿、界面改三回、写完前端六组合</td></tr><tr><td>21:40 – 22:16</td><td>约 36 分钟</td><td>讲局域网连接原理、追问"双向"、建库</td></tr><tr><td>22:16 – 22:52</td><td>约 36 分钟</td><td>换 Python、拆多文件、逐个问框架概念</td></tr><tr><td>22:52 – 23:19</td><td>约 27 分钟</td><td>手机适配版</td></tr><tr><td>23:19 – 23:57</td><td>约 38 分钟</td><td>排错：滚动、剪贴板、图片、文件、WS 五处</td></tr><tr><td>23:57 – 00:17</td><td>约 20 分钟</td><td>P2P 思考题、单元测试、整理过程记录</td></tr></tbody></table></div>
+<p>（总跨度 4 小时 23 分，20:00 开始，次日 00:17 结束。）</p>
+<p>看得出来<strong>界面那块最费时间</strong>，而这正是我一开始没说清楚的地方；后面理解和排错反而比较快。</p>
+<hr>
+<h2 class="md-h" id="h15-九-还没做好的地方">九、还没做好的地方</h2>
+<ol>
+<li><strong>界面口径一开始没讲清</strong>，改了三回，也是这四小时里最耗时的一段。两张轴（输入方式 × 传输方式）应该第一句就说。</li>
+<li><strong>测试写晚了</strong>。两个真 bug 本来在写的时候就能发现。</li>
+<li><strong>有几个问题跟本题关系不大</strong>（微信为什么限 1GB、分片重组的细节），属于顺带了解，占了一点时间，不过也没影响进度。</li>
+<li><strong>分工上我偏"定方向"</strong>，界面骨架、交互模型、范围这些是我拍的，具体代码基本是 AI 写的 —— 这点我照实说。</li>
+</ol></div>
+  </main>
+</div>
+
+</body>
+</html>

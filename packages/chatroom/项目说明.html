@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目说明（我自己的理解）</title>
+<style>
+
+  :root{
+    --bg:#FBFAF8; --card:#FFFFFF; --tx:#22262C; --tx2:#5B6472; --tx3:#8A93A0;
+    --line:#E6E3DE; --code-bg:#F4F2EE; --accent:#B45309; --link:#1D4ED8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--tx);
+    font-family:'Segoe UI','Microsoft YaHei',system-ui,-apple-system,sans-serif;
+    font-size:15px;line-height:1.75;
+  }
+  .body>*:first-child{margin-top:0}
+  .body>*:last-child{margin-bottom:0}
+  .body p{margin:10px 0;white-space:pre-wrap}          /* pre-wrap：保留原文换行（ASCII 图靠它） */
+  .body li{white-space:pre-wrap}
+  .body h3,.body h4,.body h5,.body h6{margin:18px 0 8px;font-size:15px;font-weight:650}
+  .body h3{font-size:16px}
+  .body ul,.body ol{margin:10px 0;padding-left:26px}
+  .body li{margin:4px 0}
+  .body hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+  .body blockquote{margin:10px 0;padding:8px 14px;background:var(--code-bg);
+                   border-left:3px solid var(--line);border-radius:0 8px 8px 0;
+                   color:var(--tx2);font-size:13.5px}
+  .body blockquote p{margin:4px 0}
+  .body code{background:var(--code-bg);padding:1.5px 6px;border-radius:5px;
+             font-family:ui-monospace,Consolas,'Cascadia Mono',monospace;font-size:13px}
+  .body pre.code{background:#F7F5F1;border:1px solid var(--line);border-radius:10px;
+                 padding:14px 16px;overflow-x:auto;margin:12px 0}
+  .body pre.code code{background:none;padding:0;font-size:12.5px;line-height:1.65;white-space:pre}
+  .body .tw{overflow-x:auto;margin:12px 0}
+  .body table{border-collapse:collapse;font-size:13.5px;width:100%;margin:0}
+  .body th,.body td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  .body th{background:var(--code-bg);font-weight:600;white-space:nowrap}
+  .body a{color:var(--link);text-decoration:none;border-bottom:1px solid rgba(29,78,216,.3)}
+  .body a:hover{border-bottom-color:var(--link)}
+  .body strong{font-weight:650}
+  header.top{
+    position:sticky;top:0;z-index:10;background:rgba(251,250,248,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:12px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  header.top .t{font-weight:650;font-size:15px}
+  @media print{
+    header.top,.toc{display:none!important}
+    body{font-size:11.5pt;background:#fff} .intro{display:none}
+    .body table,.body pre.code{break-inside:avoid}
+  }
+
+  :root{--accent:#B45309}
+  header.top .sub{color:var(--tx3);font-size:12.5px}
+
+  .layout{max-width:1180px;margin:0 auto;padding:26px 22px 90px;
+          display:grid;grid-template-columns:236px minmax(0,1fr);gap:40px;align-items:start}
+  /* 没有小标题（也就没有目录）时改单栏，正文窄一点更好读 */
+  .layout.no-toc{grid-template-columns:minmax(0,1fr);max-width:860px}
+  .layout.no-toc .body{font-size:15.5px;line-height:1.95}
+  .layout.no-toc .body p{margin:16px 0;text-indent:2em}   /* 中文习惯：段首空两格 */
+  .toc{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto;
+       font-size:13px;background:var(--card);border:1px solid var(--line);
+       border-radius:12px;padding:14px 16px}
+  .toc-t{font-weight:650;font-size:12px;letter-spacing:.1em;color:var(--tx3);margin-bottom:8px}
+  .toc ol{margin:0;padding-left:18px}
+  .toc li{margin:6px 0;line-height:1.5}
+  .toc a{color:var(--tx2);text-decoration:none;border:0}
+  .toc a:hover{color:var(--accent)}
+
+  h1.doc{font-size:27px;line-height:1.35;margin:6px 0 6px;letter-spacing:-.01em}
+  .lead{color:var(--tx2);font-size:13.5px;margin:0 0 30px;padding-left:14px;
+        border-left:3px solid var(--accent)}
+  .lead p{margin:5px 0;white-space:pre-wrap}
+
+  .body h2{font-size:19px;margin:40px 0 14px;padding-bottom:8px;
+           border-bottom:2px solid var(--line);color:var(--accent);font-weight:650}
+  .body h2:first-child{margin-top:0}
+  .body h3,.body h4{color:var(--tx);font-weight:650}
+  .body h3{font-size:16px;margin:26px 0 8px}
+  .body h4{font-size:14.5px;margin:20px 0 6px}
+  .body .md-h{scroll-margin-top:76px}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr);gap:22px;padding:18px 14px 70px}
+    .toc{position:static;max-height:none}
+    h1.doc{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="t">项目说明（我自己的理解）</span>
+  <span class="sub">我自己手敲的，没打草稿</span>
+</header>
+
+<div class="layout">
+  <nav class="toc"><div class="toc-t">目录</div><ol><li><a href="#h1-part-1">Part 1</a></li><li><a href="#h2-part-2-登录鉴权-与-sqlite-建表">Part 2 · 登录鉴权 与 SQLite 建表</a></li></ol></nav>
+  <main>
+    <h1 class="doc">项目说明（我自己的理解）</h1>
+    <div class="lead"><p>纯手敲的，没打草稿。下面是我对这个项目本身的理解，跟交付物的口径可能有出入，以这篇为准。</p>
+<p><strong>Part 1</strong> 是上一个项目（局域网协同剪贴板）留下的那部分 —— 这次大部分框架直接沿用，所以那些理解仍然成立；
+<strong>Part 2</strong> 是这道题新增的两个思考点：登录鉴权、SQLite 建表。</p></div>
+    <div class="body"><h2 class="md-h" id="h1-part-1">Part 1</h2>
+<p>我这个项目分服务端和客户端两部分：服务端用 sqlite 做数据源，所有用户端先把数据传到服务端，服务端再把数据传回各个用户端。三种传输方式的区别，就产生在"传输"这一步。</p>
+<p>最简单的是轮询，数据是用户主动向服务器要的 —— 页面每隔固定间隔发一次请求，判断有没有更新。这个方法我之前那个项目也用过，不过当时打交道的对象不是网页和服务器：那时候是为了判断一个窗口是不是不再变化了，做法是轮询截图，再拿截图去比对（大概是比对字节数吧，记不太清了），运行过程中还要顺手清理截图缓存，只留最近三张。这段算是题外话。</p>
+<p>轮询要往服务器传东西时，走的是另一条通道 —— 轮询和 SSE 的上传其实是一回事，都是普通的 HTTP POST。</p>
+<p>SSE 就明显高级一点：服务器收到新消息之后，由服务器主动发到各个客户端。我理解它本质上就是一个逻辑判断，一个 if 分支（我是这么理解的）。</p>
+<p>最后是 WebSocket，它把上传和发送做成了一条通道，双向都走同一根管子，效率上确实高不少。不过它不适合拿来传文件 —— 题目里也明确说了不用 WebSocket 传二进制，所以文件还是单独走 HTTP 上传。</p>
+<p>关于传文件，我还特意问了一下什么叫分帧。简单说：我们传给服务器的是一长串字节，中间虽然分了好几个字节段，但这些段并不是按消息切的；要让服务器知道哪几个字节属于同一条消息，就得靠分帧。常见的做法有四种：定长、长度前缀（在每条消息前面加两三个字节，先告诉程序这条有多长）、加分隔符、加结束标识。</p>
+<p>我第一印象觉得第三、第四种更合理，比较符合人的直觉；结果挺意外 ——现在最主流的居然是第二种（长度前缀），后两种作为补充。当然这也是题外话。</p>
+<p>总而言之大概就是这个逻辑。各个用户是怎么连接到服务器的呢：一开始有一行调用操作系统的代码，让操作系统去找服务器"握手"，等服务器回一句"哎呀，都是老乡"，握手就算成功、连上了。这一点也挺意外的 —— 我一直以为向服务器发请求一定要有库撑着（比如 requests，我之前写爬虫用得特别多），结果是系统调用层面一行命令的事。</p>
+<p>至于为什么最后做成了聊天室而不是共享输入框：主要是本人土鳖，之前没见过这种交互模式，写到一半发现是这么回事，已经来不及改了。</p>
+<p>前端设计套用的是我之前的项目（架构是，风格不是），我自己还是挺满意的。</p>
+<p>关于 P2P 那道题，我的理解是：可以做成网状连接，让用户和用户之间私下交易。不过好像还是要过服务器，这一点我没太搞懂为什么（雾）。需要的东西是信令（用来过防火墙、互相识别）和 WebRTC DataChannel（浏览器自带的功能）。但我做的是聊天室，所以这个作用就不大了（喵喵）。</p>
+<p>先这样了，这篇是纯手敲的，有点累。</p>
+<h2 class="md-h" id="h2-part-2-登录鉴权-与-sqlite-建表">Part 2 · 登录鉴权 与 SQLite 建表</h2>
+<p>这个我直接把前一道题的拿来用了，大部分框架是一样的，服务器文件传输那些的我不细说了。这道题新增的思考点是两个部分：一个是登录鉴权，一个是 sqlite 库建表。这两个事情其实是有交叉的部分的。</p>
+<p>先来说登录这个事。登录这件事是你在客户端注册了、登录了，服务器端就会给你发一个 cookie。这个 cookie 不是身份证，而是门禁卡（我之前一直拿刷脸来类比，但是忽略了 cookie 是可以偷的 ——明明做爬虫的时候偷过，这波我的），真正的身份证是 userid。</p>
+<p>那具体是一个什么流程呢？没有 cookie 的是陌生人，服务器不理你，所以客户端要在发请求前先写一个Cookie: sid=abc123…；然后服务器对着这个 cookie 去查你的 userid，查完 userid，说欸这个是 7 号，那你之后都会以 7 号的身份进行行动。</p>
+<p>到这里我有一个疑惑：为什么不直接拿 cookie 当成 userid？为啥一定要设两个变量、让机器多一步查的步骤呢，难道是因为他太长了吗。但是这又是一个很反直觉的地方：在互联网中，出于对网络安全的考虑，这个"门禁卡"是会隔一段时间重新发的。这个 userid 和 cookie 的寿命是不一样的，一个 userid 可以对好多个 cookie，这个过期了就对下一个（太优美了，伟大的算法发明）。</p>
+<p>再说回这个 sqlite 库。一开始我以为他是对不同群聊的数据做单独隔离，就像我们做工程一样，一个模块可能会单开一个文件夹；但这又是计算机和人类思维不同的地方。其实 sqlite 的所有数据都是一起的，但是每条信息前面有前缀，可以让他先做一次分类（比如说 room id=xx 你好），这就是用逻辑判断代替扩大存储占用（每个库，或者一小块开始画出来的空间都是固定的）。</p>
+<p>ok 了，这个就是这个项目的新东西了。这段依旧纯手敲，有点累了，先这样。</p></div>
+  </main>
+</div>
+
+</body>
+</html>

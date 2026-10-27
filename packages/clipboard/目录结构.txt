@@ -1,0 +1,117 @@
+协同剪贴板（局域网）· 完整文件结构
+============================================================
+统计时间：2026-10-07     行数为实际统计
+文档全部摊在主目录，不用翻文件夹
+
+collab-clipboard/
+│
+├─ README.md                    项目说明（运行方式 / 三种传输的区别 / 设计 / 已知问题）
+├─ 目录结构.txt                  本文件
+│
+├─ server.py               139 行  ★ 服务端入口（装配 + 局域网横幅 + 端口预检）
+├─ requirements.txt         11 行  非标准库依赖只有 4 个
+├─ 启动服务.cmd              30 行  双击启动（纯 ASCII + 缺依赖自动装 + 自动开浏览器）
+├─ 跑单元测试.cmd            29 行  双击跑测试
+├─ 放行防火墙.cmd            38 行  右键「以管理员身份运行」
+│
+├─ 【过程记录】文档都在这一层，双击 .html 用浏览器打开
+│  ├─ 对话记录-01-实现过程.html     ★ 分色对话原文（我的话琥珀、AI 的话蓝）
+│  ├─ 开发经历.html                ★ 我这边做过的事和当时的想法
+│  ├─ 项目说明.html                ★ 我自己手敲的项目理解
+│  ├─ 开发经历总结.md               技术层面的回顾（弯路 / 坑 / 修法）
+│  ├─ 思路记录.md                   我给出的思路原话 + 由此沉淀的约束
+│  └─ 手动测试清单.md               7 组手动验收项
+│
+├─ app/                         ★ Python 后端（7 个模块 + 4 条路由，各管一件事）
+│  ├─ __init__.py             61 行  create_app()：装配 FastAPI + 路由 + 静态目录 + UTF-8 响应类
+│  ├─ config.py               75 行  配置集中（监听地址 / 端口 / 各类上限 / 心跳 / 目录）
+│  ├─ net.py                  67 行  ★ 局域网地址发现（跳过 loopback 与 169.254）
+│  ├─ db.py                  187 行  ★ SQLite：建表 / 读写 / 统计（标准库 sqlite3）
+│  ├─ rooms.py               224 行  ★ 房间与消息 + 订阅队列 + 在线成员 + 大小校验（两条上行共用）
+│  ├─ websocket.py           150 行  任务三：WebSocket（发件箱队列；单条出错只回 error 帧）
+│  └─ routes/
+│     ├─ api_routes.py       185 行  任务一：/api/snapshot、/api/messages、/api/history、/api/upload
+│     ├─ sse_routes.py        84 行  任务二：SSE
+│     ├─ net_routes.py        53 行  /api/health、/api/net、房间连接实况
+│     └─ __init__.py           6 行
+│
+├─ public/                      ★ 前端（零构建、零依赖，原生 ES Module）
+│  ├─ index.html             122 行  桌面版：四面框（窄屏自动跳手机版）
+│  ├─ mobile.html            182 行  手机版：顶栏 + 组合条 + 全宽消息流 + 左右两个抽屉
+│  ├─ css/
+│  │  ├─ app.css             261 行  桌面版样式（精密仪表皮肤）
+│  │  └─ mobile.css          287 行  手机版样式（复用同一套配色令牌）
+│  └─ js/
+│     ├─ main.js             365 行  ★ 前端入口：换管道 / 换输入源 / 发消息（桌面手机共用这一份）
+│     ├─ store.js            124 行  ★ MessageStore：唯一数据源 + seq 去重
+│     ├─ render.js           179 行  消息渲染 + 滚动策略（贴底跟随 / 新消息提示）
+│     ├─ api.js               86 行  所有 REST 调用的唯一出口
+│     ├─ panels.js            96 行  左栏 / 右栏渲染
+│     ├─ session.js           61 行  客户端 id / 昵称 / 房间号
+│     ├─ ui.js                46 行  建 DOM、格式化时间与大小、轻提示
+│     ├─ transports/         三套传输，同一个接口：index · polling · sse · ws
+│     └─ modes/              两种输入源，只换底栏 composer：text · clipboard
+│
+├─ tests/                       ★ 单元测试（Python 标准库 unittest，103 项，约 1.2 秒）
+│  ├─ _base.py                66 行  公共：每个用例用临时数据库，绝不碰 data/app.db
+│  ├─ test_db.py             181 行  数据层（21 项）
+│  ├─ test_rooms.py          271 行  房间与校验（35 项）
+│  ├─ test_api.py            271 行  HTTP 接口（36 项）
+│  └─ test_net.py             73 行  局域网地址过滤（11 项）
+│
+├─ dev/                        验证与记录工具（不参与运行时）
+│  ├─ md2html.mjs            191 行  ★ markdown → HTML 渲染器 + 共用样式 BASE_CSS
+│  ├─ make-transcript.mjs    330 行  ★ 会话日志 → 分色对话记录 HTML（多帧 zstd 逐帧解压）
+│  ├─ make-doc.mjs           120 行  ★ 普通 md → 文档 HTML
+│  ├─ docs-src/                     **文档源文件**（改内容改这里，再跑一条命令重新生成）
+│  │  ├─ 开发经历.md          272 行
+│  │  └─ 项目说明.md           40 行
+│  ├─ e2e-check.py           131 行  端到端：三种传输互通、切换不清窗（21 项）
+│  ├─ mobile-check.py        137 行  手机版适配（23 项）
+│  ├─ scroll-check.py        124 行  滚动行为（17 项）
+│  ├─ clipboard-check.py     179 行  剪贴板模式（25 项）
+│  ├─ ws-check.py            192 行  WebSocket 容错（19 项）
+│  ├─ seed.mjs                71 行  灌示例数据（只发 HTTP 请求）
+│  ├─ make-sample.py          39 行  造示例图片与 py 文件
+│  ├─ db-check.mjs            47 行  持久化验证（写入 / 重启后读取）
+│  ├─ db-inspect.mjs          40 行  绕过服务直接看 SQLite 里存了什么
+│  └─ extract-transcript.mjs 140 行  日志结构探查（备用）
+│
+├─ design/                      UI 设计稿
+│  ├─ v1~v4*.html + skins/          四版风格探索 + 定稿皮肤
+│  ├─ shots/                        截图（桌面版 / 手机版 / 测试 / 文档渲染）
+│  ├─ prompts/ concepts/            早期生图路线的提示词与产物（已弃用）
+│  └─ README.md                     设计稿说明
+│
+├─ alt-node/                    Node 版后端（同一套接口契约，留作对照，不参与运行）
+│  ├─ server.js               87 行
+│  ├─ src/                    config.js · net.js · rooms.js · db.js · app.js · ws.js · routes/
+│  ├─ package.json
+│  └─ node_modules/           依赖（express / ws / multer 等，已随包一起打进来）
+│
+├─ data/app.db                  运行时产生：SQLite 单文件（含 -wal / -shm）
+├─ uploads/                     运行时产生：上传的图片与文件（二进制落磁盘，不入库）
+└─ .gitignore                   忽略 data/ uploads/ node_modules/ __pycache__/ 等
+
+============================================================
+三条规矩
+------------------------------------------------------------
+1. 所有文档都在主目录 —— 验收时一眼就能看到，不用翻文件夹；
+   文档的源文件在 dev/docs-src/（改内容改源文件，再跑一条命令重新生成）
+2. data/ 和 uploads/ 不进 Git —— 它们是运行时产生的，拷走 data/app.db 就等于备份
+3. alt-node/ 只是留档 —— Node 版实现过同一套接口契约，留着对照，删掉不影响运行
+
+怎么跑
+------------------------------------------------------------
+双击 启动服务.cmd     → 服务起来，浏览器自动打开，窗口里打印手机该访问的地址
+双击 跑单元测试.cmd   → 103 项单元测试，约 1.2 秒（不需要启动服务）
+连不上手机时          → 右键 放行防火墙.cmd → 以管理员身份运行
+
+想重新生成文档
+------------------------------------------------------------
+node dev/make-doc.mjs dev/docs-src/开发经历.md 开发经历.html "副标题"
+node dev/make-doc.mjs dev/docs-src/项目说明.md 项目说明.html "副标题"
+node dev/make-transcript.mjs <会话日志.v4.jsonl.zstd> 对话记录-01-实现过程.html \
+     --from "先给我出一版ui设计稿" \
+     --skip "我的问答页进readme吧" "开始后端，一步步来" \
+     --to   "现在你先分两个板块写"

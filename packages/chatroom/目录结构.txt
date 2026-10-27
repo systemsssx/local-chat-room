@@ -1,0 +1,113 @@
+聊天室（全栈）· 完整文件结构
+============================================================
+统计时间：2026-10-07     行数为有效行（不含空行）
+文档全部摊在主目录，不用翻文件夹
+
+【运行入口】
+server.py                         110 行  ★ 服务入口（装配 + 局域网横幅 + 端口预检）
+requirements.txt                           非标准库依赖只有 3 个：fastapi / uvicorn / python-multipart
+启动服务.cmd                               双击启动（自动开浏览器）
+跑单元测试.cmd                             双击跑 131 项单元测试
+跑端到端.cmd                               双击跑 51 项端到端（需要先起服务）
+放行防火墙.cmd                             右键"以管理员身份运行"
+
+【文档】
+主目录（双击就能看）：
+README.md                                  项目说明（怎么跑 / 登录怎么实现 / 隔离怎么做 / 已知问题）
+项目说明.html                  11 KB      自述 · 我自己手敲的：Part 1 上一道题沿用的部分 + Part 2 登录鉴权与 SQLite 建表
+开发经历总结.md                 8 KB      总结 · 技术层面的回顾（弯路 / 坑 / 修法）
+手动测试清单.md                            8 组需要在浏览器里手点的验收项
+目录结构.txt                               本文件
+
+这是上一个项目的陈述文件/
+    对话记录-01-实现过程.html   355 KB      原始记录 · 上一个项目（协同剪贴板）的完整对话原文
+    开发经历-01-协同剪贴板.html  23 KB      叙事 · 上一个项目我这边做过的事
+
+这是这个项目的陈述文件（新增部分）/
+    对话记录-02-实现过程.html   120 KB      原始记录 · 本项目（聊天室）的完整对话原文，75 个对话块
+    开发经历-02-聊天室.html      19 KB      叙事 · 本项目我这边做过的事（含那个只有手点才发现的 bug）
+
+docs/接口契约.md                           ★ 前后端唯一约定（改字段先改这里）
+design/v5-chatroom.html                    界面设计稿（定稿那一版）+ design/README.md 说明改了什么
+dev/docs-src/                              上列文档的源文件（改内容改这里，再跑命令重新生成）
+
+【后端 app/】
+app/__init__.py                    56 行  create_app()：装配路由 + 静态目录 + HTML 不缓存中间件
+app/config.py                      69 行  配置集中（监听 / 会话 / 房间 / 上限 / 文本白名单）
+app/net.py                         52 行  局域网地址发现（跳过 loopback 与 169.254）
+app/db.py                         532 行  ★ SQLite：6 张表 + 全部查询（标准库 sqlite3）
+app/auth.py                       121 行  ★ 密码哈希 / 会话名册 / current_user / 登录限速
+app/rooms.py                      343 行  ★ 房间服务 + SSE 订阅表 + 权限收口 + file 白名单重建
+app/routes/__init__.py              7 行
+app/routes/auth_routes.py          60 行  注册 / 登录 / 登出 / 我是谁（哈希与校验扔线程池）
+app/routes/room_routes.py          50 行  建群 / 入群 / 列表 / 概况 / 退群 / 换码 / 解散
+app/routes/api_routes.py          130 行  快照 / 发消息 / 翻页 / 上传 / **下载（要验成员）**
+app/routes/sse_routes.py           60 行  ★ 唯一的长连接（一条连接订两个频道）
+app/routes/net_routes.py           38 行  /api/health（只回存活）、/api/net、连接实况
+
+【前端 public/】（零构建、零依赖，原生 ES Module）
+public/index.html                 190 行  桌面版：登录卡片 + 三栏聊天页 + 两个弹窗
+public/mobile.html                175 行  手机版：同一套 JS，左右两个抽屉
+public/css/app.css                284 行  皮肤：暖炭灰机箱 + 单一琥珀 + LED 电平
+public/css/mobile.css              56 行  手机版布局覆盖
+public/js/main.js                 393 行  ★ 装配层：启动 → 选房间 → 拉快照 → 连 SSE
+public/js/api.js                   77 行  ★ 所有 REST 的唯一出口（401 统一处理）
+public/js/state.js                 49 行  界面状态：我 + 我的房间 + 当前房间
+public/js/store.js                 48 行  ★ 消息存储：按 seq 去重
+public/js/sse.js                   62 行  ★ 唯一的实时通道（自动重连 + 401/被踢兜底）
+public/js/auth.js                 104 行  登录 / 注册卡片（同一张卡片两种模式）
+public/js/rooms.js                235 行  房间列表 + 建房间/加入房间弹窗 + 成员/概况/退出房间
+public/js/composer.js              94 行  输入栏（文字 / 图片 / 文件 / Ctrl+V 粘贴）
+public/js/render.js               145 行  消息渲染（日期分隔 / 图片 / 文件卡片 / 滚动策略）
+public/js/ui.js                    98 行  DOM 与格式化工具（一律 textContent + 文案闸，不拼 HTML）
+
+【测试 tests/】
+tests/__init__.py                   0 行
+tests/_base.py                     89 行  每个用例一个临时数据库 + 一个独立"浏览器"
+tests/test_auth.py                166 行  注册 / 登录 / 登出 / 会话 / Cookie 属性 / 密码哈希
+tests/test_rooms.py               266 行  建群 / 入群 / 隔离 / 成员 / 换码 / 未读 / 公开房间不给码
+tests/test_messages.py            211 行  发送 / 快照 / 翻页 / 上传 / 下载鉴权 / file 字段白名单
+tests/test_sse.py                 133 行  访问控制 + 帧格式 + 订阅表推送范围
+tests/test_net.py                  55 行  局域网地址过滤
+
+【工具 dev/】（不参与运行时）
+dev/e2e-check.py                  309 行  端到端：纯 HTTP 跑完整流程（51 项）
+dev/ui-check.py                    54 行  静态检查：JS 用到的 id 在两份页面里都得有
+dev/make-transcript.mjs           292 行  ★ 会话原始日志 → 分色对话记录 HTML
+dev/make-doc.mjs                  107 行  普通 md → 带目录侧栏的文档 HTML
+dev/md2html.mjs                   189 行  自写的 markdown 渲染器（两个脚本共用）
+dev/extract-transcript.mjs        127 行  从会话日志里抽原始记录（备用）
+dev/docs-src/                             文档的源文件（改内容改这里，再跑一条命令重新生成）
+
+【运行时产生】（不进 Git）
+data/app.db                               SQLite 单文件（含 -wal / -shm）
+data/app.db.legacy-<时间>.bak              旧结构数据库留档（换 schema 时自动改名，不删数据）
+uploads/                                  上传的图片与文件（**下载要过鉴权**，不是静态目录）
+
+
+文档是怎么生成的（可复现）
+============================================================
+    # 对话记录：从 DSH 会话原始日志逐条抽取，不改写、不润色、不摘要
+    node dev/make-transcript.mjs <session.v4.jsonl.zstd> 对话记录-02-实现过程.html \
+         --project "聊天室" --from "方向二：聊天室" --to "把那个之前的几个说明文档搬过来"
+
+    # 开发经历那类普通文档：改 dev/docs-src/ 里的 md，再跑这一条
+    node dev/make-doc.mjs dev/docs-src/开发经历-02-聊天室.md 开发经历-02-聊天室.html "局域网聊天室 · 全栈"
+
+    --from  从哪一条开始收（前面选题/交接的讨论不要）
+    --to    到哪一条为止（整理文档这段讨论不要）
+    --skip  跳过中段（可给起止两个关键字）
+
+三条规矩
+============================================================
+1. 文档摊在主目录 —— 验收时一眼就能看到，不用翻文件夹；
+2. data/ 和 uploads/ 不进 Git —— 它们是运行时产生的；拷走 data/app.db 就等于完成备份；
+3. 接口字段只认 docs/接口契约.md —— 改字段先改契约，再改两边代码。
+
+怎么跑
+============================================================
+    python -m pip install -r requirements.txt
+    python server.py                  → http://localhost:8000（手机用局域网地址）
+    python -m unittest discover       → 131 项单元测试
+    python dev/ui-check.py            → 前端静态检查
+    python dev/e2e-check.py           → 51 项端到端（需要服务在跑）
